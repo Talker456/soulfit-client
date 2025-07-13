@@ -1,26 +1,52 @@
 // lib/main.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'config/di/di_container.dart';
 import 'config/router/app_router.dart';
 import 'core/theme/app_theme.dart';
 
 void main() {
+  // Get_It 의존성 주입 설정
+  // DIContainer.setup();
+
   runApp(
-    const ProviderScope( // Riverpod에서 DI 및 상태관리 컨테이너
-      child: MyApp(),
+    ProviderScope(
+      child: SoulfitApp(),
     ),
   );
 }
 
-class MyApp extends ConsumerWidget {
-  const MyApp({super.key});
-
+class SoulfitApp extends StatelessWidget {
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     return MaterialApp.router(
-      title: 'Flutter Clean Architecture with Riverpod',
-      theme: AppTheme.light,
+      title: 'Soulfit',
+      theme: ThemeData(
+        primarySwatch: Colors.green,
+        fontFamily: 'NotoSans',
+      ),
       routerConfig: appRouter,
     );
   }
 }
+
+// void main() {
+//   runApp(
+//     const ProviderScope( // Riverpod에서 DI 및 상태관리 컨테이너
+//       child: MyApp(),
+//     ),
+//   );
+// }
+//
+// class MyApp extends ConsumerWidget {
+//   const MyApp({super.key});
+//
+//   @override
+//   Widget build(BuildContext context, WidgetRef ref) {
+//     return MaterialApp.router(
+//       title: 'Flutter Clean Architecture with Riverpod',
+//       theme: AppTheme.light,
+//       routerConfig: appRouter,
+//     );
+//   }
+// }
