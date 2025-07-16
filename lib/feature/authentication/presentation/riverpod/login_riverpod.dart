@@ -50,6 +50,9 @@ class AuthNotifier extends StateNotifier<AuthStateData> {
 
     try {
       final user = await loginUseCase.execute(email, password);
+
+      print('[login_riverpod] : User Logged in :'+user.username+", "+user.email);
+
       state = state.copyWith(
         state: AuthState.success,
         user: user,
@@ -62,11 +65,23 @@ class AuthNotifier extends StateNotifier<AuthStateData> {
       );
     }
   }
+
+  Future<void> loadCurrentUser() async {
+    state = state.copyWith(state: AuthState.loading);
+    try {
+      // 실제로는 GetCurrentUser UseCase를 호출하여 사용자 정보를 가져와야 합니다.
+      // 예시: final user = await GetCurrentUser(sl()).call(NoParams());
+      // 여기서는 임시로 null 또는 저장된 사용자 정보를 가져온다고 가정합니다.
+      final User? currentUser = null; // 실제 구현에서는 저장된 사용자 정보를 로드합니다.
+
+      if (currentUser != null) {
+        state = state.copyWith(state: AuthState.success, user: currentUser);
+      } else {
+        state = state.copyWith(state: AuthState.initial); // 로그인되지 않은 상태
+      }
+    } catch (e) {
+      state = state.copyWith(state: AuthState.error, errorMessage: e.toString());
+    }
+  }
 }
 
-// Riverpod Provider 정의
-final authNotifierProvider = StateNotifierProvider<AuthNotifier, AuthStateData>((ref) {
-  return AuthNotifier(
-    loginUseCase: ref.read(loginUseCaseProvider),
-  );
-});

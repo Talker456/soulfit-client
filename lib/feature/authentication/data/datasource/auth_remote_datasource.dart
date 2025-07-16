@@ -6,4 +6,5 @@ import '../model/login_response_dto.dart';
 abstract class AuthRemoteDataSource {
   Future<LoginResponseModel> login(String email, String password);
   Future<void> register(SignUpRequestDto data);
+  Future<void> logout();
 }

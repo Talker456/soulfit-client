@@ -31,10 +31,5 @@ class SignUpNotifier extends StateNotifier<RegisterState> {
   }
 }
 
-// Riverpod Provider 정의
-final regiserNotifierProvider = StateNotifierProvider<SignUpNotifier, RegisterState>((ref) {
-  return SignUpNotifier(
-    registerUseCase: ref.read(registerUseCaseProvider),
-  );
-});
+
 

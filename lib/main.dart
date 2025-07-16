@@ -1,14 +1,16 @@
 // lib/main.dart
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'config/di/di_container.dart';
 import 'config/router/app_router.dart';
 import 'core/theme/app_theme.dart';
 
-void main() {
+void main() async{
   // Get_It 의존성 주입 설정
   // DIContainer.setup();
-
+  WidgetsFlutterBinding.ensureInitialized();  // 1번코드
+  await dotenv.load(fileName: ".env");    // 2번코드
   runApp(
     ProviderScope(
       child: SoulfitApp(),

@@ -18,7 +18,8 @@ class AuthRepositoryImpl implements AuthRepository {
   @override
   Future<User> login(String email, String password) async {
     final loginResponse = await remoteDataSource.login(email, password);
-    print("login : success, Access Token : "+loginResponse.accessToken);
+    print("[auth repo impl] : login : success, Access Token : "+loginResponse.accessToken);
+    print("[auth repo impl] : user logged in : "+loginResponse.email+", "+loginResponse.username);
     await localDataSource.saveTokens(
         loginResponse.accessToken, loginResponse.refreshToken);
     return loginResponse;
@@ -33,6 +34,7 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<void> logout() async {
+    await remoteDataSource.logout();
     await localDataSource.deleteTokens();
   }
 }

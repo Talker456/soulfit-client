@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:http/http.dart' as http;
+import 'package:soulfit_client/config/di/provider.dart';
+import 'package:soulfit_client/feature/authentication/data/datasource/auth_local_datasource.dart';
 import 'package:soulfit_client/feature/authentication/data/model/register_request_dto.dart';
 import 'package:soulfit_client/feature/authentication/domain/entity/signup_data.dart';
 
@@ -10,8 +12,9 @@ import 'auth_remote_datasource.dart';
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   final http.Client client;
+  final AuthLocalDataSource source;
 
-  AuthRemoteDataSourceImpl({required this.client});
+  AuthRemoteDataSourceImpl({required this.client, required this.source});
 
   @override
   Future<LoginResponseModel> login(String email, String password) async {
@@ -27,7 +30,11 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         }),
       );
 
+      print("[auth remote data source impl] : login call : "+response.body);
+
       if (response.statusCode == 200) {
+        var loginResponseModel = LoginResponseModel.fromJson(jsonDecode(response.body));
+      print("[auth remote data source impl] : "+loginResponseModel.username+", "+loginResponseModel.email);
         return LoginResponseModel.fromJson(jsonDecode(response.body));
       } else {
         throw Exception('Failed to login: ${response.statusCode} ${response.body}');
@@ -59,4 +66,24 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       throw Exception('Failed to connect or process registration: $e');
     }
   }
+
+  @override
+  Future<void> logout() async{
+    String accessToken = await source.getAccessToken() as String;
+
+    final response = await client.post(
+      Uri.parse('https://localhost:8443/api/auth/logout'),
+      headers: <String,String>{
+        'Content-Type' : 'application/json; charset=UTF-8',
+        'Authorization': 'Bearer '+accessToken,
+      },
+    );
+
+    if(response.statusCode == 200){
+      print('log out : OK');
+    }else{
+      throw Exception('failed to logout: ${accessToken} ${response.body}');
+    }
+  }
+
 }

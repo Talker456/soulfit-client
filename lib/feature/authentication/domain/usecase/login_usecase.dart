@@ -7,7 +7,11 @@ class LoginUseCase {
   LoginUseCase(this.repository);
 
   Future<User> execute(String email, String password) async {
-    print('login executed on login usecase');
+
+    var user = await repository.login(email, password);
+
+    print('[login use case] : login executed on login usecase : '+user.username+", "+user.email);
+
     return await repository.login(email, password);
   }
 }

@@ -41,4 +41,11 @@ class FakeAuthRemoteDataSource implements AuthRemoteDataSource {
       throw Exception('회원가입 실패: 유효하지 않은 이메일 형식입니다.');
     }
   }
+
+  @override
+  Future<void> logout() async{
+    await Future.delayed(const Duration(seconds: 1));
+
+    log('logout on fake remote repo impl');
+  }
 }

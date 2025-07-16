@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:soulfit_client/feature/counter/presentation/screens/counter_screen.dart';
 
 import '../../feature/authentication/presentation/riverpod/login_riverpod.dart';
 import '../../feature/authentication/presentation/screens/login_screen.dart';
-import '../../feature/authentication/presentation/screens/signup_screen.dart';
+import '../../feature/authentication/presentation/screens/signup_screen_v3.dart';
+import '../di/provider.dart';
 
 class AppRoutes {
   static const String login = '/login';
@@ -21,15 +21,16 @@ final GoRouter appRouter = GoRouter(
       name: 'login',
       builder: (context, state) => SoulfitLoginScreen(),
     ),
-    // GoRoute(
-    //   path: AppRoutes.home,
-    //   name: 'home',
-    //   builder: (context, state) => const HomeScreen(),
-    // ),
+    GoRoute(
+      path: AppRoutes.home,
+      name: 'home',
+      builder: (context, state) => const HomePage(),
+    ),
     GoRoute(
       path: AppRoutes.register,
       name: 'register',
-      builder: (context, state) => const SignUpScreen(),
+      // builder: (context, state) => const SignUpScreen(),
+      builder: (context, state) => const SignUpScreenV3(),
     ),
   ],
   redirect: (context, state) {
