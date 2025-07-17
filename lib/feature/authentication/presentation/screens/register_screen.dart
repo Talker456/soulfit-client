@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:soulfit_client/config/router/app_router.dart';
+import 'package:soulfit_client/feature/authentication/presentation/widget/intro_widget.dart';
 
 import '../../../../config/di/provider.dart';
 import '../../domain/entity/signup_data.dart';
@@ -24,7 +25,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreenV3> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
-  String? _verificationId; // 인증 스킵
+  String? _verificationId="testId"; // 인증 스킵
   String? _selectedGender;
 
   void _onSignUp() {
@@ -52,7 +53,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreenV3> {
     );
 
     ref.read(regiserNotifierProvider.notifier).register(signUpData);
-    context.go(AppRoutes.login);
+
   }
 
   @override
@@ -60,13 +61,13 @@ class _SignUpScreenState extends ConsumerState<SignUpScreenV3> {
     final state = ref.watch(regiserNotifierProvider);
 
     return Scaffold(
-      backgroundColor: const Color(0xFFE8F5E8), // 연한 초록색 배경
+      backgroundColor: const Color(0xFFE4FFDF), // 연한 초록색 배경
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () => Navigator.pop(context),
+          onPressed: () => context.go("/login"),
         ),
       ),
       body: SingleChildScrollView(
@@ -74,33 +75,14 @@ class _SignUpScreenState extends ConsumerState<SignUpScreenV3> {
         child: Form(
           key: _formKey,
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            // crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               const SizedBox(height: 20),
               // 브랜드 로고
-              Center(
-                child: Column(
-                  children: [
-                    Text(
-                      'soulfit',
-                      style: TextStyle(
-                        fontSize: 48,
-                        fontWeight: FontWeight.w300,
-                        color: Colors.green.shade600,
-                        letterSpacing: 2,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      '나의 소울메이트를 찾는 여정의 시작',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.grey.shade600,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+              IntroHeader(),
+
               const SizedBox(height: 40),
               // 회원가입 제목
               const Text(
@@ -114,8 +96,8 @@ class _SignUpScreenState extends ConsumerState<SignUpScreenV3> {
               const SizedBox(height: 24),
 
               // 입력 필드들
-              _buildStyledTextField(_passwordController, '비밀번호', obscureText: true),
               _buildStyledTextField(_emailController, '아이디'),
+              _buildStyledTextField(_passwordController, '비밀번호', obscureText: true),
 
               // 본인인증 섹션
               const SizedBox(height: 16),

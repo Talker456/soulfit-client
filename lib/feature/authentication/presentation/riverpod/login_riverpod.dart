@@ -51,8 +51,6 @@ class AuthNotifier extends StateNotifier<AuthStateData> {
     try {
       final user = await loginUseCase.execute(email, password);
 
-      print('[login_riverpod] : User Logged in :'+user.username+", "+user.email);
-
       state = state.copyWith(
         state: AuthState.success,
         user: user,

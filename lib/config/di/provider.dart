@@ -13,8 +13,11 @@ import '../../feature/authentication/data/datasource/auth_remote_datasource_impl
 import '../../feature/authentication/data/datasource/fake_remote_datasource.dart';
 import '../../feature/authentication/data/repository_impl/auth_repository_impl.dart';
 import '../../feature/authentication/domain/repository/AuthRepository.dart';
+import '../../feature/authentication/domain/usecase/change_credential_usecase.dart';
 import '../../feature/authentication/domain/usecase/login_usecase.dart';
 import '../../feature/authentication/domain/usecase/register_usecase.dart';
+import '../../feature/authentication/presentation/riverpod/change_credential_riverpod.dart';
+import '../../feature/authentication/presentation/riverpod/change_credential_state.dart';
 import '../../feature/authentication/presentation/riverpod/login_riverpod.dart';
 import '../../feature/authentication/presentation/riverpod/register_riverpod.dart';
 import '../../feature/authentication/presentation/riverpod/register_state.dart';
@@ -38,11 +41,16 @@ final authLocalDataSourceProvider = Provider<AuthLocalDataSource>((ref) {
 
 final authRemoteDataSourceProvider = Provider<AuthRemoteDataSource>((ref) {
   const useFake = false;
+  const isAVD = true;
 
   if (useFake) {
     return FakeAuthRemoteDataSource();
   } else {
-    return AuthRemoteDataSourceImpl(client: ref.read(httpClientProvider), source: ref.read(authLocalDataSourceProvider));
+    return AuthRemoteDataSourceImpl(
+        client: ref.read(httpClientProvider),
+        source: ref.read(authLocalDataSourceProvider),
+        base: isAVD? "10.0.2.2" : "localhost"
+    );
   }
 });
 
@@ -85,4 +93,17 @@ final logoutNotifierProvider =
 StateNotifierProvider<LogoutNotifier, AsyncValue<void>>((ref) {
   final usecase = ref.watch(logoutUseCaseProvider);
   return LogoutNotifier(usecase);
+});
+
+
+final credentialNotifierProvider =
+StateNotifierProvider<CredentialNotifier, CredentialStateData>((ref) {
+  final changeCredentialUseCase = ref.watch(changeCredentialUseCaseProvider);
+  return CredentialNotifier(changeCredentialUseCase: changeCredentialUseCase);
+});
+
+/// ChangeCredentialUseCase 주입 Provider 예시 (DI 설정에 따라 변경 가능)
+final changeCredentialUseCaseProvider = Provider<ChangeCredentialUseCase>((ref) {
+  final repository = ref.watch(authRepositoryProvider);
+  return ChangeCredentialUseCase(repository);
 });

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:developer';
 
 import '../../domain/entity/user_entity.dart';
+import '../model/change_credential_request_dto.dart';
 import '../model/login_response_dto.dart';
 import '../model/register_request_dto.dart';
 import 'auth_remote_datasource.dart';
@@ -47,5 +48,11 @@ class FakeAuthRemoteDataSource implements AuthRemoteDataSource {
     await Future.delayed(const Duration(seconds: 1));
 
     log('logout on fake remote repo impl');
+  }
+
+  @override
+  Future<void> changeCredential(ChangeCredentialRequestDto dto) {
+    // TODO: implement changeCredential
+    throw UnimplementedError();
   }
 }

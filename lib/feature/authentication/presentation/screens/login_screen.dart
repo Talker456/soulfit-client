@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../config/di/provider.dart';
 import '../../../../config/router/app_router.dart';
+import '../../domain/entity/change_credential_data.dart';
 import '../../domain/entity/user_entity.dart';
+import '../riverpod/change_credential_state.dart';
 import '../riverpod/login_riverpod.dart';
+import '../widget/intro_widget.dart';
 
 class SoulfitLoginScreen extends ConsumerStatefulWidget {
   const SoulfitLoginScreen({Key? key}) : super(key: key);
@@ -41,7 +45,7 @@ class _SoulfitLoginScreenState extends ConsumerState<SoulfitLoginScreen> {
     });
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F8F5),
+      backgroundColor: const Color(0xFFE4FFDF),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24.0),
@@ -52,7 +56,7 @@ class _SoulfitLoginScreenState extends ConsumerState<SoulfitLoginScreen> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 // 로고 및 타이틀
-                _buildHeader(),
+                IntroHeader(),
 
                 const SizedBox(height: 80),
 
@@ -79,6 +83,10 @@ class _SoulfitLoginScreenState extends ConsumerState<SoulfitLoginScreen> {
                 // 회원가입 버튼
                 _buildRegisterButton(),
 
+                const SizedBox(height: 10),
+
+                _buildFindIdText(),
+
                 // 에러 메시지
                 if (authState.errorMessage != null)
                   _buildErrorMessage(authState.errorMessage!),
@@ -96,8 +104,8 @@ class _SoulfitLoginScreenState extends ConsumerState<SoulfitLoginScreen> {
         Text(
           'soulfit',
           style: TextStyle(
-            fontSize: 48,
-            fontWeight: FontWeight.w300,
+            fontSize: 54,
+            fontWeight: FontWeight.w600,
             color: Color(0xFF8FBC8F),
             letterSpacing: 2,
           ),
@@ -114,6 +122,7 @@ class _SoulfitLoginScreenState extends ConsumerState<SoulfitLoginScreen> {
       ],
     );
   }
+
 
   Widget _buildEmailField() {
     return Container(
@@ -201,7 +210,7 @@ class _SoulfitLoginScreenState extends ConsumerState<SoulfitLoginScreen> {
             ? null
             : () => _handleLogin(authNotifier),
         style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFF8FBC8F),
+          backgroundColor: const Color(0xFF99E48B),
           foregroundColor: Colors.white,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
@@ -300,6 +309,21 @@ class _SoulfitLoginScreenState extends ConsumerState<SoulfitLoginScreen> {
     );
   }
 
+  Widget _buildFindIdText(){
+    return Align(
+      alignment: Alignment.centerRight,
+      child: GestureDetector(
+        onTap: () => context.go("/findId"),
+        child: const Text(
+          '아이디, 비밀번호 찾기',
+          style: TextStyle(
+            color: Colors.black, // 필요에 따라 색상 조정
+          ),
+        ),
+      ),
+    );
+  }
+
   void _handleLogin(AuthNotifier authNotifier) {
     if (_formKey.currentState?.validate() ?? false) {
       authNotifier.login(
@@ -367,39 +391,84 @@ class ProfilePage extends StatelessWidget {
   }
 }
 
-// HomePage를 ConsumerWidget으로 변경하여 Riverpod 프로바이더를 사용할 수 있게 합니다.
 class HomePage extends ConsumerWidget {
   const HomePage({Key? key}) : super(key: key);
 
+  void _onLogout(BuildContext context, WidgetRef ref) async {
+    final notifier = ref.read(logoutNotifierProvider.notifier);
+    await notifier.logout();
+
+    final state = ref.read(logoutNotifierProvider);
+    if (state is AsyncError) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('로그아웃 실패: ${state.error}')),
+      );
+    } else {
+      context.go(AppRoutes.login); // 로그아웃 성공 시 로그인 화면으로 이동
+    }
+  }
+
+  /// ✅ 테스트용 credential 변경 함수
+  Future<void> _onChangeCredentialTest(BuildContext context, WidgetRef ref, User user) async {
+    final notifier = ref.read(credentialNotifierProvider.notifier);
+
+    final testData = ChangeCredentialData(
+      currentPassword: 'admin123', // 기존 비밀번호
+      accessToken: 'fakeAccessToken', // 실제 앱에서는 사용자 토큰 사용
+      newEmail: 'adminNew@example.com',
+      newPassword: 'adminNew',
+    );
+
+    await notifier.changeCredential(testData);
+
+    final state = ref.read(credentialNotifierProvider);
+    if (state.state == CredentialState.success) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('이메일/비밀번호 변경 성공')),
+      );
+    } else if (state.state == CredentialState.error) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('변경 실패: ${state.errorMessage}')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // authNotifierProvider의 현재 상태를 watch하여 상태 변경 시 위젯을 다시 빌드합니다.
     final authStateData = ref.watch(authNotifierProvider);
+    final logoutState = ref.watch(logoutNotifierProvider);
 
-    // 위젯이 처음 빌드될 때 (또는 의존성이 변경될 때) 현재 사용자 정보를 로드합니다.
-    // 이 부분은 앱 시작 시 로그인 상태를 확인하는 로직에 추가될 수 있습니다.
-    // initState와 유사한 역할을 하려면 `ref.read`를 사용하고 `FutureProvider` 또는 `onInit` 패턴을 고려할 수 있습니다.
-    // 여기서는 간단하게 build 메서드 내에서 상태가 initial일 때 로드하도록 합니다.
-    if (authStateData.state == AuthState.initial) {
-      // AuthNotifier의 loadCurrentUser 메서드를 호출하여 사용자 정보를 로드합니다.
-      // 이 호출은 UI 빌드 중에는 피해야 하므로, `WidgetsBinding.instance.addPostFrameCallback`을 사용하거나
-      // 상태 관리 로직 내에서 초기 로딩을 처리하는 것이 더 좋습니다.
-      // 여기서는 예시를 위해 직접 호출합니다.
-      Future.microtask(() => ref.read(authNotifierProvider.notifier).loadCurrentUser());
-    }
+
+      if (authStateData.state == AuthState.initial) {
+        Future.microtask(() => ref.read(authNotifierProvider.notifier).loadCurrentUser());
+      }
 
     return Scaffold(
-      appBar: AppBar(title: const Text('홈 화면')),
-      body: _buildBody(context, authStateData),
+      appBar: AppBar(
+        title: const Text('홈 화면'),
+        actions: [
+          IconButton(
+            onPressed: logoutState is AsyncLoading
+                ? null
+                : () => _onLogout(context, ref),
+            icon: const Icon(Icons.logout),
+          ),
+        ],
+      ),
+      body: _buildBody(context, ref, authStateData),
     );
   }
 
-  Widget _buildBody(BuildContext context, AuthStateData authStateData) {
+  /// ✅ ref 인자 추가
+  Widget _buildBody(BuildContext context, WidgetRef ref, AuthStateData authStateData) {
+    print("[login screen] : "+authStateData.state.toString());
+    final logoutState = ref.watch(logoutNotifierProvider);
+
     switch (authStateData.state) {
       case AuthState.loading:
         return const Center(child: CircularProgressIndicator());
       case AuthState.success:
-      // 사용자 정보가 성공적으로 로드되었을 때
+
         if (authStateData.user != null) {
           final user = authStateData.user!;
           return Center(
@@ -408,11 +477,11 @@ class HomePage extends ConsumerWidget {
               children: [
                 Text('환영합니다, ${user.username}!'),
                 Text('이메일: ${user.email}'),
-                // User 엔티티의 다른 정보를 활용하여 UI 표시
+                const SizedBox(height: 16),
+
+                /// ✅ 마이페이지 버튼
                 ElevatedButton(
                   onPressed: () {
-                    // 사용자 정보를 활용한 비즈니스 로직 예시
-                    // 예를 들어, 마이페이지로 이동 시 사용자 정보를 전달
                     Navigator.push(
                       context,
                       MaterialPageRoute(builder: (context) => ProfilePage(user: user)),
@@ -420,29 +489,32 @@ class HomePage extends ConsumerWidget {
                   },
                   child: const Text('마이페이지'),
                 ),
+
+                /// ✅ change credential 테스트 버튼
                 ElevatedButton(
-                  onPressed: () {
-                    // 로그아웃 기능 추가 (AuthNotifier에 로그아웃 메서드 필요)
-                    // ref.read(authNotifierProvider.notifier).logout();
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('로그아웃 기능은 구현되지 않았습니다.')),
-                    );
-                  },
+                  onPressed: () => _onChangeCredentialTest(context, ref, user),
+                  child: const Text('이메일/비밀번호 변경 테스트'),
+                ),
+
+                /// 기존 로그아웃 버튼
+                ElevatedButton(
+                  onPressed: logoutState is AsyncLoading
+                      ? null
+                      : () => _onLogout(context, ref),
                   child: const Text('로그아웃'),
                 ),
               ],
             ),
           );
         } else {
-          // success 상태이지만 user가 null인 경우 (예: 로그인되지 않은 상태)
           return const Center(child: Text('로그인이 필요합니다.'));
         }
       case AuthState.error:
         return Center(child: Text('에러: ${authStateData.errorMessage ?? '알 수 없는 에러'}'));
       case AuthState.initial:
       default:
-      // 초기 상태 또는 알 수 없는 상태일 때
         return const Center(child: Text('로그인 상태를 확인 중입니다...'));
     }
   }
 }
+
