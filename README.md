@@ -5,5 +5,3 @@ Flutter Project for Soulfit client
 
 
 
-
-
