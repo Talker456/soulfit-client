@@ -20,7 +20,7 @@ class SandboxScreen extends StatelessWidget {
           return ListTile(
             title: Text(route),
             trailing: const Icon(Icons.arrow_forward),
-            onTap: () => context.go(route),
+            onTap: () => context.push(route),
           );
         },
       ),

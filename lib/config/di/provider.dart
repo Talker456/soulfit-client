@@ -21,6 +21,16 @@ import '../../feature/authentication/presentation/riverpod/change_credential_sta
 import '../../feature/authentication/presentation/riverpod/login_riverpod.dart';
 import '../../feature/authentication/presentation/riverpod/register_riverpod.dart';
 import '../../feature/authentication/presentation/riverpod/register_state.dart';
+import '../../feature/notification/data/datasource/Noti_remote_datasource.dart';
+import '../../feature/notification/data/datasource/fake_noti_remote_datasource_impl.dart';
+import '../../feature/notification/data/repository_impl/notification_repository_impl.dart';
+import '../../feature/notification/domain/repository/notification_repository.dart';
+import '../../feature/notification/domain/usecase/delete_noti_usecase.dart';
+import '../../feature/notification/domain/usecase/get_noti_usecase.dart';
+import '../../feature/notification/domain/usecase/mark_all_noti_as_read_usecase.dart';
+import '../../feature/notification/domain/usecase/mark_noti_as_read_usecase.dart';
+import '../../feature/notification/presentation/riverpod/notification_notifier.dart';
+import '../../feature/notification/presentation/riverpod/notification_state_data.dart';
 
 /// 1. 외부 패키지 Provider
 final httpClientProvider = Provider<http.Client>((ref) {
@@ -106,4 +116,43 @@ StateNotifierProvider<CredentialNotifier, CredentialStateData>((ref) {
 final changeCredentialUseCaseProvider = Provider<ChangeCredentialUseCase>((ref) {
   final repository = ref.watch(authRepositoryProvider);
   return ChangeCredentialUseCase(repository);
+});
+
+final notificationRemoteDataSourceProvider = Provider<NotificationRemoteDataSource>((ref) {
+  // 실제 서버 연동 구현체
+  // return NotificationRemoteDataSourceImpl(http.Client());
+
+  // 현재는 Fake 사용
+  return FakeNotificationRemoteDataSourceImpl();
+});
+
+final notificationRepositoryProvider = Provider<NotificationRepository>((ref) {
+  return NotificationRepositoryImpl(
+    ref.read(notificationRemoteDataSourceProvider),
+  );
+});
+
+final getNotificationsUseCaseProvider = Provider<GetNotificationsUseCase>((ref) {
+  return GetNotificationsUseCase(ref.read(notificationRepositoryProvider));
+});
+
+final markNotificationAsReadUseCaseProvider = Provider<MarkNotificationAsReadUseCase>((ref) {
+  return MarkNotificationAsReadUseCase(ref.read(notificationRepositoryProvider));
+});
+
+final markAllNotificationsAsReadUseCaseProvider = Provider<MarkAllNotificationsAsReadUseCase>((ref) {
+  return MarkAllNotificationsAsReadUseCase(ref.read(notificationRepositoryProvider));
+});
+
+final deleteNotificationUseCaseProvider = Provider<DeleteNotificationUseCase>((ref) {
+  return DeleteNotificationUseCase(ref.read(notificationRepositoryProvider));
+});
+
+final notificationNotifierProvider = StateNotifierProvider<NotificationNotifier, NotificationStateData>((ref) {
+  return NotificationNotifier(
+    getNotificationsUseCase: ref.read(getNotificationsUseCaseProvider),
+    markAsReadUseCase: ref.read(markNotificationAsReadUseCaseProvider),
+    markAllAsReadUseCase: ref.read(markAllNotificationsAsReadUseCaseProvider),
+    deleteUseCase: ref.read(deleteNotificationUseCaseProvider),
+  );
 });

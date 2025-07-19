@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:soulfit_client/feature/authentication/presentation/screens/find_id_screen.dart';
+import 'package:soulfit_client/feature/notification/presentation/ui/notification_screen.dart';
 
 import '../../core/dev/sandbox_screen.dart';
 import '../../feature/authentication/presentation/riverpod/login_riverpod.dart';
@@ -16,9 +17,10 @@ class AppRoutes {
   static const String home = '/home';
   static const String register = '/register';
   static const String findId = '/findId';
+  static const String noti = '/notification';
 
   static const List<String> allRoutes = [
-    login, home, register, findId,
+    login, home, register, findId, noti,
   ];
 }
 
@@ -49,7 +51,13 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
         path: AppRoutes.sandbox,
         name: 'sandbox',
-        builder: (context,state) => const SandboxScreen())
+        builder: (context,state) => const SandboxScreen()
+    ),
+    GoRoute(
+      path: AppRoutes.noti,
+      name : 'notification',
+      builder: (context,state)=> const NotificationScreen(),
+    ),
   ],
   redirect: (context, state) {
     // 인증 상태에 따른 리다이렉트 로직
