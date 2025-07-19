@@ -40,7 +40,7 @@ class _SoulfitLoginScreenState extends ConsumerState<SoulfitLoginScreen> {
     ref.listen<AuthStateData>(authNotifierProvider, (previous, next) {
       if (next.state == AuthState.success) {
         print('successful login');
-        context.go(AppRoutes.home);
+        context.go(AppRoutes.sandbox);
       }
     });
 
