@@ -36,13 +36,18 @@ class NotificationNotifier extends StateNotifier<NotificationStateData> {
       final list = await getNotificationsUseCase.call();
       state = state.copyWith(state: NotificationState.success, notifications: list);
     } catch (e) {
+      print('[notification notifier] : catching err');
       state = state.copyWith(state: NotificationState.error, errorMessage: e.toString());
     }
   }
 
   Future<void> markAsRead(String notificationId) async {
+    print('$notificationId notification marking as read');
+
     try {
       await markAsReadUseCase.call(notificationId);
+      print('[notification notifier] : after call mark as read usecase');
+
       final updated = state.notifications.map((n) {
         if (n.id == notificationId) {
           return NotificationEntity(
@@ -52,7 +57,7 @@ class NotificationNotifier extends StateNotifier<NotificationStateData> {
             body: n.body,
             targetId: n.targetId,
             createdAt: n.createdAt,
-            isRead: true,
+            read: true,
           );
         }
         return n;
@@ -60,7 +65,7 @@ class NotificationNotifier extends StateNotifier<NotificationStateData> {
 
       state = state.copyWith(notifications: updated);
     } catch (e) {
-      // 선택적으로 에러 처리
+      print('Error marking notification as read: $e');
     }
   }
 

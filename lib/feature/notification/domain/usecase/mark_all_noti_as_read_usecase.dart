@@ -5,7 +5,7 @@ class MarkAllNotificationsAsReadUseCase {
 
   MarkAllNotificationsAsReadUseCase(this.repository);
 
-  Future<void> call() {
-    return repository.markAllAsRead();
+  Future<void> call() async{
+    return await repository.markAllAsRead();
   }
 }

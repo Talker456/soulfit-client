@@ -1,5 +1,5 @@
 import '../../domain/entity/notification_entity.dart';
-import 'Noti_remote_datasource.dart';
+import 'noti_remote_datasource.dart';
 
 class FakeNotificationRemoteDataSourceImpl implements NotificationRemoteDataSource {
   final List<NotificationEntity> _notifications = [
@@ -10,7 +10,7 @@ class FakeNotificationRemoteDataSourceImpl implements NotificationRemoteDataSour
       body: 'type_A 관련 커뮤니티 알림입니다.',
       targetId: 'post_0',
       createdAt: DateTime.now().subtract(const Duration(minutes: 5)),
-      isRead: false,
+      read: false,
     ),
     NotificationEntity(
       id: '1',
@@ -19,7 +19,7 @@ class FakeNotificationRemoteDataSourceImpl implements NotificationRemoteDataSour
       body: 'type_B 관련 커뮤니티 알림입니다.',
       targetId: 'post_1',
       createdAt: DateTime.now().subtract(const Duration(minutes: 10)),
-      isRead: false,
+      read: false,
     ),
     NotificationEntity(
       id: '2',
@@ -28,7 +28,7 @@ class FakeNotificationRemoteDataSourceImpl implements NotificationRemoteDataSour
       body: 'type_C 관련 미팅 알림입니다.',
       targetId: 'post_2',
       createdAt: DateTime.now().subtract(const Duration(minutes: 15)),
-      isRead: false,
+      read: false,
     ),
     NotificationEntity(
       id: '3',
@@ -37,7 +37,7 @@ class FakeNotificationRemoteDataSourceImpl implements NotificationRemoteDataSour
       body: 'type_D 관련 미팅 알림입니다.',
       targetId: 'post_3',
       createdAt: DateTime.now().subtract(const Duration(minutes: 20)),
-      isRead: false,
+      read: false,
     ),
     NotificationEntity(
       id: '4',
@@ -46,7 +46,7 @@ class FakeNotificationRemoteDataSourceImpl implements NotificationRemoteDataSour
       body: 'type_E 관련 매칭 알림입니다.',
       targetId: 'post_4',
       createdAt: DateTime.now().subtract(const Duration(minutes: 25)),
-      isRead: false,
+      read: false,
     ),
     NotificationEntity(
       id: '5',
@@ -55,7 +55,7 @@ class FakeNotificationRemoteDataSourceImpl implements NotificationRemoteDataSour
       body: 'type_F 관련 매칭 알림입니다.',
       targetId: 'post_5',
       createdAt: DateTime.now().subtract(const Duration(minutes: 30)),
-      isRead: false,
+      read: false,
     ),
     // 여유 알림 (중복 필터에 포함되지 않음, 테스트용)
     NotificationEntity(
@@ -65,7 +65,7 @@ class FakeNotificationRemoteDataSourceImpl implements NotificationRemoteDataSour
       body: '필터링되지 않는 기타 알림입니다.',
       targetId: 'post_6',
       createdAt: DateTime.now().subtract(const Duration(minutes: 35)),
-      isRead: false,
+      read: false,
     ),
   ];
 
@@ -90,7 +90,7 @@ class FakeNotificationRemoteDataSourceImpl implements NotificationRemoteDataSour
         body: _notifications[index].body,
         targetId: _notifications[index].targetId,
         createdAt: _notifications[index].createdAt,
-        isRead: true,
+        read: true,
       );
     }
   }
@@ -107,7 +107,7 @@ class FakeNotificationRemoteDataSourceImpl implements NotificationRemoteDataSour
         body: _notifications[i].body,
         targetId: _notifications[i].targetId,
         createdAt: _notifications[i].createdAt,
-        isRead: true,
+        read: true,
       );
     }
   }

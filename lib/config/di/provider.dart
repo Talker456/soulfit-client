@@ -21,8 +21,9 @@ import '../../feature/authentication/presentation/riverpod/change_credential_sta
 import '../../feature/authentication/presentation/riverpod/login_riverpod.dart';
 import '../../feature/authentication/presentation/riverpod/register_riverpod.dart';
 import '../../feature/authentication/presentation/riverpod/register_state.dart';
-import '../../feature/notification/data/datasource/Noti_remote_datasource.dart';
+import '../../feature/notification/data/datasource/noti_remote_datasource.dart';
 import '../../feature/notification/data/datasource/fake_noti_remote_datasource_impl.dart';
+import '../../feature/notification/data/datasource/noti_remote_datasource_impl.dart';
 import '../../feature/notification/data/repository_impl/notification_repository_impl.dart';
 import '../../feature/notification/domain/repository/notification_repository.dart';
 import '../../feature/notification/domain/usecase/delete_noti_usecase.dart';
@@ -120,10 +121,15 @@ final changeCredentialUseCaseProvider = Provider<ChangeCredentialUseCase>((ref) 
 
 final notificationRemoteDataSourceProvider = Provider<NotificationRemoteDataSource>((ref) {
   // 실제 서버 연동 구현체
-  // return NotificationRemoteDataSourceImpl(http.Client());
+  return NotificationRemoteDataSourceImpl(
+    client: ref.read(httpClientProvider),
+    source: ref.read(authLocalDataSourceProvider),
+    base: "localhost",
+    // base: "10.0.2.2",
+  );
 
   // 현재는 Fake 사용
-  return FakeNotificationRemoteDataSourceImpl();
+  // return FakeNotificationRemoteDataSourceImpl();
 });
 
 final notificationRepositoryProvider = Provider<NotificationRepository>((ref) {

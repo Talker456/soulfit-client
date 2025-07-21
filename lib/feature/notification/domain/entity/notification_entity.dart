@@ -5,7 +5,7 @@ class NotificationEntity {
   final String body;
   final String targetId;
   final DateTime createdAt;
-  final bool isRead;
+  final bool read;
 
   NotificationEntity({
     required this.id,
@@ -14,7 +14,7 @@ class NotificationEntity {
     required this.body,
     required this.targetId,
     required this.createdAt,
-    required this.isRead,
+    required this.read,
   });
 
   NotificationEntity copyWith({
@@ -33,7 +33,7 @@ class NotificationEntity {
       body: body ?? this.body,
       targetId: targetId ?? this.targetId,
       createdAt: createdAt ?? this.createdAt,
-      isRead: isRead ?? this.isRead,
+      read: isRead ?? this.read,
     );
   }
 }

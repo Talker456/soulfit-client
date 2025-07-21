@@ -1,6 +1,6 @@
 import '../../domain/entity/notification_entity.dart';
 import '../../domain/repository/notification_repository.dart';
-import '../datasource/Noti_remote_datasource.dart';
+import '../datasource/noti_remote_datasource.dart';
 
 class NotificationRepositoryImpl implements NotificationRepository {
   final NotificationRemoteDataSource remoteDataSource;
@@ -15,13 +15,15 @@ class NotificationRepositoryImpl implements NotificationRepository {
   }
 
   @override
-  Future<void> markAsRead(String notificationId) {
-    return remoteDataSource.markAsRead(notificationId);
+  Future<void> markAsRead(String notificationId) async{
+    print('[noti repo impl] : notification ($notificationId) marking as read');
+
+    return await remoteDataSource.markAsRead(notificationId);
   }
 
   @override
-  Future<void> markAllAsRead() {
-    return remoteDataSource.markAllAsRead();
+  Future<void> markAllAsRead() async{
+    return await remoteDataSource.markAllAsRead();
   }
 
   @override
