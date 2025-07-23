@@ -6,6 +6,7 @@ import 'package:http/http.dart' as http;
 import 'package:http/io_client.dart';
 import 'package:soulfit_client/feature/authentication/domain/usecase/logout_usecase.dart';
 import 'package:soulfit_client/feature/authentication/presentation/riverpod/logout_riverpod.dart';
+import 'package:soulfit_client/feature/payment/data/datasource/fake_payment_remote_datasouece_impl.dart';
 
 import '../../feature/authentication/data/datasource/auth_local_datasource.dart';
 import '../../feature/authentication/data/datasource/auth_remote_datasource.dart';
@@ -21,6 +22,11 @@ import '../../feature/authentication/presentation/riverpod/change_credential_sta
 import '../../feature/authentication/presentation/riverpod/login_riverpod.dart';
 import '../../feature/authentication/presentation/riverpod/register_riverpod.dart';
 import '../../feature/authentication/presentation/riverpod/register_state.dart';
+import '../../feature/payment/data/datasource/payment_remote_datasource_impl.dart';
+import '../../feature/payment/data/repository_impl/payment_repository_impl.dart';
+import '../../feature/payment/domain/repository/payment_repository.dart';
+import '../../feature/payment/domain/usecsae/approve_payment_usecase.dart';
+import '../../feature/payment/domain/usecsae/create_order_usecase.dart';
 
 /// 1. 외부 패키지 Provider
 final httpClientProvider = Provider<http.Client>((ref) {
@@ -106,4 +112,36 @@ StateNotifierProvider<CredentialNotifier, CredentialStateData>((ref) {
 final changeCredentialUseCaseProvider = Provider<ChangeCredentialUseCase>((ref) {
   final repository = ref.watch(authRepositoryProvider);
   return ChangeCredentialUseCase(repository);
+});
+
+
+/// RemoteDataSource
+final remoteDataSourceProvider = Provider((ref) {
+  final client = ref.watch(httpClientProvider);
+  final source = ref.read(authLocalDataSourceProvider);
+
+  // AVD vs Windows
+  // final baseUrl = "10.0.2.2";
+  final baseUrl = "localhost";
+  return PaymentRemoteDataSourceImpl(client: client, baseUrl: baseUrl, source : source);
+
+  // return FakePaymentRemoteDataSourceImpl(client: client);
+});
+
+/// Repository
+final paymentRepositoryProvider = Provider<PaymentRepository>((ref) {
+  final remote = ref.watch(remoteDataSourceProvider);
+  return PaymentRepositoryImpl(remote);
+});
+
+/// UseCase: CreateOrder
+final createOrderUseCaseProvider = Provider((ref) {
+  final repo = ref.watch(paymentRepositoryProvider);
+  return CreateOrderUseCase(repo);
+});
+
+/// UseCase: ApprovePayment
+final approvePaymentUseCaseProvider = Provider((ref) {
+  final repo = ref.watch(paymentRepositoryProvider);
+  return ApprovePaymentUseCase(repo);
 });
