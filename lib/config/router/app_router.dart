@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:soulfit_client/feature/authentication/presentation/screens/find_id_screen.dart';
+import 'package:soulfit_client/feature/community/presentation/screens/community_screen.dart';
+import 'package:soulfit_client/feature/community/presentation/screens/create_post_screen.dart';
 import 'package:soulfit_client/feature/payment/presentation/ui/portone_delegator.dart';
 
 import '../../core/dev/sandbox_screen.dart';
@@ -20,9 +22,12 @@ class AppRoutes {
   static const String findId = '/findId';
   static const String payment = '/payment';
   static const String tossPayment = '/toss-pay';
+  static const String community = '/community';
+  static const String createPost = '/create-post';
 
   static const List<String> allRoutes = [
-    login, home, register, findId, payment, tossPayment
+    login, home, register, findId, payment, tossPayment,
+    community, createPost,
   ];
 }
 
@@ -63,6 +68,16 @@ final GoRouter appRouter = GoRouter(
         name: 'toss-payments',
         // builder: (context,state)=> const PaymentWidgetExamplePage()),
         builder: (context,state)=> const PaymentWidgetExamplePage2()),
+    GoRoute(
+        path: AppRoutes.community,
+        name: 'community',
+        // builder: (context,state)=> const PaymentWidgetExamplePage()),
+        builder: (context,state)=> const CommunityScreen()),
+    GoRoute(
+        path: AppRoutes.createPost,
+        name: 'create-post',
+        // builder: (context,state)=> const PaymentWidgetExamplePage()),
+        builder: (context,state)=> const CreatePostScreen()),
 
 
   ],
