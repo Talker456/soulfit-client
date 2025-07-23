@@ -7,6 +7,8 @@ import '../../core/dev/sandbox_screen.dart';
 import '../../feature/authentication/presentation/riverpod/login_riverpod.dart';
 import '../../feature/authentication/presentation/screens/login_screen.dart';
 import '../../feature/authentication/presentation/screens/register_screen.dart';
+import '../../feature/community/presentation/screens/community_screen.dart';
+import '../../feature/community/presentation/screens/create_post_screen.dart';
 import '../di/provider.dart';
 
 class AppRoutes {
@@ -16,9 +18,12 @@ class AppRoutes {
   static const String home = '/home';
   static const String register = '/register';
   static const String findId = '/findId';
+  static const String community = '/community';
+  static const String post = '/post';
+
 
   static const List<String> allRoutes = [
-    login, home, register, findId,
+    login, home, register, findId, community, post,
   ];
 }
 
@@ -49,7 +54,15 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
         path: AppRoutes.sandbox,
         name: 'sandbox',
-        builder: (context,state) => const SandboxScreen())
+        builder: (context,state) => const SandboxScreen()),
+    GoRoute(
+        path: AppRoutes.community,
+        name: 'community',
+        builder: (context,state) => const CommunityScreen()),
+    GoRoute(
+        path: AppRoutes.post,
+        name: 'post',
+        builder: (context,state) => const CreatePostScreen()),
   ],
   redirect: (context, state) {
     // 인증 상태에 따른 리다이렉트 로직
