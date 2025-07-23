@@ -40,7 +40,7 @@ final authLocalDataSourceProvider = Provider<AuthLocalDataSource>((ref) {
 
 
 final authRemoteDataSourceProvider = Provider<AuthRemoteDataSource>((ref) {
-  const useFake = true;
+  const useFake = false;
   const isAVD = false;
 
   if (useFake) {
