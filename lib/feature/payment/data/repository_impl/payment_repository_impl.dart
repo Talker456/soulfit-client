@@ -11,10 +11,14 @@ class PaymentRepositoryImpl implements PaymentRepository {
   Future<String> createOrder({
     required String orderName,
     required int totalAmount,
+    required String orderType,
+    required int itemId,
   }) {
     return remote.createOrder(
       orderName: orderName,
       totalAmount: totalAmount,
+      orderType: orderType,
+      itemId : itemId,
     );
   }
 

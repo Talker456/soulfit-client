@@ -19,6 +19,8 @@ class FakePaymentRemoteDataSourceImpl implements PaymentRemoteDataSource {
   Future<String> createOrder({
     required String orderName,
     required int totalAmount,
+    required String orderType,
+    required int itemId,
   }) async {
     await Future.delayed(const Duration(milliseconds: 300)); // simulate latency
     return 'FAKE-ORDER-ID-${_orderCounter++}';

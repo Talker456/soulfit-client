@@ -49,8 +49,15 @@ class _PaymentWidgetExamplePageState extends ConsumerState<PaymentWidgetExampleP
     final approvePaymentController = ref.watch(approvePaymentProvider.notifier);
 
     // Step 1: 서버에 주문 생성 요청
-    const orderName = '파란티셔츠 외 2건';
-    final createResult = await createOrderController.createOrder(orderName: orderName, totalAmount: 300);
+    const orderName = 'Sample Meeting';
+    const orderType = 'MEETING';
+    const itemId = 1;
+    final createResult = await createOrderController.createOrder(
+        orderName: orderName,
+        totalAmount: 300,
+        orderType: orderType,
+        itemId: itemId,
+    );
 
 
 

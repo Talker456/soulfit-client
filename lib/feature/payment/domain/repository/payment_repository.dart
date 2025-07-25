@@ -5,6 +5,8 @@ abstract class PaymentRepository {
   Future<String> createOrder({
     required String orderName,
     required int totalAmount,
+    required String orderType,
+    required int itemId
   });
 
   /// 서버에 결제 승인 요청을 보내고 결제 결과를 반환
