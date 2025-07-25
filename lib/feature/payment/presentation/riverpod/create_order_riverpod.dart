@@ -18,12 +18,16 @@ class CreateOrderController extends StateNotifier<AsyncValue<String>> {
   Future<void> createOrder({
     required String orderName,
     required int totalAmount,
+    required String orderType,
+    required int itemId,
   }) async {
     state = const AsyncValue.loading();
     try {
       final orderId = await _useCase.execute(
         orderName: orderName,
         totalAmount: totalAmount,
+        orderType:  orderType,
+        itemId:  itemId,
       );
 
       print('[create order usecase] : '+orderId);

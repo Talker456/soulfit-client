@@ -4,6 +4,8 @@ abstract class PaymentRemoteDataSource {
   Future<String> createOrder({
     required String orderName,
     required int totalAmount,
+    required String orderType,
+    required int itemId,
   });
 
   Future<PaymentResult> approvePayment({

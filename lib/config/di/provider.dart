@@ -46,8 +46,8 @@ final authLocalDataSourceProvider = Provider<AuthLocalDataSource>((ref) {
 
 
 final authRemoteDataSourceProvider = Provider<AuthRemoteDataSource>((ref) {
-  const useFake = true;
-  const isAVD = false;
+  const useFake = false;
+  const isAVD = true;
 
   if (useFake) {
     return FakeAuthRemoteDataSource();
@@ -121,8 +121,8 @@ final remoteDataSourceProvider = Provider((ref) {
   final source = ref.read(authLocalDataSourceProvider);
 
   // AVD vs Windows
-  // final baseUrl = "10.0.2.2";
-  final baseUrl = "localhost";
+  final baseUrl = "10.0.2.2";
+  // final baseUrl = "localhost";
   return PaymentRemoteDataSourceImpl(client: client, baseUrl: baseUrl, source : source);
 
   // return FakePaymentRemoteDataSourceImpl(client: client);

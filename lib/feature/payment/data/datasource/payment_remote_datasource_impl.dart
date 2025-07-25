@@ -18,20 +18,12 @@ class PaymentRemoteDataSourceImpl implements PaymentRemoteDataSource {
     required this.source,
   });
 
-  //String accessToken = await source.getAccessToken() as String;
-  //
-  //     final response = await client.post(
-  //       Uri.parse('https://$base:8443/api/auth/logout'),
-  //       headers: <String,String>{
-  //         'Content-Type' : 'application/json; charset=UTF-8',
-  //         'Authorization': 'Bearer '+accessToken,
-  //       },
-  //     );
-
   @override
   Future<String> createOrder({
     required String orderName,
     required int totalAmount,
+    required int itemId,
+    required String orderType,
   }) async {
     String accessToken = await source.getAccessToken() as String;
 
@@ -45,6 +37,8 @@ class PaymentRemoteDataSourceImpl implements PaymentRemoteDataSource {
       },
       body: jsonEncode({
         'totalAmount': totalAmount,
+        'orderType': orderType,
+        'itemId': itemId,
       }),
     );
 
