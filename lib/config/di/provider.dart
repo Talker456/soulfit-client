@@ -21,9 +21,8 @@ import '../../feature/authentication/presentation/riverpod/change_credential_sta
 import '../../feature/authentication/presentation/riverpod/login_riverpod.dart';
 import '../../feature/authentication/presentation/riverpod/register_riverpod.dart';
 import '../../feature/authentication/presentation/riverpod/register_state.dart';
-import '../../feature/notification/data/datasource/noti_remote_datasource.dart';
 import '../../feature/notification/data/datasource/fake_noti_remote_datasource_impl.dart';
-import '../../feature/notification/data/datasource/noti_remote_datasource_impl.dart';
+import '../../feature/notification/data/datasource/noti_remote_datasource.dart';
 import '../../feature/notification/data/repository_impl/notification_repository_impl.dart';
 import '../../feature/notification/domain/repository/notification_repository.dart';
 import '../../feature/notification/domain/usecase/delete_noti_usecase.dart';
@@ -32,6 +31,11 @@ import '../../feature/notification/domain/usecase/mark_all_noti_as_read_usecase.
 import '../../feature/notification/domain/usecase/mark_noti_as_read_usecase.dart';
 import '../../feature/notification/presentation/riverpod/notification_notifier.dart';
 import '../../feature/notification/presentation/riverpod/notification_state_data.dart';
+import '../../feature/payment/data/datasource/payment_remote_datasource_impl.dart';
+import '../../feature/payment/data/repository_impl/payment_repository_impl.dart';
+import '../../feature/payment/domain/repository/payment_repository.dart';
+import '../../feature/payment/domain/usecsae/approve_payment_usecase.dart';
+import '../../feature/payment/domain/usecsae/create_order_usecase.dart';
 
 /// 1. 외부 패키지 Provider
 final httpClientProvider = Provider<http.Client>((ref) {
@@ -119,13 +123,44 @@ final changeCredentialUseCaseProvider = Provider<ChangeCredentialUseCase>((ref) 
   return ChangeCredentialUseCase(repository);
 });
 
+/// RemoteDataSource
+final remoteDataSourceProvider = Provider((ref) {
+  final client = ref.watch(httpClientProvider);
+  final source = ref.read(authLocalDataSourceProvider);
+
+  // AVD vs Windows
+  final baseUrl = "10.0.2.2";
+  // final baseUrl = "localhost";
+  return PaymentRemoteDataSourceImpl(client: client, baseUrl: baseUrl, source : source);
+
+  // return FakePaymentRemoteDataSourceImpl(client: client);
+});
+
+/// Repository
+final paymentRepositoryProvider = Provider<PaymentRepository>((ref) {
+  final remote = ref.watch(remoteDataSourceProvider);
+  return PaymentRepositoryImpl(remote);
+});
+
+/// UseCase: CreateOrder
+final createOrderUseCaseProvider = Provider((ref) {
+  final repo = ref.watch(paymentRepositoryProvider);
+  return CreateOrderUseCase(repo);
+});
+
+/// UseCase: ApprovePayment
+final approvePaymentUseCaseProvider = Provider((ref) {
+  final repo = ref.watch(paymentRepositoryProvider);
+  return ApprovePaymentUseCase(repo);
+});
+
 final notificationRemoteDataSourceProvider = Provider<NotificationRemoteDataSource>((ref) {
   // 실제 서버 연동 구현체
   // return NotificationRemoteDataSourceImpl(
   //   client: ref.read(httpClientProvider),
   //   source: ref.read(authLocalDataSourceProvider),
   //   base: "localhost",
-    // base: "10.0.2.2",
+  // base: "10.0.2.2",
   // );
 
   // 현재는 Fake 사용
