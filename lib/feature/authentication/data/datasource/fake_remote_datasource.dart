@@ -14,11 +14,11 @@ class FakeAuthRemoteDataSource implements AuthRemoteDataSource {
     await Future.delayed(const Duration(seconds: 1)); // simulate network delay
 
     // 간단한 테스트용 조건
-    if (email == 'test@example.com' && password == 'password') {
+    if (email == 'admin@example.com' && password == 'admin123') {
       return LoginResponseModel(
         id: "1",
-        email: "testman@example.com",
-        username: "man",
+        email: "admin@example.com",
+        username: "admin",
         accessToken: 'fake-access-token',
         refreshToken: 'fake-refresh-token',
         tokenType: "Bearer",

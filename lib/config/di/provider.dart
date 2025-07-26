@@ -6,7 +6,6 @@ import 'package:http/http.dart' as http;
 import 'package:http/io_client.dart';
 import 'package:soulfit_client/feature/authentication/domain/usecase/logout_usecase.dart';
 import 'package:soulfit_client/feature/authentication/presentation/riverpod/logout_riverpod.dart';
-import 'package:soulfit_client/feature/payment/data/datasource/fake_payment_remote_datasouece_impl.dart';
 
 import '../../feature/authentication/data/datasource/auth_local_datasource.dart';
 import '../../feature/authentication/data/datasource/auth_remote_datasource.dart';
@@ -22,6 +21,16 @@ import '../../feature/authentication/presentation/riverpod/change_credential_sta
 import '../../feature/authentication/presentation/riverpod/login_riverpod.dart';
 import '../../feature/authentication/presentation/riverpod/register_riverpod.dart';
 import '../../feature/authentication/presentation/riverpod/register_state.dart';
+import '../../feature/notification/data/datasource/fake_noti_remote_datasource_impl.dart';
+import '../../feature/notification/data/datasource/noti_remote_datasource.dart';
+import '../../feature/notification/data/repository_impl/notification_repository_impl.dart';
+import '../../feature/notification/domain/repository/notification_repository.dart';
+import '../../feature/notification/domain/usecase/delete_noti_usecase.dart';
+import '../../feature/notification/domain/usecase/get_noti_usecase.dart';
+import '../../feature/notification/domain/usecase/mark_all_noti_as_read_usecase.dart';
+import '../../feature/notification/domain/usecase/mark_noti_as_read_usecase.dart';
+import '../../feature/notification/presentation/riverpod/notification_notifier.dart';
+import '../../feature/notification/presentation/riverpod/notification_state_data.dart';
 import '../../feature/payment/data/datasource/payment_remote_datasource_impl.dart';
 import '../../feature/payment/data/repository_impl/payment_repository_impl.dart';
 import '../../feature/payment/domain/repository/payment_repository.dart';
@@ -46,8 +55,8 @@ final authLocalDataSourceProvider = Provider<AuthLocalDataSource>((ref) {
 
 
 final authRemoteDataSourceProvider = Provider<AuthRemoteDataSource>((ref) {
-  const useFake = false;
-  const isAVD = true;
+  const useFake = true;
+  const isAVD = false;
 
   if (useFake) {
     return FakeAuthRemoteDataSource();
@@ -114,7 +123,6 @@ final changeCredentialUseCaseProvider = Provider<ChangeCredentialUseCase>((ref) 
   return ChangeCredentialUseCase(repository);
 });
 
-
 /// RemoteDataSource
 final remoteDataSourceProvider = Provider((ref) {
   final client = ref.watch(httpClientProvider);
@@ -144,4 +152,48 @@ final createOrderUseCaseProvider = Provider((ref) {
 final approvePaymentUseCaseProvider = Provider((ref) {
   final repo = ref.watch(paymentRepositoryProvider);
   return ApprovePaymentUseCase(repo);
+});
+
+final notificationRemoteDataSourceProvider = Provider<NotificationRemoteDataSource>((ref) {
+  // 실제 서버 연동 구현체
+  // return NotificationRemoteDataSourceImpl(
+  //   client: ref.read(httpClientProvider),
+  //   source: ref.read(authLocalDataSourceProvider),
+  //   base: "localhost",
+  // base: "10.0.2.2",
+  // );
+
+  // 현재는 Fake 사용
+  return FakeNotificationRemoteDataSourceImpl();
+});
+
+final notificationRepositoryProvider = Provider<NotificationRepository>((ref) {
+  return NotificationRepositoryImpl(
+    ref.read(notificationRemoteDataSourceProvider),
+  );
+});
+
+final getNotificationsUseCaseProvider = Provider<GetNotificationsUseCase>((ref) {
+  return GetNotificationsUseCase(ref.read(notificationRepositoryProvider));
+});
+
+final markNotificationAsReadUseCaseProvider = Provider<MarkNotificationAsReadUseCase>((ref) {
+  return MarkNotificationAsReadUseCase(ref.read(notificationRepositoryProvider));
+});
+
+final markAllNotificationsAsReadUseCaseProvider = Provider<MarkAllNotificationsAsReadUseCase>((ref) {
+  return MarkAllNotificationsAsReadUseCase(ref.read(notificationRepositoryProvider));
+});
+
+final deleteNotificationUseCaseProvider = Provider<DeleteNotificationUseCase>((ref) {
+  return DeleteNotificationUseCase(ref.read(notificationRepositoryProvider));
+});
+
+final notificationNotifierProvider = StateNotifierProvider<NotificationNotifier, NotificationStateData>((ref) {
+  return NotificationNotifier(
+    getNotificationsUseCase: ref.read(getNotificationsUseCaseProvider),
+    markAsReadUseCase: ref.read(markNotificationAsReadUseCaseProvider),
+    markAllAsReadUseCase: ref.read(markAllNotificationsAsReadUseCaseProvider),
+    deleteUseCase: ref.read(deleteNotificationUseCaseProvider),
+  );
 });
