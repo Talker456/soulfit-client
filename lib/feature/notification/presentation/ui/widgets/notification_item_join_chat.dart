@@ -1,14 +1,13 @@
-
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:soulfit_client/feature/notification/domain/entity/notification_entity.dart';
 import 'package:soulfit_client/feature/notification/presentation/riverpod/notification_notifier.dart';
 
-class NotificationItemJoinMeeting extends StatelessWidget {
+class NotificationItemJoinChat extends StatelessWidget {
   final NotificationEntity notification;
   final NotificationNotifier notifier;
 
-  const NotificationItemJoinMeeting({
+  const NotificationItemJoinChat({
     Key? key,
     required this.notification,
     required this.notifier,
@@ -19,7 +18,7 @@ class NotificationItemJoinMeeting extends StatelessWidget {
     return GestureDetector(
       onTap: () => notifier.markAsRead(notification.id),
       child: Container(
-        color: const Color(0xff7dff7d), // Background color for JOIN_MEETING type
+        color: const Color(0xff7DFF7D), // Background color for JOIN_CHAT type
         padding: const EdgeInsets.all(12),
         child: Row(
           children: [
@@ -44,9 +43,8 @@ class NotificationItemJoinMeeting extends StatelessWidget {
             ),
             ElevatedButton(
               onPressed: () {
-                print('routing unimplemented screen_A');
-                //TODO : replace screen_A ...
-                context.push("/screen_A");
+                //TODO : replace with actual chat room screen
+                context.push("/chat_room");
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xff3df33d), // Button color for CONVERSATION_REQUEST type

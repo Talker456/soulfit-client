@@ -16,30 +16,37 @@ class NotificationItemTypeB extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: Colors.lightBlue.shade50,
-      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-      child: Row(
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(notification.title, style: const TextStyle(fontWeight: FontWeight.bold)),
-                Text(notification.body),
-              ],
+    return GestureDetector(
+      onTap: () => notifier.markAsRead(notification.id),
+      child: Container(
+        color: const Color(0xFFB5F5F8), // Background color for LIKE_POST type
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+        child: Row(
+          children: [
+            if (!notification.read)
+              const Padding(
+                padding: EdgeInsets.only(right: 8.0), // Changed from left to right for spacing
+                child: Icon(Icons.fiber_manual_record, color: Colors.blue, size: 12),
+              ),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(notification.title, style: const TextStyle(fontWeight: FontWeight.bold)),
+                  Text(notification.body),
+                ],
+              ),
             ),
-          ),
-          IconButton(
-            icon: const Icon(Icons.arrow_forward),
-            onPressed: () {
-              print('routing unimplemented screen_B');
-              //TODO : replace screen_B ...
-              context.push('screen_B');
-              notifier.markAsRead(notification.id);
-            },
-          )
-        ],
+            IconButton(
+              icon: const Icon(Icons.arrow_forward),
+              onPressed: () {
+                print('routing unimplemented screen_B');
+                //TODO : replace screen_B ...
+                context.push('screen_B');
+              },
+            ),
+          ],
+        ),
       ),
     );
   }

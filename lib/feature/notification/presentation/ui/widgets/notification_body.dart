@@ -5,9 +5,14 @@ import 'package:soulfit_client/feature/notification/presentation/riverpod/notifi
 import 'package:soulfit_client/feature/notification/presentation/riverpod/notification_notifier.dart';
 import 'package:soulfit_client/feature/notification/presentation/riverpod/notification_state.dart';
 import 'package:soulfit_client/feature/notification/presentation/riverpod/notification_state_data.dart';
+import 'package:soulfit_client/feature/notification/presentation/ui/widgets/notification_item_approved.dart';
+import 'package:soulfit_client/feature/notification/presentation/ui/widgets/notification_item_comment.dart';
+import 'package:soulfit_client/feature/notification/presentation/ui/widgets/notification_item_conversation_request.dart';
 import 'package:soulfit_client/feature/notification/presentation/ui/widgets/notification_item_default.dart';
+import 'package:soulfit_client/feature/notification/presentation/ui/widgets/notification_item_join_chat.dart';
 import 'package:soulfit_client/feature/notification/presentation/ui/widgets/notification_item_join_meeting.dart';
-import 'package:soulfit_client/feature/notification/presentation/ui/widgets/notification_item_type_b.dart';
+import 'package:soulfit_client/feature/notification/presentation/ui/widgets/notification_item_like.dart';
+import 'package:soulfit_client/feature/notification/presentation/ui/widgets/notification_item_like_post.dart';
 
 class NotificationBody extends StatelessWidget {
   final NotificationStateData state;
@@ -50,10 +55,20 @@ class NotificationBody extends StatelessWidget {
 
   Widget _buildNotificationTile(NotificationEntity notification, NotificationNotifier notifier, BuildContext context) {
     switch (notification.type) {
-      case 'type_A':
+      case 'LIKE_POST':
+        return NotificationItemLikePost(notification: notification, notifier: notifier);
+      case 'COMMENT':
+        return NotificationItemComment(notification: notification, notifier: notifier);
+      case 'JOIN_CHAT':
+        return NotificationItemJoinChat(notification: notification, notifier: notifier);
+      case 'JOIN_MEETING':
         return NotificationItemJoinMeeting(notification: notification, notifier: notifier);
-      case 'type_B':
-        return NotificationItemTypeB(notification: notification, notifier: notifier);
+      case 'APPROVED':
+        return NotificationItemApproved(notification: notification, notifier: notifier);
+      case 'LIKE':
+        return NotificationItemLike(notification: notification, notifier: notifier);
+      case 'CONVERSATION_REQUEST':
+        return NotificationItemConversationRequest(notification: notification, notifier: notifier);
       default:
         return NotificationItemDefault(notification: notification, notifier: notifier);
     }

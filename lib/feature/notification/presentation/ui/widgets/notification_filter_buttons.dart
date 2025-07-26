@@ -33,7 +33,13 @@ class NotificationFilterButtons extends StatelessWidget {
       child: ElevatedButton(
         onPressed: () => notifier.updateFilterAndReload(category),
         style: ElevatedButton.styleFrom(
-          backgroundColor: isSelected ? Colors.blue : Colors.grey,
+          backgroundColor: isSelected
+              ? (category == NotificationFilterCategory.community
+                  ? const Color(0xFFDAEDF8)
+                  : category == NotificationFilterCategory.meeting
+                      ? const Color(0xFFE3F8DF)
+                      : const Color(0xFFFFDBF2)) // Default to matching if not community or meeting
+              : Colors.grey,
         ),
         child: Text(label),
       ),

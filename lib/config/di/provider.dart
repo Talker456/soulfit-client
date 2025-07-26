@@ -51,7 +51,7 @@ final authLocalDataSourceProvider = Provider<AuthLocalDataSource>((ref) {
 
 
 final authRemoteDataSourceProvider = Provider<AuthRemoteDataSource>((ref) {
-  const useFake = false;
+  const useFake = true;
   const isAVD = false;
 
   if (useFake) {
@@ -121,15 +121,15 @@ final changeCredentialUseCaseProvider = Provider<ChangeCredentialUseCase>((ref) 
 
 final notificationRemoteDataSourceProvider = Provider<NotificationRemoteDataSource>((ref) {
   // 실제 서버 연동 구현체
-  return NotificationRemoteDataSourceImpl(
-    client: ref.read(httpClientProvider),
-    source: ref.read(authLocalDataSourceProvider),
-    base: "localhost",
+  // return NotificationRemoteDataSourceImpl(
+  //   client: ref.read(httpClientProvider),
+  //   source: ref.read(authLocalDataSourceProvider),
+  //   base: "localhost",
     // base: "10.0.2.2",
-  );
+  // );
 
   // 현재는 Fake 사용
-  // return FakeNotificationRemoteDataSourceImpl();
+  return FakeNotificationRemoteDataSourceImpl();
 });
 
 final notificationRepositoryProvider = Provider<NotificationRepository>((ref) {

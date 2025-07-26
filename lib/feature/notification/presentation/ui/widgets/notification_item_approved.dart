@@ -1,14 +1,13 @@
-
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:soulfit_client/feature/notification/domain/entity/notification_entity.dart';
 import 'package:soulfit_client/feature/notification/presentation/riverpod/notification_notifier.dart';
 
-class NotificationItemJoinMeeting extends StatelessWidget {
+class NotificationItemApproved extends StatelessWidget {
   final NotificationEntity notification;
   final NotificationNotifier notifier;
 
-  const NotificationItemJoinMeeting({
+  const NotificationItemApproved({
     Key? key,
     required this.notification,
     required this.notifier,
@@ -19,8 +18,8 @@ class NotificationItemJoinMeeting extends StatelessWidget {
     return GestureDetector(
       onTap: () => notifier.markAsRead(notification.id),
       child: Container(
-        color: const Color(0xff7dff7d), // Background color for JOIN_MEETING type
-        padding: const EdgeInsets.all(12),
+        color: const Color(0xff7dff7d), // Background color for APPROVED type
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
         child: Row(
           children: [
             if (!notification.read)
@@ -28,11 +27,6 @@ class NotificationItemJoinMeeting extends StatelessWidget {
                 padding: EdgeInsets.only(right: 8.0), // Changed from left to right for spacing
                 child: Icon(Icons.fiber_manual_record, color: Colors.blue, size: 12),
               ),
-            const CircleAvatar(
-              radius: 24,
-              backgroundImage: NetworkImage('https://placehold.co/200x200'),
-            ),
-            const SizedBox(width: 12),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -42,16 +36,13 @@ class NotificationItemJoinMeeting extends StatelessWidget {
                 ],
               ),
             ),
-            ElevatedButton(
+            IconButton(
+              icon: const Icon(Icons.arrow_forward),
               onPressed: () {
-                print('routing unimplemented screen_A');
-                //TODO : replace screen_A ...
-                context.push("/screen_A");
+                //TODO : replace with actual approved item screen
+                context.push("/approved_item");
               },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xff3df33d), // Button color for CONVERSATION_REQUEST type
-              ),
-              child: const Text('이동'),
+
             ),
           ],
         ),

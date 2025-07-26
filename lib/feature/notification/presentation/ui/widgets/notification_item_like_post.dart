@@ -1,14 +1,13 @@
-
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:soulfit_client/feature/notification/domain/entity/notification_entity.dart';
 import 'package:soulfit_client/feature/notification/presentation/riverpod/notification_notifier.dart';
 
-class NotificationItemJoinMeeting extends StatelessWidget {
+class NotificationItemLikePost extends StatelessWidget {
   final NotificationEntity notification;
   final NotificationNotifier notifier;
 
-  const NotificationItemJoinMeeting({
+  const NotificationItemLikePost({
     Key? key,
     required this.notification,
     required this.notifier,
@@ -19,7 +18,7 @@ class NotificationItemJoinMeeting extends StatelessWidget {
     return GestureDetector(
       onTap: () => notifier.markAsRead(notification.id),
       child: Container(
-        color: const Color(0xff7dff7d), // Background color for JOIN_MEETING type
+        color: const Color(0xFFB5F5F8), // Background color for COMMENT type
         padding: const EdgeInsets.all(12),
         child: Row(
           children: [
@@ -44,12 +43,11 @@ class NotificationItemJoinMeeting extends StatelessWidget {
             ),
             ElevatedButton(
               onPressed: () {
-                print('routing unimplemented screen_A');
-                //TODO : replace screen_A ...
-                context.push("/screen_A");
+                //TODO : replace with actual post detail screen
+                context.push("/post_detail");
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xff3df33d), // Button color for CONVERSATION_REQUEST type
+                backgroundColor: const Color(0xFF87F2F8), // Button color for CONVERSATION_REQUEST type
               ),
               child: const Text('이동'),
             ),
