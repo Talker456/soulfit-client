@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../feature/test_result_check.dart';
 import 'dart:math' as math;
 
 // --- 1. 백엔드와 주고받을 데이터의 '약속' (데이터 모델) ---
@@ -180,30 +181,51 @@ class AnalysisReportScreen extends StatelessWidget {
 
   // 가치관 상세 분석 카드
   Widget _buildDetailAnalysisCard(Tendency t1, Tendency t2) {
-    return _buildBaseCard(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Text('가치관 상세 분석',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-              OutlinedButton(
-                onPressed: () {},
-                child: const Text('가치관 검사 확인'),
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: Colors.orange,
-                  side: const BorderSide(color: Colors.orange),
+    return Builder(
+      builder: (context) => _buildBaseCard(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text('가치관 상세 분석',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                OutlinedButton(
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => ValueTestResultScreen(
+                          answers: [
+                            QuestionAnswer(
+                              question: "더미 질문 1",
+                              userAnswer: "더미 답변 1",
+                              type: QuestionType.multipleChoice,
+                            ),
+                            QuestionAnswer(
+                              question: "더미 질문 2",
+                              userAnswer: "더미 답변 2",
+                              type: QuestionType.descriptive,
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                  child: const Text('가치관 검사 확인'),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: Colors.orange,
+                    side: const BorderSide(color: Colors.orange),
+                  ),
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          _buildTendencySection(t1),
-          const SizedBox(height: 20),
-          _buildTendencySection(t2),
-        ],
+              ],
+            ),
+            const SizedBox(height: 16),
+            _buildTendencySection(t1),
+            const SizedBox(height: 20),
+            _buildTendencySection(t2),
+          ],
+        ),
       ),
     );
   }
