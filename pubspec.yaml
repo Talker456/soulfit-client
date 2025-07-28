@@ -46,6 +46,7 @@ dependencies:
   # 유틸리티
   logger: ^2.1.0
   intl: ^0.18.1
+  dartz: ^0.10.1
 
   cupertino_icons: ^1.0.8
   http: ^1.4.0

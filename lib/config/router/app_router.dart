@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:soulfit_client/feature/authentication/presentation/screens/find_id_screen.dart';
+import 'package:soulfit_client/feature/main_profile/ui/screen/main_profile_screen.dart';
 import 'package:soulfit_client/feature/notification/presentation/ui/notification_screen.dart';
 
 import '../../core/dev/sandbox_screen.dart';
@@ -26,10 +27,11 @@ class AppRoutes {
   static const String community = '/community';
   static const String createPost = '/create-post';
   static const String noti = '/notification';
+  static const String mainProfile = '/main-profile/1/2';
 
   static const List<String> allRoutes = [
     login, home, register, findId, payment, tossPayment,
-    community, createPost,noti
+    community, createPost,noti, mainProfile,
   ];
 }
 final GoRouter appRouter = GoRouter(
@@ -72,18 +74,26 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
         path: AppRoutes.community,
         name: 'community',
-        // builder: (context,state)=> const PaymentWidgetExamplePage()),
         builder: (context,state)=> const CommunityScreen()),
     GoRoute(
         path: AppRoutes.createPost,
         name: 'create-post',
-        // builder: (context,state)=> const PaymentWidgetExamplePage()),
         builder: (context,state)=> const CreatePostScreen()),
     GoRoute(
         path: AppRoutes.noti,
         name: 'notification',
-        // builder: (context,state)=> const PaymentWidgetExamplePage()),
         builder: (context,state)=> const NotificationScreen()),
+    GoRoute(
+        path: '/main-profile/:viewer/:target',
+        name: 'main-profile',
+
+        builder: (context,state) =>
+          MainProfileScreen(
+              viewerUserId: state.pathParameters['viewer'] as String,
+              targetUserId: state.pathParameters['target'] as String
+          )
+    ),
+    
   ],
   redirect: (context, state) {
     // 인증 상태에 따른 리다이렉트 로직
