@@ -8,6 +8,7 @@ class CounterScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final count = ref.watch(counterProvider);
+
     return Scaffold(
       appBar: AppBar(title: const Text('Counter')),
       body: Center(

@@ -6,27 +6,22 @@ import 'config/di/di_container.dart';
 import 'config/router/app_router.dart';
 import 'core/theme/app_theme.dart';
 
-void main() async{
+void main() async {
   // Get_It 의존성 주입 설정
   // DIContainer.setup();
-  WidgetsFlutterBinding.ensureInitialized();  // 1번코드
-  await dotenv.load(fileName: ".env");    // 2번코드
-  runApp(
-    ProviderScope(
-      child: SoulfitApp(),
-    ),
-  );
+  WidgetsFlutterBinding.ensureInitialized(); // 1번코드
+  await dotenv.load(fileName: ".env"); // 2번코드
+  runApp(ProviderScope(child: SoulfitApp()));
 }
 
 class SoulfitApp extends StatelessWidget {
+  const SoulfitApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
       title: 'Soulfit',
-      theme: ThemeData(
-        primarySwatch: Colors.green,
-        fontFamily: 'NotoSans',
-      ),
+      theme: ThemeData(primarySwatch: Colors.green, fontFamily: 'NotoSans'),
       routerConfig: appRouter,
     );
   }

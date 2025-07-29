@@ -7,7 +7,7 @@ import '../widgets/post_list_view.dart';
 import '../widgets/bottom_nav_bar.dart';
 import '../riverpod/nav_index_provider.dart';
 import 'create_post_screen.dart';
-import 'package:go_router/go_router.dart'; // go_router 사용
+import 'package:go_router/go_router.dart';
 
 class CommunityScreen extends ConsumerWidget {
   const CommunityScreen({super.key});
@@ -33,7 +33,7 @@ class CommunityScreen extends ConsumerWidget {
           const Expanded(child: PostListView()),
           const SizedBox(height: 16),
 
-          // 🚀 임시 테스트 버튼들
+          // 임시 테스트 버튼들
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Column(
@@ -69,7 +69,7 @@ class CommunityScreen extends ConsumerWidget {
             MaterialPageRoute(builder: (_) => const CreatePostScreen()),
           );
         },
-        backgroundColor: const Color(0x3881E06E), // 22% 투명도
+        backgroundColor: const Color(0x3881E06E),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(100),
           side: const BorderSide(color: Color(0xFF66A825), width: 1.5),

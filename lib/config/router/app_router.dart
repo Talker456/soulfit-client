@@ -30,14 +30,25 @@ class AppRoutes {
   static const String createPost = '/create-post';
   static const String noti = '/notification';
   static const String mainProfile = '/main-profile/1/2';
-  static const String lifeSurvey ='/life-survey';
-  static const String loveSurvey ='/love-survey';
+  static const String lifeSurvey = '/life-survey';
+  static const String loveSurvey = '/love-survey';
 
   static const List<String> allRoutes = [
-    login, home, register, findId, payment, tossPayment,
-    community, createPost,noti, mainProfile, lifeSurvey,loveSurvey,
+    login,
+    home,
+    register,
+    findId,
+    payment,
+    tossPayment,
+    community,
+    createPost,
+    noti,
+    mainProfile,
+    lifeSurvey,
+    loveSurvey,
   ];
 }
+
 final GoRouter appRouter = GoRouter(
   initialLocation: AppRoutes.login,
   routes: [
@@ -59,53 +70,60 @@ final GoRouter appRouter = GoRouter(
     ),
     GoRoute(
       path: AppRoutes.findId,
-      name : 'findId',
-      builder: (context,state) => const FindIdScreen(),
+      name: 'findId',
+      builder: (context, state) => const FindIdScreen(),
     ),
     GoRoute(
-        path: AppRoutes.sandbox,
-        name: 'sandbox',
-        builder: (context,state) => const SandboxScreen()),
+      path: AppRoutes.sandbox,
+      name: 'sandbox',
+      builder: (context, state) => const SandboxScreen(),
+    ),
     GoRoute(
-        path: AppRoutes.payment,
-        name: 'payment',
-        builder: (context,state)=> const PortoneDelegator()),
+      path: AppRoutes.payment,
+      name: 'payment',
+      builder: (context, state) => const PortoneDelegator(),
+    ),
     GoRoute(
-        path: AppRoutes.tossPayment,
-        name: 'toss-payments',
-        // builder: (context,state)=> const PaymentWidgetExamplePage()),
-        builder: (context,state)=> const PaymentWidgetExamplePage2()),
+      path: AppRoutes.tossPayment,
+      name: 'toss-payments',
+      // builder: (context,state)=> const PaymentWidgetExamplePage()),
+      builder: (context, state) => const PaymentWidgetExamplePage2(),
+    ),
     GoRoute(
-        path: AppRoutes.community,
-        name: 'community',
-        builder: (context,state)=> const CommunityScreen()),
+      path: AppRoutes.community,
+      name: 'community',
+      builder: (context, state) => const CommunityScreen(),
+    ),
     GoRoute(
-        path: AppRoutes.createPost,
-        name: 'create-post',
-        builder: (context,state)=> const CreatePostScreen()),
+      path: AppRoutes.createPost,
+      name: 'create-post',
+      builder: (context, state) => const CreatePostScreen(),
+    ),
     GoRoute(
-        path: AppRoutes.noti,
-        name: 'notification',
-        builder: (context,state)=> const NotificationScreen()),
+      path: AppRoutes.noti,
+      name: 'notification',
+      builder: (context, state) => const NotificationScreen(),
+    ),
     GoRoute(
-        path: '/main-profile/:viewer/:target',
-        name: 'main-profile',
+      path: '/main-profile/:viewer/:target',
+      name: 'main-profile',
 
-        builder: (context,state) =>
-          MainProfileScreen(
-              viewerUserId: state.pathParameters['viewer'] as String,
-              targetUserId: state.pathParameters['target'] as String
-          )
+      builder:
+          (context, state) => MainProfileScreen(
+            viewerUserId: state.pathParameters['viewer'] as String,
+            targetUserId: state.pathParameters['target'] as String,
+          ),
     ),
     GoRoute(
-        path: AppRoutes.lifeSurvey,
-        name: 'life-survey',
-        builder: (context,state)=> const LifeSurveyScreen()),
+      path: AppRoutes.lifeSurvey,
+      name: 'life-survey',
+      builder: (context, state) => const LifeSurveyScreen(),
+    ),
     GoRoute(
-        path: AppRoutes.loveSurvey,
-        name: 'love-survey',
-        builder: (context,state)=> const LoveSurveyScreen()),
-    
+      path: AppRoutes.loveSurvey,
+      name: 'love-survey',
+      builder: (context, state) => const LoveSurveyScreen(),
+    ),
   ],
   redirect: (context, state) {
     // 인증 상태에 따른 리다이렉트 로직
