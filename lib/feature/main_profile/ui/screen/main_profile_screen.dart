@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:soulfit_client/feature/main_profile/ui/widgets/album_section.dart';
+import 'package:soulfit_client/feature/main_profile/ui/widgets/hosted_meetings_placeholder.dart';
+import 'package:soulfit_client/feature/main_profile/ui/widgets/perception_card.dart';
+import 'package:soulfit_client/feature/main_profile/ui/widgets/profile_card.dart';
+import 'package:soulfit_client/feature/main_profile/ui/widgets/value_analysis_card.dart';
 import '../provider/main_profile_provider.dart';
 import '../state/main_profile_state.dart';
 
-class MainProfileScreen extends ConsumerWidget {
+class MainProfileScreen extends ConsumerStatefulWidget {
   final String viewerUserId;
   final String targetUserId;
 
@@ -14,53 +19,85 @@ class MainProfileScreen extends ConsumerWidget {
   });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<MainProfileScreen> createState() => _MainProfileScreenState();
+}
+
+class _MainProfileScreenState extends ConsumerState<MainProfileScreen> {
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(() {
+      ref
+          .read(mainProfileNotifierProvider.notifier)
+          .load(widget.viewerUserId, widget.targetUserId);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final state = ref.watch(mainProfileNotifierProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('메인 프로필')),
-      body: switch (state) {
-        MainProfileInitial() => const Center(child: Text("초기화 중...")),
-        MainProfileLoading() => const Center(child: CircularProgressIndicator()),
-        MainProfileError(:final message) => Center(child: Text("오류: $message")),
-        MainProfileLoaded(:final data) => ListView(
-          padding: const EdgeInsets.all(16),
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        centerTitle: true,
+        title: const Column(
           children: [
-            CircleAvatar(
-              radius: 40,
-              backgroundImage: NetworkImage(data.mainProfileInfo.profileImageUrl),
+            Text(
+              "soulfit",
+              style: TextStyle(
+                fontFamily: 'Serif',
+                fontSize: 20,
+                color: Colors.green,
+              ),
             ),
-            const SizedBox(height: 8),
-            Text(data.mainProfileInfo.introduction),
-            const SizedBox(height: 8),
-            Wrap(
-              spacing: 8,
-              children: data.mainProfileInfo.personalityKeywords
-                  .map((e) => Chip(label: Text(e)))
-                  .toList(),
-            ),
-            const Divider(),
-            Text("내가 보는 나: ${data.mainProfileInfo.selfKeywords.join(', ')}"),
-            Text("상대방이 보는 나: ${data.perceivedByOthersKeywords.join(', ')}"),
-            Text("AI가 보는 나: ${data.aiPredictedKeywords.join(', ')}"),
-            const Divider(),
-            Text("가치관 요약: ${data.valueAnalysis.summary}"),
-            const Divider(),
-            Text("앨범 (${data.albumImages.length})"),
-            Column(
-              children: data.albumImages
-                  .map((url) => Image.network(url, height: 100))
-                  .toList(),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  "메인 프로필",
+                  style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+                ),
+                Icon(Icons.keyboard_arrow_down, color: Colors.black),
+              ],
             ),
           ],
-        )
-      },
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          ref.read(mainProfileNotifierProvider.notifier).load(viewerUserId, targetUserId);
-        },
-        child: const Icon(Icons.refresh),
+        ),
       ),
+      body: switch (state) {
+        MainProfileInitial() ||
+        MainProfileLoading() =>
+          const Center(child: CircularProgressIndicator()),
+        MainProfileError(:final message) =>
+          Center(child: Text("오류 발생: $message")),
+        MainProfileLoaded(:final data) => ListView(
+            padding: const EdgeInsets.all(16),
+            children: [
+              ProfileCard(data: data),
+              const SizedBox(height: 12),
+              PerceptionCard(
+                  title: "상대방이 보는 나는...",
+                  keywords: data.perceivedByOthersKeywords),
+              const SizedBox(height: 8),
+              PerceptionCard(
+                  title: "내가 보는 나는...",
+                  keywords: data.mainProfileInfo.selfKeywords),
+              const SizedBox(height: 8),
+              PerceptionCard(
+                  title: "AI가 보는 나는...",
+                  keywords: data.aiPredictedKeywords),
+              const SizedBox(height: 12),
+              ValueAnalysisCard(data: data),
+              const SizedBox(height: 16),
+              const HostedMeetingsPlaceholder(),
+              const SizedBox(height: 16),
+              AlbumSection(urls: data.albumImages),
+              const SizedBox(height: 16),
+            ],
+          )
+      },
     );
   }
 }

@@ -10,7 +10,7 @@ class FakeMainProfileRemoteDataSourceImpl implements MainProfileRemoteDataSource
   Future<UserMainProfileInfoDto> fetchUserMainProfileInfo(String userId) async {
     await Future.delayed(const Duration(milliseconds: 300)); // simulate latency
     return UserMainProfileInfoDto(
-      profileImageUrl: "https://example.com/profile.jpg",
+      profileImageUrl: "https://placehold.co/200x200",
       introduction: "안녕하세요, 저는 성장을 좋아하는 사람입니다.",
       personalityKeywords: ["내향적", "감성적", "계획적"],
       selfKeywords: ["진지함", "배려", "호기심"],
@@ -54,9 +54,9 @@ class FakeMainProfileRemoteDataSourceImpl implements MainProfileRemoteDataSource
   Future<List<String>> fetchUserAlbumImages(String userId) async {
     await Future.delayed(const Duration(milliseconds: 250));
     return [
-      "https://example.com/album1.jpg",
-      "https://example.com/album2.jpg",
-      "https://example.com/album3.jpg",
+      "https://placehold.co/200x200",
+      "https://placehold.co/200x200",
+      "https://placehold.co/200x200",
     ];
   }
 
