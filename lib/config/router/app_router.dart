@@ -4,6 +4,8 @@ import 'package:go_router/go_router.dart';
 import 'package:soulfit_client/feature/authentication/presentation/screens/find_id_screen.dart';
 import 'package:soulfit_client/feature/main_profile/ui/screen/main_profile_screen.dart';
 import 'package:soulfit_client/feature/notification/presentation/ui/notification_screen.dart';
+import 'package:soulfit_client/feature/survey/presentation/screens/life_survey_screen.dart';
+import 'package:soulfit_client/feature/survey/presentation/screens/love_survey_screen.dart';
 
 import '../../core/dev/sandbox_screen.dart';
 import '../../feature/authentication/presentation/riverpod/login_riverpod.dart';
@@ -28,10 +30,12 @@ class AppRoutes {
   static const String createPost = '/create-post';
   static const String noti = '/notification';
   static const String mainProfile = '/main-profile/1/2';
+  static const String lifeSurvey ='/life-survey';
+  static const String loveSurvey ='/love-survey';
 
   static const List<String> allRoutes = [
     login, home, register, findId, payment, tossPayment,
-    community, createPost,noti, mainProfile,
+    community, createPost,noti, mainProfile, lifeSurvey,loveSurvey,
   ];
 }
 final GoRouter appRouter = GoRouter(
@@ -93,6 +97,14 @@ final GoRouter appRouter = GoRouter(
               targetUserId: state.pathParameters['target'] as String
           )
     ),
+    GoRoute(
+        path: AppRoutes.lifeSurvey,
+        name: 'life-survey',
+        builder: (context,state)=> const LifeSurveyScreen()),
+    GoRoute(
+        path: AppRoutes.loveSurvey,
+        name: 'love-survey',
+        builder: (context,state)=> const LoveSurveyScreen()),
     
   ],
   redirect: (context, state) {
