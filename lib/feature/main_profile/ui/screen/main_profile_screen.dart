@@ -5,6 +5,7 @@ import 'package:soulfit_client/feature/main_profile/ui/widgets/hosted_meetings_p
 import 'package:soulfit_client/feature/main_profile/ui/widgets/perception_card.dart';
 import 'package:soulfit_client/feature/main_profile/ui/widgets/profile_card.dart';
 import 'package:soulfit_client/feature/main_profile/ui/widgets/value_analysis_card.dart';
+import 'package:soulfit_client/feature/user_report/presentation/widgets/user_report_dialog.dart'; // 유저 신고
 import '../provider/main_profile_provider.dart';
 import '../state/main_profile_state.dart';
 
@@ -80,7 +81,30 @@ class _MainProfileScreenState extends ConsumerState<MainProfileScreen> {
         MainProfileLoaded(:final data) => ListView(
           padding: const EdgeInsets.all(16),
           children: [
-            ProfileCard(data: data),
+            // 유저 신고 버튼 코드 시작
+            Stack(
+              children: [
+                ProfileCard(data: data),
+                Positioned(
+                  top: 8,
+                  right: 8,
+                  child: IconButton(
+                    icon: const Icon(Icons.warning, color: Colors.red),
+                    onPressed: () {
+                      showDialog(
+                        context: context,
+                        builder:
+                            (_) => UserReportDialog(
+                              reporterUserId: widget.viewerUserId,
+                              reportedUserId: widget.targetUserId,
+                            ),
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ), // 유저 신고 버튼 코드 끝
+            // ProfileCard(data: data), // 유저 신고 버튼 코드 삭제 시 주석 해제하기
             const SizedBox(height: 12),
             PerceptionCard(
               title: "상대방이 보는 나는...",
