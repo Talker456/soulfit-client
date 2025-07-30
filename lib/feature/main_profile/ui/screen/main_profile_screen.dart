@@ -106,19 +106,31 @@ class _MainProfileScreenState extends ConsumerState<MainProfileScreen> {
             ), // 유저 신고 버튼 코드 끝
             // ProfileCard(data: data), // 유저 신고 버튼 코드 삭제 시 주석 해제하기
             const SizedBox(height: 12),
-            PerceptionCard(
-              title: "상대방이 보는 나는...",
-              keywords: data.perceivedByOthersKeywords,
-            ),
-            const SizedBox(height: 8),
-            PerceptionCard(
-              title: "내가 보는 나는...",
-              keywords: data.mainProfileInfo.selfKeywords,
-            ),
-            const SizedBox(height: 8),
-            PerceptionCard(
-              title: "AI가 보는 나는...",
-              keywords: data.aiPredictedKeywords,
+            Card(
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              elevation: 1,
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    PerceptionCard(
+                      title: "상대방이 보는 나는...",
+                      keywords: data.perceivedByOthersKeywords,
+                    ),
+                    const SizedBox(height: 8),
+                    PerceptionCard(
+                      title: "내가 보는 나는...",
+                      keywords: data.mainProfileInfo.selfKeywords,
+                    ),
+                    const SizedBox(height: 8),
+                    PerceptionCard(
+                      title: "AI가 보는 나는...",
+                      keywords: data.aiPredictedKeywords,
+                    ),
+                  ],
+                ),
+              ),
             ),
             const SizedBox(height: 12),
             ValueAnalysisCard(data: data),

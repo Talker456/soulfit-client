@@ -13,23 +13,20 @@ class PerceptionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      color: Colors.green[50],
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
-            const SizedBox(height: 4),
-            Wrap(
-              spacing: 8,
-              children:
-                  keywords.map<Widget>((k) => Chip(label: Text(k))).toList(),
-            ),
-          ],
-        ),
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
+          const SizedBox(height: 4),
+          Wrap(
+            spacing: 8,
+            children: keywords
+                .map<Widget>((e) => Chip(label: Text(e), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)), backgroundColor: Colors.green[50]))
+                .toList(),
+          ),
+        ],
       ),
     );
   }
