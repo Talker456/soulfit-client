@@ -15,32 +15,64 @@ class ProfileCard extends StatelessWidget {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       elevation: 1,
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            CircleAvatar(
-              radius: 40,
-              backgroundImage:
-                  NetworkImage(data.mainProfileInfo.profileImageUrl),
-              backgroundColor: Colors.purple[100],
+      clipBehavior: Clip.antiAlias,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: NetworkImage(data.mainProfileInfo.profileImageUrl),
+                fit: BoxFit.cover,
+
+              ),
             ),
-            const SizedBox(height: 8),
-            const Text("이름 (나이)",
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-            Text("mbti", style: TextStyle(color: Colors.grey[700])),
-            const SizedBox(height: 8),
-            Text(data.mainProfileInfo.introduction),
-            const Divider(),
-            Wrap(
-              spacing: 8,
-              children: data.mainProfileInfo.personalityKeywords
-                  .map<Widget>(
-                      (e) => Chip(label: Text(e), backgroundColor: Colors.green[50]))
-                  .toList(),
-            )
-          ],
-        ),
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 88),
+                  const Text(
+                    "이름 (나이)",
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                  Text(
+                    "mbti",
+                    style: TextStyle(color: Colors.white70),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const Divider(height: 1),
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  data.mainProfileInfo.introduction,
+                  style: const TextStyle(color: Colors.black87),
+                  textAlign: TextAlign.start,
+                ),
+                const SizedBox(height: 8),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 4,
+                  children: data.mainProfileInfo.personalityKeywords
+                      .map<Widget>((e) =>
+                          Chip(label: Text(e), backgroundColor: Colors.green[50], shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0))))
+                      .toList(),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

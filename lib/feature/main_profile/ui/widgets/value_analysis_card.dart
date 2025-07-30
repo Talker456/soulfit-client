@@ -69,7 +69,7 @@ class ValueAnalysisCard extends StatelessWidget {
             child: Row(
               children: [
                 SizedBox(
-                    width: 16,
+                    width: 60,
                     child: Text(c.label, style: const TextStyle(fontSize: 12))),
                 const SizedBox(width: 4),
                 Expanded(
