@@ -43,6 +43,9 @@ dependencies:
   flutter_svg: ^2.0.10+1
   google_fonts: ^6.2.1
 
+  # 네트워크
+  dio: ^5.8.0
+
   # 유틸리티
   logger: ^2.1.0
   intl: ^0.18.1
