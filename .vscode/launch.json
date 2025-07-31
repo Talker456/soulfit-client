@@ -1,0 +1,24 @@
+{
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "기본 실행 (main.dart)",
+            "request": "launch",
+            "type": "dart",
+            "program": "lib/main.dart"
+        },
+        {
+            "name": "미리보기 실행 (preview.dart)",
+            "request": "launch",
+            "type": "dart",
+            "program": "lib/preview.dart"
+        },
+        {
+            "name": "연습용 실행 (prac.dart)",
+            "request": "launch",
+            "type": "dart",
+            "program": "lib/prac.dart"
+        }
+    ]
+}
