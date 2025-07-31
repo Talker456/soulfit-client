@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:soulfit_client/feature/authentication/presentation/screens/find_id_screen.dart';
 import 'package:soulfit_client/feature/main_profile/ui/screen/main_profile_screen.dart';
+import 'package:soulfit_client/feature/meeting/main/ui/screen/meeting_home_screen.dart';
 import 'package:soulfit_client/feature/notification/presentation/ui/notification_screen.dart';
 import 'package:soulfit_client/feature/survey/presentation/screens/life_survey_screen.dart';
 import 'package:soulfit_client/feature/survey/presentation/screens/love_survey_screen.dart';
@@ -32,6 +33,7 @@ class AppRoutes {
   static const String mainProfile = '/main-profile/1/2';
   static const String lifeSurvey = '/life-survey';
   static const String loveSurvey = '/love-survey';
+  static const String meetingMain = '/meeting-main';
 
   static const List<String> allRoutes = [
     login,
@@ -46,6 +48,7 @@ class AppRoutes {
     mainProfile,
     lifeSurvey,
     loveSurvey,
+    meetingMain,
   ];
 }
 
@@ -123,6 +126,11 @@ final GoRouter appRouter = GoRouter(
       path: AppRoutes.loveSurvey,
       name: 'love-survey',
       builder: (context, state) => const LoveSurveyScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.meetingMain,
+      name: 'meeting-main',
+      builder: (context, state) => const MeetingHomeScreen(),
     ),
   ],
   redirect: (context, state) {
