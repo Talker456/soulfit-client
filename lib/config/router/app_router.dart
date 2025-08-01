@@ -14,6 +14,8 @@ import '../../feature/authentication/presentation/screens/login_screen.dart';
 import '../../feature/authentication/presentation/screens/register_screen.dart';
 import '../../feature/community/presentation/screens/community_screen.dart';
 import '../../feature/community/presentation/screens/create_post_screen.dart';
+import '../../feature/meeting/main/ui/screen/ai_meeting_list_screen.dart';
+import '../../feature/meeting/main/ui/screen/meeting_detail_screen.dart';
 import '../../feature/payment/presentation/ui/portone_delegator.dart';
 import '../../feature/payment/presentation/ui/tosspayments_widget_v2.dart';
 import '../di/provider.dart';
@@ -34,6 +36,8 @@ class AppRoutes {
   static const String lifeSurvey = '/life-survey';
   static const String loveSurvey = '/love-survey';
   static const String meetingMain = '/meeting-main';
+  static const String aiMeetingList = '/ai-meeting-list';
+  static const String meetingDetail = '/meeting-detail';
 
   static const List<String> allRoutes = [
     login,
@@ -49,6 +53,8 @@ class AppRoutes {
     lifeSurvey,
     loveSurvey,
     meetingMain,
+    aiMeetingList,
+    meetingDetail,
   ];
 }
 
@@ -131,6 +137,18 @@ final GoRouter appRouter = GoRouter(
       path: AppRoutes.meetingMain,
       name: 'meeting-main',
       builder: (context, state) => const MeetingHomeScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.aiMeetingList,
+      name: 'ai-meeting-list',
+      builder: (context, state) => const AiMeetingListScreen(),
+    ),
+    GoRoute(
+      path: '/meeting-detail/:meetingId',
+      name: 'meeting-detail',
+      builder: (context, state) => MeetingDetailScreen(
+        meetingId: state.pathParameters['meetingId']!,
+      ),
     ),
   ],
   redirect: (context, state) {

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:soulfit_client/config/router/app_router.dart';
 import '../provider/meeting_list_providers.dart';
 import '../widget/event_banner.dart';
 import '../widget/category_menu.dart';
@@ -62,6 +64,9 @@ class MeetingHomeScreen extends ConsumerWidget {
               child: MeetingSection(
                 title: 'AI 맞춤 추천 모임',
                 provider: aiRecommendedMeetingsProvider,
+                onSeeMorePressed: () {
+                  context.push(AppRoutes.aiMeetingList);
+                },
               ),
             ),
 

@@ -10,6 +10,7 @@ class MeetingSummaryModel extends MeetingSummary {
     required super.category,
     required super.currentParticipants,
     required super.maxParticipants,
+    required super.price,
   });
 
   factory MeetingSummaryModel.fromJson(Map<String, dynamic> json) {
@@ -20,6 +21,7 @@ class MeetingSummaryModel extends MeetingSummary {
       category: json['category'],
       currentParticipants: json['currentParticipants'],
       maxParticipants: json['maxParticipants'],
+      price: json['price'] ?? 0,
     );
   }
 
@@ -31,6 +33,7 @@ class MeetingSummaryModel extends MeetingSummary {
       'category': category,
       'currentParticipants': currentParticipants,
       'maxParticipants': maxParticipants,
+      'price': price,
     };
   }
 }

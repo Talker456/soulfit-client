@@ -7,11 +7,13 @@ import '../widget/meeting_card.dart';
 class MeetingSection extends ConsumerWidget {
   final String title;
   final StateNotifierProvider provider;
+  final VoidCallback? onSeeMorePressed;
 
   const MeetingSection({
     super.key,
     required this.title,
     required this.provider,
+    this.onSeeMorePressed,
   });
 
   @override
@@ -23,7 +25,17 @@ class MeetingSection extends ConsumerWidget {
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Text(title, style: Theme.of(context).textTheme.titleMedium),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(title, style: Theme.of(context).textTheme.titleMedium),
+              if (onSeeMorePressed != null)
+                TextButton(
+                  onPressed: onSeeMorePressed,
+                  child: const Text('더보기'),
+                ),
+            ],
+          ),
         ),
         const SizedBox(height: 12),
         SizedBox(
