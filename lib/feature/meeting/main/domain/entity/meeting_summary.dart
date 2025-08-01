@@ -5,6 +5,7 @@ class MeetingSummary {
   final String category;
   final int currentParticipants;
   final int maxParticipants;
+  final int price;
 
   const MeetingSummary({
     required this.meetingId,
@@ -13,5 +14,6 @@ class MeetingSummary {
     required this.category,
     required this.currentParticipants,
     required this.maxParticipants,
+    required this.price,
   });
 }
