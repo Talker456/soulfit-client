@@ -1,6 +1,8 @@
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:soulfit_client/core/ui/widget/shared_navigation_bar.dart';
 import 'package:soulfit_client/feature/authentication/presentation/screens/find_id_screen.dart';
 import 'package:soulfit_client/feature/main_profile/ui/screen/main_profile_screen.dart';
 import 'package:soulfit_client/feature/meeting/main/ui/screen/meeting_home_screen.dart';
@@ -58,7 +60,10 @@ class AppRoutes {
   ];
 }
 
+final _rootNavigatorKey = GlobalKey<NavigatorState>();
+
 final GoRouter appRouter = GoRouter(
+  navigatorKey: _rootNavigatorKey,
   initialLocation: AppRoutes.login,
   routes: [
     GoRoute(
@@ -67,14 +72,8 @@ final GoRouter appRouter = GoRouter(
       builder: (context, state) => SoulfitLoginScreen(),
     ),
     GoRoute(
-      path: AppRoutes.home,
-      name: 'home',
-      builder: (context, state) => const HomePage(),
-    ),
-    GoRoute(
       path: AppRoutes.register,
       name: 'register',
-      // builder: (context, state) => const SignUpScreen(),
       builder: (context, state) => const SignUpScreenV3(),
     ),
     GoRoute(
@@ -95,13 +94,7 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: AppRoutes.tossPayment,
       name: 'toss-payments',
-      // builder: (context,state)=> const PaymentWidgetExamplePage()),
       builder: (context, state) => const PaymentWidgetExamplePage2(),
-    ),
-    GoRoute(
-      path: AppRoutes.community,
-      name: 'community',
-      builder: (context, state) => const CommunityScreen(),
     ),
     GoRoute(
       path: AppRoutes.createPost,
@@ -109,19 +102,12 @@ final GoRouter appRouter = GoRouter(
       builder: (context, state) => const CreatePostScreen(),
     ),
     GoRoute(
-      path: AppRoutes.noti,
-      name: 'notification',
-      builder: (context, state) => const NotificationScreen(),
-    ),
-    GoRoute(
       path: '/main-profile/:viewer/:target',
       name: 'main-profile',
-
-      builder:
-          (context, state) => MainProfileScreen(
-            viewerUserId: state.pathParameters['viewer'] as String,
-            targetUserId: state.pathParameters['target'] as String,
-          ),
+      builder: (context, state) => MainProfileScreen(
+        viewerUserId: state.pathParameters['viewer'] as String,
+        targetUserId: state.pathParameters['target'] as String,
+      ),
     ),
     GoRoute(
       path: AppRoutes.lifeSurvey,
@@ -134,11 +120,6 @@ final GoRouter appRouter = GoRouter(
       builder: (context, state) => const LoveSurveyScreen(),
     ),
     GoRoute(
-      path: AppRoutes.meetingMain,
-      name: 'meeting-main',
-      builder: (context, state) => const MeetingHomeScreen(),
-    ),
-    GoRoute(
       path: AppRoutes.aiMeetingList,
       name: 'ai-meeting-list',
       builder: (context, state) => const AiMeetingListScreen(),
@@ -149,6 +130,69 @@ final GoRouter appRouter = GoRouter(
       builder: (context, state) => MeetingDetailScreen(
         meetingId: state.pathParameters['meetingId']!,
       ),
+    ),
+    StatefulShellRoute.indexedStack(
+      builder: (context, state, navigationShell) {
+        return Scaffold(
+          body: navigationShell,
+          bottomNavigationBar: SharedNavigationBar(
+            currentIndex: navigationShell.currentIndex,
+            onTap: (index) {
+              navigationShell.goBranch(
+                index,
+                initialLocation: index == navigationShell.currentIndex,
+              );
+            },
+          ),
+        );
+      },
+      branches: [
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: AppRoutes.home,
+              name: 'home',
+              builder: (context, state) => const HomePage(),
+            ),
+          ],
+        ),
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: AppRoutes.community,
+              name: 'community',
+              builder: (context, state) => const CommunityScreen(),
+            ),
+          ],
+        ),
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: '/chat', // Placeholder
+              name: 'chat',
+              builder: (context, state) => const Center(child: Text('Chat Screen')),
+            ),
+          ],
+        ),
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: AppRoutes.noti,
+              name: 'notification',
+              builder: (context, state) => const NotificationScreen(),
+            ),
+          ],
+        ),
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: '/profile', // Placeholder
+              name: 'profile',
+              builder: (context, state) => const Center(child: Text('Profile Screen')),
+            ),
+          ],
+        ),
+      ],
     ),
   ],
   redirect: (context, state) {
@@ -164,3 +208,4 @@ final GoRouter appRouter = GoRouter(
     return null;
   },
 );
+
