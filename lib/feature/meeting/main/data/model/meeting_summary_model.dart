@@ -3,6 +3,9 @@
 import '../../domain/entity/meeting_summary.dart';
 
 class MeetingSummaryModel extends MeetingSummary {
+  final DateTime? date;
+  final double? rating;
+
   const MeetingSummaryModel({
     required super.meetingId,
     required super.title,
@@ -11,6 +14,8 @@ class MeetingSummaryModel extends MeetingSummary {
     required super.currentParticipants,
     required super.maxParticipants,
     required super.price,
+    this.date,
+    this.rating,
   });
 
   factory MeetingSummaryModel.fromJson(Map<String, dynamic> json) {
@@ -22,6 +27,8 @@ class MeetingSummaryModel extends MeetingSummary {
       currentParticipants: json['currentParticipants'],
       maxParticipants: json['maxParticipants'],
       price: json['price'] ?? 0,
+      date: json['date'] != null ? DateTime.parse(json['date']) : null,
+      rating: json['rating'] != null ? (json['rating'] as num).toDouble() : null,
     );
   }
 
@@ -34,6 +41,8 @@ class MeetingSummaryModel extends MeetingSummary {
       'currentParticipants': currentParticipants,
       'maxParticipants': maxParticipants,
       'price': price,
+      'date': date?.toIso8601String(),
+      'rating': rating,
     };
   }
 }

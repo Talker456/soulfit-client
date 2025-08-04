@@ -1,5 +1,6 @@
 import '../entity/meeting_summary.dart';
 import '../repository/meeting_repository.dart';
+import '../entity/meeting_filter_params.dart';
 
 class AiRecommendationResult {
   final List<MeetingSummary> meetings;
@@ -13,8 +14,8 @@ class GetAiRecommendedMeetingsUseCase {
 
   GetAiRecommendedMeetingsUseCase(this.repository);
 
-  Future<AiRecommendationResult> execute({required int page, required int size}) async {
-    final result = await repository.getAiRecommendedMeetings(page: page, size: size);
+  Future<AiRecommendationResult> execute({required int page, required int size, MeetingFilterParams? filterParams}) async {
+    final result = await repository.getAiRecommendedMeetings(page: page, size: size, filterParams: filterParams);
     return AiRecommendationResult(
       meetings: result['meetings'] as List<MeetingSummary>,
       tags: result['tags'] as List<String>,

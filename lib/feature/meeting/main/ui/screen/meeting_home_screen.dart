@@ -65,7 +65,7 @@ class MeetingHomeScreen extends ConsumerWidget {
                 title: 'AI 맞춤 추천 모임',
                 provider: aiRecommendedMeetingsProvider,
                 onSeeMorePressed: () {
-                  context.push(AppRoutes.aiMeetingList);
+                  context.push('${AppRoutes.meetingList}/aiRecommended');
                 },
               ),
             ),
@@ -77,6 +77,9 @@ class MeetingHomeScreen extends ConsumerWidget {
               child: MeetingSection(
                 title: '인기 모임',
                 provider: popularMeetingsProvider,
+                onSeeMorePressed: () {
+                  context.push('${AppRoutes.meetingList}/popular');
+                },
               ),
             ),
 
@@ -87,6 +90,9 @@ class MeetingHomeScreen extends ConsumerWidget {
               child: MeetingSection(
                 title: '최근 개설된 모임',
                 provider: recentlyCreatedMeetingsProvider,
+                onSeeMorePressed: () {
+                  context.push('${AppRoutes.meetingList}/recentlyCreated');
+                },
               ),
             ),
 
@@ -97,6 +103,9 @@ class MeetingHomeScreen extends ConsumerWidget {
               child: MeetingSection(
                 title: '최근 참여한 모임',
                 provider: userRecentJoinedMeetingsProvider,
+                onSeeMorePressed: () {
+                  context.push('${AppRoutes.meetingList}/userRecentJoined');
+                },
               ),
             ),
 

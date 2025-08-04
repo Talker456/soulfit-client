@@ -2,29 +2,36 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/entity/meeting_summary.dart';
 import '../../domain/usecase/get_ai_recommended_meetings_usecase.dart';
 import '../state/meeting_list_state.dart';
+import '../../domain/entity/meeting_filter_params.dart';
 
 class MeetingListNotifier extends StateNotifier<MeetingListState> {
   final dynamic useCase;
   int _page = 1;
   static const int _size = 10;
+  MeetingFilterParams? _currentFilters;
 
   MeetingListNotifier({required this.useCase}) : super(MeetingListInitial()) {
     fetchFirstPage();
   }
 
+  void applyFilters(MeetingFilterParams newFilters) {
+    _currentFilters = newFilters;
+    fetchFirstPage(); // 필터 적용 시 첫 페이지부터 다시 로드
+  }
+
   Future<void> fetchFirstPage() async {
     _page = 1;
-    print('[Notifier] Fetching first page (page: $_page, size: ${_size})');
+    print('[Notifier] Fetching first page (page: $_page, size: ${_size}, filters: $_currentFilters)');
     state = MeetingListLoading();
     try {
       if (useCase is GetAiRecommendedMeetingsUseCase) {
-        final result = await useCase.execute(page: _page, size: _size) as AiRecommendationResult;
+        final result = await useCase.execute(page: _page, size: _size, filterParams: _currentFilters) as AiRecommendationResult;
         final hasNext = result.meetings.length == _size;
-        state = MeetingListLoaded(result.meetings, hasNext: hasNext, recommendationTags: result.tags);
+        state = MeetingListLoaded(result.meetings, hasNext: hasNext, recommendationTags: result.tags, activeFilters: _currentFilters);
       } else {
-        final meetings = await useCase.execute(page: _page, size: _size) as List<MeetingSummary>;
+        final meetings = await useCase.execute(page: _page, size: _size, filterParams: _currentFilters) as List<MeetingSummary>;
         final hasNext = meetings.length == _size;
-        state = MeetingListLoaded(meetings, hasNext: hasNext);
+        state = MeetingListLoaded(meetings, hasNext: hasNext, activeFilters: _currentFilters);
       }
       print('[Notifier] First page loaded.');
     } catch (e) {
@@ -37,18 +44,18 @@ class MeetingListNotifier extends StateNotifier<MeetingListState> {
     if (state is MeetingListLoaded && (state as MeetingListLoaded).hasNext) {
       final loadedState = state as MeetingListLoaded;
       _page++;
-      print('[Notifier] Fetching next page (page: $_page, size: ${_size})');
+      print('[Notifier] Fetching next page (page: $_page, size: ${_size}, filters: $_currentFilters)');
       try {
         if (useCase is GetAiRecommendedMeetingsUseCase) {
-          final result = await useCase.execute(page: _page, size: _size) as AiRecommendationResult;
+          final result = await useCase.execute(page: _page, size: _size, filterParams: _currentFilters) as AiRecommendationResult;
           final hasNext = result.meetings.length == _size;
           final updatedMeetings = [...loadedState.meetings, ...result.meetings];
-          state = loadedState.copyWith(meetings: updatedMeetings, hasNext: hasNext);
+          state = loadedState.copyWith(meetings: updatedMeetings, hasNext: hasNext, activeFilters: _currentFilters);
         } else {
-          final newMeetings = await useCase.execute(page: _page, size: _size) as List<MeetingSummary>;
+          final newMeetings = await useCase.execute(page: _page, size: _size, filterParams: _currentFilters) as List<MeetingSummary>;
           final hasNext = newMeetings.length == _size;
           final updatedMeetings = [...loadedState.meetings, ...newMeetings];
-          state = loadedState.copyWith(meetings: updatedMeetings, hasNext: hasNext);
+          state = loadedState.copyWith(meetings: updatedMeetings, hasNext: hasNext, activeFilters: _currentFilters);
         }
         print('[Notifier] Next page loaded. Total items: ${(state as MeetingListLoaded).meetings.length}');
       } catch (e) {
