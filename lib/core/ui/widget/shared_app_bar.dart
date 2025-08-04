@@ -2,8 +2,17 @@ import 'package:flutter/material.dart';
 
 class SharedAppBar extends StatelessWidget implements PreferredSizeWidget {
   final bool showBackButton;
+  final VoidCallback? onBackButtonPressed;
+  final Widget? title;
+  final List<Widget>? actions;
 
-  const SharedAppBar({super.key, this.showBackButton = false});
+  const SharedAppBar({
+    super.key,
+    this.showBackButton = false,
+    this.onBackButtonPressed,
+    this.title,
+    this.actions,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -19,23 +28,18 @@ class SharedAppBar extends StatelessWidget implements PreferredSizeWidget {
                   padding: const EdgeInsets.only(right: 8.0),
                   child: IconButton(
                     icon: const Icon(Icons.arrow_back_ios),
-                    onPressed: () => Navigator.of(context).pop(),
+                    onPressed: onBackButtonPressed ?? () => Navigator.of(context).pop(),
                   ),
                 ),
-              const Text('soulfit',
+              title ?? const Text('soulfit',
                   style: TextStyle(
                       fontSize: 24, color: Colors.green, fontWeight: FontWeight.bold)),
             ],
           ),
-          Row(
-            children: const [
-              Icon(Icons.history, size: 20),
-              SizedBox(width: 12),
-              Icon(Icons.send, size: 20),
-              SizedBox(width: 12),
-              Icon(Icons.search, size: 20),
-            ],
-          ),
+          if (actions != null)
+            Row(
+              children: actions!,
+            ),
         ],
       ),
     );

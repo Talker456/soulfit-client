@@ -6,7 +6,7 @@ import 'package:soulfit_client/config/router/app_router.dart';
 
 import '../provider/meeting_list_providers.dart';
 import '../state/meeting_list_state.dart';
-import '../widget/shared_app_bar.dart';
+import '../../../../../core/ui/widget/shared_app_bar.dart';
 
 class AiMeetingListScreen extends ConsumerStatefulWidget {
   const AiMeetingListScreen({super.key});
@@ -43,7 +43,16 @@ class _AiMeetingListScreenState extends ConsumerState<AiMeetingListScreen> {
     final currencyFormat = NumberFormat.currency(locale: 'ko_KR', symbol: '');
 
     return Scaffold(
-      appBar: const SharedAppBar(showBackButton: true),
+      appBar: const SharedAppBar(
+        showBackButton: true,
+        actions: [
+          Icon(Icons.history, size: 20),
+          SizedBox(width: 12),
+          Icon(Icons.send, size: 20),
+          SizedBox(width: 12),
+          Icon(Icons.search, size: 20),
+        ],
+      ),
       body: switch (state) {
         MeetingListLoaded(meetings: final m, recommendationTags: final t) when m.isEmpty =>
           const Center(child: Text('추천 모임이 없습니다.')),
