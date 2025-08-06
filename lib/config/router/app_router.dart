@@ -16,7 +16,7 @@ import '../../feature/authentication/presentation/screens/login_screen.dart';
 import '../../feature/authentication/presentation/screens/register_screen.dart';
 import '../../feature/community/presentation/screens/community_screen.dart';
 import '../../feature/community/presentation/screens/create_post_screen.dart';
-import '../../feature/meeting/main/ui/screen/ai_meeting_list_screen.dart';
+import '../../feature/meeting/main/ui/screen/meeting_list_screen.dart';
 import '../../feature/meeting/main/ui/screen/meeting_detail_screen.dart';
 import '../../feature/payment/presentation/ui/portone_delegator.dart';
 import '../../feature/payment/presentation/ui/tosspayments_widget_v2.dart';
@@ -38,7 +38,7 @@ class AppRoutes {
   static const String lifeSurvey = '/life-survey';
   static const String loveSurvey = '/love-survey';
   static const String meetingMain = '/meeting-main';
-  static const String aiMeetingList = '/ai-meeting-list';
+  static const String meetingList = '/meeting-list';
   static const String meetingDetail = '/meeting-detail';
 
   static const List<String> allRoutes = [
@@ -55,7 +55,7 @@ class AppRoutes {
     lifeSurvey,
     loveSurvey,
     meetingMain,
-    aiMeetingList,
+    meetingList,
     meetingDetail,
   ];
 }
@@ -120,9 +120,16 @@ final GoRouter appRouter = GoRouter(
       builder: (context, state) => const LoveSurveyScreen(),
     ),
     GoRoute(
-      path: AppRoutes.aiMeetingList,
-      name: 'ai-meeting-list',
-      builder: (context, state) => const AiMeetingListScreen(),
+      path: AppRoutes.meetingMain,
+      name: 'meeting-main',
+      builder: (context, state) => const MeetingHomeScreen(),
+    ),
+    GoRoute(
+      path: '${AppRoutes.meetingList}/:listType',
+      name: 'meeting-list',
+      builder: (context, state) => MeetingListScreen(
+        listType: state.pathParameters['listType']!,
+      ),
     ),
     GoRoute(
       path: '/meeting-detail/:meetingId',
