@@ -1,6 +1,7 @@
 import 'dart:async';
 import '../model/chat_request_model.dart';
 import '../model/chat_room_model.dart';
+import '../model/sent_chat_request_model.dart';
 import 'conversation_request_remote_data_source.dart';
 
 import 'dart:developer';
@@ -31,10 +32,33 @@ class FakeConversationRequestRemoteDataSource
     ),
   ];
 
+  final List<SentChatRequestModel> _fakeSentData = [
+    SentChatRequestModel(
+      recipientUserId: 'user_4',
+      recipientUsername: '사용자 D',
+      recipientProfileImageUrl: 'https://picsum.photos/400/400?random=4',
+      sentGreetingMessage: '안녕하세요. 잘 부탁드립니다.',
+      isViewed: false,
+    ),
+    SentChatRequestModel(
+      recipientUserId: 'user_5',
+      recipientUsername: '사용자 E',
+      recipientProfileImageUrl: 'https://picsum.photos/400/400?random=5',
+      sentGreetingMessage: '우리 같이 운동해요!',
+      isViewed: true,
+    ),
+  ];
+
   @override
   Future<List<ChatRequestModel>> getReceivedRequests() async {
     await Future.delayed(Duration(milliseconds: 300));
     return List.from(_fakeData);
+  }
+
+  @override
+  Future<List<SentChatRequestModel>> getSentRequests() async {
+    await Future.delayed(Duration(milliseconds: 300));
+    return List.from(_fakeSentData);
   }
 
   @override
@@ -59,3 +83,4 @@ class FakeConversationRequestRemoteDataSource
     _fakeData.removeWhere((e) => e.userId == userId);
   }
 }
+
