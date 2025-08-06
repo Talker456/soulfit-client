@@ -5,7 +5,6 @@ import 'package:go_router/go_router.dart';
 import 'package:soulfit_client/core/ui/widget/shared_navigation_bar.dart';
 import 'package:soulfit_client/feature/authentication/presentation/screens/find_id_screen.dart';
 import 'package:soulfit_client/feature/main_profile/ui/screen/main_profile_screen.dart';
-import 'package:soulfit_client/feature/matching/conversation_request/presentation/screen/received_conversation_request_screen.dart';
 import 'package:soulfit_client/feature/meeting/main/ui/screen/meeting_home_screen.dart';
 import 'package:soulfit_client/feature/notification/presentation/ui/notification_screen.dart';
 import 'package:soulfit_client/feature/survey/presentation/screens/life_survey_screen.dart';
@@ -17,6 +16,7 @@ import '../../feature/authentication/presentation/screens/login_screen.dart';
 import '../../feature/authentication/presentation/screens/register_screen.dart';
 import '../../feature/community/presentation/screens/community_screen.dart';
 import '../../feature/community/presentation/screens/create_post_screen.dart';
+import '../../feature/matching/chat/presentation/screen/chat_screen.dart';
 import '../../feature/meeting/main/ui/screen/meeting_list_screen.dart';
 import '../../feature/meeting/main/ui/screen/meeting_detail_screen.dart';
 import '../../feature/payment/presentation/ui/portone_delegator.dart';
@@ -41,7 +41,7 @@ class AppRoutes {
   static const String meetingMain = '/meeting-main';
   static const String meetingList = '/meeting-list';
   static const String meetingDetail = '/meeting-detail';
-  static const String conversation_received = '/conversation_received';
+  static const String chat = '/chat';
 
 
 
@@ -61,7 +61,7 @@ class AppRoutes {
     meetingMain,
     meetingList,
     meetingDetail,
-    conversation_received
+    chat
   ];
 }
 
@@ -143,11 +143,11 @@ final GoRouter appRouter = GoRouter(
         meetingId: state.pathParameters['meetingId']!,
       ),
     ),
-    GoRoute(
-      path: AppRoutes.conversation_received,
-      name: 'conversation-received',
-      builder: (context, state) => const ReceivedConversationRequestScreen(),
-    ),
+    // GoRoute(
+    //   path: AppRoutes.conversation_received,
+    //   name: 'conversation-received',
+    //   builder: (context, state) => const ReceivedConversationRequestScreen(),
+    // ),
     StatefulShellRoute.indexedStack(
       builder: (context, state, navigationShell) {
         return Scaffold(
@@ -185,9 +185,9 @@ final GoRouter appRouter = GoRouter(
         StatefulShellBranch(
           routes: [
             GoRoute(
-              path: '/chat', // Placeholder
+              path: AppRoutes.chat,
               name: 'chat',
-              builder: (context, state) => const Center(child: Text('Chat Screen')),
+              builder: (context, state) => const ChatScreen(),
             ),
           ],
         ),

@@ -1,7 +1,7 @@
-import 'package:soulfit_client/feature/matching/conversation_request/domain/entity/chat_room.dart';
 
-import '../../../../../feature/matching/conversation_request/domain/entity/chat_request.dart';
-import '../../../../../feature/matching/conversation_request/domain/repository/conversation_request_repository.dart';
+import '../../domain/entity/chat_request.dart';
+import '../../domain/entity/chat_room.dart';
+import '../../domain/repository/conversation_request_repository.dart';
 import '../datasource/conversation_request_remote_data_source.dart';
 import 'dart:developer';
 
