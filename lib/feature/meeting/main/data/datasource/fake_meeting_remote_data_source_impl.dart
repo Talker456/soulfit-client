@@ -11,28 +11,66 @@ class FakeMeetingRemoteDataSourceImpl implements MeetingRemoteDataSource {
     print('[DataSource] Received request for $type - Page: $page, Size: $size, Filters: $filterParams');
     await Future.delayed(const Duration(milliseconds: 300)); // simulate latency
 
+    final List<Map<String, String?>> dummyRegions = [
+      {'province': '서울', 'district': '강남구'},
+      {'province': '서울', 'district': '서초구'},
+      {'province': '경기', 'district': '수원시'},
+      {'province': '경기', 'district': '성남시'},
+      {'province': '부산', 'district': '해운대구'},
+      {'province': '부산', 'district': '서면'},
+      {'province': '대구', 'district': '동성로'},
+      {'province': '인천', 'district': '부평구'},
+      {'province': '광주', 'district': '상무지구'},
+      {'province': '대전', 'district': '둔산동'},
+      {'province': '울산', 'district': '삼산동'},
+      {'province': '세종', 'district': null},
+      {'province': '강원', 'district': '춘천시'},
+      {'province': '충북', 'district': '청주시'},
+      {'province': '충남', 'district': '천안시'},
+      {'province': '전북', 'district': '전주시'},
+      {'province': '전남', 'district': '목포시'},
+      {'province': '경북', 'district': '포항시'},
+      {'province': '경남', 'district': '창원시'},
+      {'province': '제주', 'district': '제주시'},
+    ];
+
     List<MeetingSummaryModel> allItems = List.generate(
       100,
-      (index) => MeetingSummaryModel(
-        meetingId: '$type-${index + 1}',
-        title: '[서울] $type 모임 ${index + 1}',
-        thumbnailUrl: 'https://picsum.photos/400/400?random=$type$index',
-        category: type,
-        currentParticipants: (index % 10) + 1,
-        maxParticipants: 10,
-        price: (index % 5) * 10000 + 10000, // 10,000 ~ 50,000
-        date: DateTime.now().add(Duration(days: index)), // Assign dummy date
-        rating: ((index % 5) + 1).toDouble(), // Assign dummy rating (1.0 to 5.0)
-      ),
+      (index) {
+        final selectedRegion = dummyRegions[_random.nextInt(dummyRegions.length)];
+        return MeetingSummaryModel(
+          meetingId: '$type-${index + 1}',
+          title: '${selectedRegion['province']}' +
+              (selectedRegion['district'] != null ? ' ${selectedRegion['district']}' : '') +
+              ' $type 모임 ${index + 1}',
+          thumbnailUrl: 'https://picsum.photos/400/400?random=$type$index',
+          category: type,
+          currentParticipants: (index % 10) + 1,
+          maxParticipants: 10,
+          price: (_random.nextInt(5) + 1) * 10000, // 10,000 ~ 50,000
+          date: DateTime.now().add(Duration(days: index)), // Assign dummy date
+          rating: ((index % 5) + 1).toDouble(), // Assign dummy rating (1.0 to 5.0)
+          region: selectedRegion, // Populate the new region field
+        );
+      },
     );
 
     // Apply filters
     List<MeetingSummaryModel> filteredItems = allItems.where((meeting) {
       if (filterParams == null) return true;
 
-      if (filterParams.region != null && !meeting.title.contains('[' + filterParams.region! + ']')) {
-        return false;
+      if (filterParams.region != null) {
+        final String? filterProvince = filterParams.region!['province'];
+        final String? filterDistrict = filterParams.region!['district'];
+
+        if (filterProvince != null && meeting.region!['province'] != filterProvince) {
+          return false;
+        }
+        if (filterDistrict != null && meeting.region!['district'] != filterDistrict) {
+          return false;
+        }
       }
+
       if (filterParams.minPrice != null && meeting.price < filterParams.minPrice!) {
         return false;
       }

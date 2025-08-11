@@ -43,7 +43,7 @@ class MeetingFilterBar extends ConsumerWidget {
           // 지역 필터
           ElevatedButton(
             onPressed: () async {
-              final selectedRegion = await showModalBottomSheet<String>(
+              final selectedRegion = await showModalBottomSheet<Map<String, String?>>(
                 context: context,
                 builder: (BuildContext modalContext) {
                   return RegionFilterModal(initialRegion: currentFilters?.region);
@@ -56,7 +56,16 @@ class MeetingFilterBar extends ConsumerWidget {
                     );
               }
             },
-            child: Text(currentFilters?.region != null ? '지역: ${currentFilters!.region}' : '지역'),
+            child: Text(
+              currentFilters?.region != null
+                  ? (currentFilters!.region!['province'] != null
+                      ? '지역: ${currentFilters.region!['province']!}' +
+                          (currentFilters.region!['district'] != null
+                              ? ' ${currentFilters.region!['district']!}'
+                              : '')
+                      : '지역')
+                  : '지역',
+            ),
           ),
           const SizedBox(width: 8),
 
