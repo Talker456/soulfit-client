@@ -7,6 +7,7 @@ class MeetingFilterParams {
   final double? minRating;
   final int? minParticipants;
   final int? maxParticipants;
+  final String? category;
 
   const MeetingFilterParams({
     this.region,
@@ -17,6 +18,7 @@ class MeetingFilterParams {
     this.minRating,
     this.minParticipants,
     this.maxParticipants,
+    this.category,
   });
 
   MeetingFilterParams copyWith({
@@ -28,6 +30,7 @@ class MeetingFilterParams {
     double? minRating,
     int? minParticipants,
     int? maxParticipants,
+    String? category,
   }) {
     return MeetingFilterParams(
       region: region ?? this.region,
@@ -38,6 +41,7 @@ class MeetingFilterParams {
       minRating: minRating ?? this.minRating,
       minParticipants: minParticipants ?? this.minParticipants,
       maxParticipants: maxParticipants ?? this.maxParticipants,
+      category: category ?? this.category,
     );
   }
 
@@ -53,7 +57,8 @@ class MeetingFilterParams {
           maxPrice == other.maxPrice &&
           minRating == other.minRating &&
           minParticipants == other.minParticipants &&
-          maxParticipants == other.maxParticipants;
+          maxParticipants == other.maxParticipants &&
+          category == other.category;
 
   @override
   int get hashCode =>
@@ -64,5 +69,6 @@ class MeetingFilterParams {
       maxPrice.hashCode ^
       minRating.hashCode ^
       minParticipants.hashCode ^
-      maxParticipants.hashCode;
+      maxParticipants.hashCode ^
+      category.hashCode;
 }

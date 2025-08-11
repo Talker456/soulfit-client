@@ -51,3 +51,10 @@ final userRecentJoinedMeetingsProvider = StateNotifierProvider<MeetingListNotifi
   final useCase = ref.watch(getUserRecentJoinedMeetingsUseCaseProvider);
   return MeetingListNotifier(useCase: useCase);
 });
+
+// 카테고리별 모임 목록
+final meetingsByCategoryProvider = StateNotifierProvider.family<MeetingListNotifier, MeetingListState, String>((ref, category) {
+  // TODO: 카테고리별 미팅을 가져오는 UseCase를 별도로 만들거나, 기존 UseCase를 수정해야 함
+  final useCase = ref.watch(getPopularMeetingsUseCaseProvider);
+  return MeetingListNotifier(useCase: useCase, category: category);
+});

@@ -26,8 +26,8 @@ class MeetingFilterBar extends ConsumerWidget {
         return recentlyCreatedMeetingsProvider;
       case 'userRecentJoined':
         return userRecentJoinedMeetingsProvider;
-      default:
-        throw Exception('Unknown list type: $listType');
+      default: // 카테고리
+        return meetingsByCategoryProvider(listType);
     }
   }
 

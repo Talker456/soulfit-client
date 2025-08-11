@@ -6,16 +6,22 @@ import '../../domain/entity/meeting_filter_params.dart';
 
 class MeetingListNotifier extends StateNotifier<MeetingListState> {
   final dynamic useCase;
+  final String? category;
   int _page = 1;
   static const int _size = 10;
-  MeetingFilterParams? _currentFilters;
+  MeetingFilterParams _currentFilters = const MeetingFilterParams();
 
-  MeetingListNotifier({required this.useCase}) : super(MeetingListInitial()) {
+  MeetingListNotifier({required this.useCase, this.category}) : super(MeetingListInitial()) {
+    // 카테고리가 있으면 필터에 바로 적용
+    if (category != null) {
+      _currentFilters = _currentFilters.copyWith(category: category);
+    }
     fetchFirstPage();
   }
 
   void applyFilters(MeetingFilterParams newFilters) {
-    _currentFilters = newFilters;
+    // 카테고리 필터는 유지하면서 다른 필터들을 업데이트
+    _currentFilters = newFilters.copyWith(category: category);
     fetchFirstPage(); // 필터 적용 시 첫 페이지부터 다시 로드
   }
 
