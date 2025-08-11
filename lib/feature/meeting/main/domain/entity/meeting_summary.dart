@@ -6,6 +6,7 @@ class MeetingSummary {
   final int currentParticipants;
   final int maxParticipants;
   final int price;
+  final Map<String, String?>? region; // Added region field
 
   const MeetingSummary({
     required this.meetingId,
@@ -15,5 +16,6 @@ class MeetingSummary {
     required this.currentParticipants,
     required this.maxParticipants,
     required this.price,
+    this.region, // Added to constructor
   });
 }

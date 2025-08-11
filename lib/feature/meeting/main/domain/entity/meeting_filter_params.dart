@@ -1,5 +1,5 @@
 class MeetingFilterParams {
-  final String? region;
+  final Map<String, String?>? region;
   final DateTime? startDate;
   final DateTime? endDate;
   final double? minPrice;
@@ -22,7 +22,7 @@ class MeetingFilterParams {
   });
 
   MeetingFilterParams copyWith({
-    String? region,
+    Map<String, String?>? region,
     DateTime? startDate,
     DateTime? endDate,
     double? minPrice,
@@ -50,7 +50,7 @@ class MeetingFilterParams {
       identical(this, other) ||
       other is MeetingFilterParams &&
           runtimeType == other.runtimeType &&
-          region == other.region &&
+          _mapEquals(region, other.region) && // Use a helper for map comparison
           startDate == other.startDate &&
           endDate == other.endDate &&
           minPrice == other.minPrice &&
@@ -62,13 +62,31 @@ class MeetingFilterParams {
 
   @override
   int get hashCode =>
-      region.hashCode ^
-      startDate.hashCode ^
-      endDate.hashCode ^
-      minPrice.hashCode ^
-      maxPrice.hashCode ^
-      minRating.hashCode ^
-      minParticipants.hashCode ^
-      maxParticipants.hashCode ^
-      category.hashCode;
+      Object.hash(
+        region,
+        startDate,
+        endDate,
+        minPrice,
+        maxPrice,
+        minRating,
+        minParticipants,
+        maxParticipants,
+        category,
+      );
+
+  // Helper function for deep comparison of Maps
+  static bool _mapEquals<K, V>(Map<K, V>? a, Map<K, V>? b) {
+    if (a == null || b == null) {
+      return a == b;
+    }
+    if (a.length != b.length) {
+      return false;
+    }
+    for (final key in a.keys) {
+      if (!b.containsKey(key) || a[key] != b[key]) {
+        return false;
+      }
+    }
+    return true;
+  }
 }
