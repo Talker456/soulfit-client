@@ -31,8 +31,8 @@ class _MeetingListScreenState extends ConsumerState<MeetingListScreen> {
         return recentlyCreatedMeetingsProvider;
       case 'userRecentJoined':
         return userRecentJoinedMeetingsProvider;
-      default:
-        throw Exception('Unknown list type: $listType');
+      default: // 카테고리
+        return meetingsByCategoryProvider(listType);
     }
   }
 
@@ -46,8 +46,8 @@ class _MeetingListScreenState extends ConsumerState<MeetingListScreen> {
         return '최근 개설된 모임';
       case 'userRecentJoined':
         return '최근 참여한 모임';
-      default:
-        return '모임 목록';
+      default: // 카테고리
+        return '${widget.listType} 모임';
     }
   }
 

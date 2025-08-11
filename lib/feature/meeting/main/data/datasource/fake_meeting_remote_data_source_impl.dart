@@ -88,4 +88,8 @@ class FakeMeetingRemoteDataSourceImpl implements MeetingRemoteDataSource {
   @override
   Future<Map<String, dynamic>> getUserRecentJoinedMeetings({required int page, required int size, MeetingFilterParams? filterParams}) =>
       _generateDummyData("참여", page: page, size: size, filterParams: filterParams);
+
+  @override
+  Future<Map<String, dynamic>> getMeetingsByCategory({required String category, required int page, required int size, MeetingFilterParams? filterParams}) =>
+      _generateDummyData(category, page: page, size: size, filterParams: filterParams);
 }

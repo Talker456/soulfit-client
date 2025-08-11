@@ -6,6 +6,7 @@ import '../../domain/usecase/get_ai_recommended_meetings_usecase.dart';
 import '../../domain/usecase/get_popular_meetings_usecase.dart';
 import '../../domain/usecase/get_recently_created_meetings_usecase.dart';
 import '../../domain/usecase/get_user_recent_joined_meetings_usecase.dart';
+import '../../domain/usecase/get_meetings_by_category_usecase.dart'; // New import
 import '../notifier/meeting_list_notifier.dart';
 import '../state/meeting_list_state.dart';
 
@@ -31,6 +32,10 @@ final getUserRecentJoinedMeetingsUseCaseProvider = Provider((ref) {
   return GetUserRecentJoinedMeetingsUseCase(ref.watch(meetingRepositoryProvider));
 });
 
+final getMeetingsByCategoryUseCaseProvider = Provider((ref) { // New UseCase Provider
+  return GetMeetingsByCategoryUseCase(ref.watch(meetingRepositoryProvider));
+});
+
 /// 📦 StateNotifierProviders
 final aiRecommendedMeetingsProvider = StateNotifierProvider<MeetingListNotifier, MeetingListState>((ref) {
   final useCase = ref.watch(getAiRecommendedMeetingsUseCaseProvider);
@@ -50,4 +55,10 @@ final recentlyCreatedMeetingsProvider = StateNotifierProvider<MeetingListNotifie
 final userRecentJoinedMeetingsProvider = StateNotifierProvider<MeetingListNotifier, MeetingListState>((ref) {
   final useCase = ref.watch(getUserRecentJoinedMeetingsUseCaseProvider);
   return MeetingListNotifier(useCase: useCase);
+});
+
+// 카테고리별 모임 목록
+final meetingsByCategoryProvider = StateNotifierProvider.family<MeetingListNotifier, MeetingListState, String>((ref, category) {
+  final useCase = ref.watch(getMeetingsByCategoryUseCaseProvider); // Changed to use new UseCase
+  return MeetingListNotifier(useCase: useCase, category: category);
 });

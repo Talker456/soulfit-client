@@ -31,4 +31,10 @@ class MeetingRepositoryImpl implements MeetingRepository {
     final models = await remoteDataSource.getUserRecentJoinedMeetings(page: page, size: size, filterParams: filterParams);
     return models['meetings'];
   }
+
+  @override
+  Future<List<MeetingSummary>> getMeetingsByCategory({required String category, required int page, required int size, MeetingFilterParams? filterParams}) async {
+    final models = await remoteDataSource.getMeetingsByCategory(category: category, page: page, size: size, filterParams: filterParams);
+    return models['meetings'];
+  }
 }
