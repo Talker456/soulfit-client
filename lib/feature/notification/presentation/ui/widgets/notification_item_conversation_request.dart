@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:soulfit_client/config/di/provider.dart';
 import 'package:soulfit_client/feature/notification/domain/entity/notification_entity.dart';
 import 'package:soulfit_client/feature/notification/presentation/riverpod/notification_notifier.dart';
 
-class NotificationItemConversationRequest extends StatelessWidget {
+class NotificationItemConversationRequest extends ConsumerWidget {
   final NotificationEntity notification;
   final NotificationNotifier notifier;
 
@@ -14,7 +16,7 @@ class NotificationItemConversationRequest extends StatelessWidget {
   }) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return GestureDetector(
       onTap: () => notifier.markAsRead(notification.id),
       child: Container(
@@ -43,8 +45,21 @@ class NotificationItemConversationRequest extends StatelessWidget {
             ),
             ElevatedButton(
               onPressed: () {
-                //TODO : replace with actual conversation screen
-                context.push("/conversation");
+                final viewerId = ref.read(authNotifierProvider).user?.id;
+
+                if (viewerId == null) {
+                  print("Error: Could not get viewer ID. User may not be logged in.");
+                  return;
+                }
+
+                final targetId = notification.targetId;
+
+                print('--- Routing to Profile (from Conversation Request) ---');
+                print('Viewer ID (My ID): $viewerId');
+                print('Target ID (Their ID): $targetId');
+                print('----------------------------------------------------');
+
+                context.push('/main-profile/$viewerId/$targetId');
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xffFF9FE7), // Button color for CONVERSATION_REQUEST type

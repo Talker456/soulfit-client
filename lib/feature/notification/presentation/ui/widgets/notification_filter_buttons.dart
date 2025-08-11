@@ -20,7 +20,7 @@ class NotificationFilterButtons extends StatelessWidget {
       children: [
         _buildFilterButton('커뮤니티', NotificationFilterCategory.community, currentFilter, notifier),
         _buildFilterButton('모임', NotificationFilterCategory.meeting, currentFilter, notifier),
-        _buildFilterButton('개팅', NotificationFilterCategory.matching, currentFilter, notifier),
+        _buildFilterButton('소개팅', NotificationFilterCategory.matching, currentFilter, notifier),
       ],
     );
   }
