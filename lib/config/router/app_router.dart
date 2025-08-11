@@ -203,9 +203,21 @@ final GoRouter appRouter = GoRouter(
         StatefulShellBranch(
           routes: [
             GoRoute(
-              path: '/profile', // Placeholder
+              path: '/profile',
               name: 'profile',
-              builder: (context, state) => const Center(child: Text('Profile Screen')),
+              builder: (context, state) {
+                return Consumer(builder: (context, ref, child) {
+                  final userId =
+                      ref.watch(authNotifierProvider.select((value) => value.user?.id));
+                  if (userId == null) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                  return MainProfileScreen(
+                    viewerUserId: userId,
+                    targetUserId: userId,
+                  );
+                });
+              },
             ),
           ],
         ),
