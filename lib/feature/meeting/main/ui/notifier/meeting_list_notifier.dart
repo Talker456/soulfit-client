@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/entity/meeting_summary.dart';
 import '../../domain/usecase/get_ai_recommended_meetings_usecase.dart';
+import '../../domain/usecase/get_meetings_by_category_usecase.dart';
 import '../state/meeting_list_state.dart';
 import '../../domain/entity/meeting_filter_params.dart';
 
@@ -34,6 +35,13 @@ class MeetingListNotifier extends StateNotifier<MeetingListState> {
         final result = await useCase.execute(page: _page, size: _size, filterParams: _currentFilters) as AiRecommendationResult;
         final hasNext = result.meetings.length == _size;
         state = MeetingListLoaded(result.meetings, hasNext: hasNext, recommendationTags: result.tags, activeFilters: _currentFilters);
+      } else if (useCase is GetMeetingsByCategoryUseCase) {
+        if (category == null) {
+          throw Exception("Category cannot be null for GetMeetingsByCategoryUseCase");
+        }
+        final meetings = await useCase.execute(category: category!, page: _page, size: _size, filterParams: _currentFilters) as List<MeetingSummary>;
+        final hasNext = meetings.length == _size;
+        state = MeetingListLoaded(meetings, hasNext: hasNext, activeFilters: _currentFilters);
       } else {
         final meetings = await useCase.execute(page: _page, size: _size, filterParams: _currentFilters) as List<MeetingSummary>;
         final hasNext = meetings.length == _size;
@@ -56,6 +64,14 @@ class MeetingListNotifier extends StateNotifier<MeetingListState> {
           final result = await useCase.execute(page: _page, size: _size, filterParams: _currentFilters) as AiRecommendationResult;
           final hasNext = result.meetings.length == _size;
           final updatedMeetings = [...loadedState.meetings, ...result.meetings];
+          state = loadedState.copyWith(meetings: updatedMeetings, hasNext: hasNext, activeFilters: _currentFilters);
+        } else if (useCase is GetMeetingsByCategoryUseCase) {
+          if (category == null) {
+            throw Exception("Category cannot be null for GetMeetingsByCategoryUseCase");
+          }
+          final newMeetings = await useCase.execute(category: category!, page: _page, size: _size, filterParams: _currentFilters) as List<MeetingSummary>;
+          final hasNext = newMeetings.length == _size;
+          final updatedMeetings = [...loadedState.meetings, ...newMeetings];
           state = loadedState.copyWith(meetings: updatedMeetings, hasNext: hasNext, activeFilters: _currentFilters);
         } else {
           final newMeetings = await useCase.execute(page: _page, size: _size, filterParams: _currentFilters) as List<MeetingSummary>;

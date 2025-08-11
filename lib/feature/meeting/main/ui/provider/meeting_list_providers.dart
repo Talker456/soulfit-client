@@ -6,6 +6,7 @@ import '../../domain/usecase/get_ai_recommended_meetings_usecase.dart';
 import '../../domain/usecase/get_popular_meetings_usecase.dart';
 import '../../domain/usecase/get_recently_created_meetings_usecase.dart';
 import '../../domain/usecase/get_user_recent_joined_meetings_usecase.dart';
+import '../../domain/usecase/get_meetings_by_category_usecase.dart'; // New import
 import '../notifier/meeting_list_notifier.dart';
 import '../state/meeting_list_state.dart';
 
@@ -31,6 +32,10 @@ final getUserRecentJoinedMeetingsUseCaseProvider = Provider((ref) {
   return GetUserRecentJoinedMeetingsUseCase(ref.watch(meetingRepositoryProvider));
 });
 
+final getMeetingsByCategoryUseCaseProvider = Provider((ref) { // New UseCase Provider
+  return GetMeetingsByCategoryUseCase(ref.watch(meetingRepositoryProvider));
+});
+
 /// 📦 StateNotifierProviders
 final aiRecommendedMeetingsProvider = StateNotifierProvider<MeetingListNotifier, MeetingListState>((ref) {
   final useCase = ref.watch(getAiRecommendedMeetingsUseCaseProvider);
@@ -54,7 +59,6 @@ final userRecentJoinedMeetingsProvider = StateNotifierProvider<MeetingListNotifi
 
 // 카테고리별 모임 목록
 final meetingsByCategoryProvider = StateNotifierProvider.family<MeetingListNotifier, MeetingListState, String>((ref, category) {
-  // TODO: 카테고리별 미팅을 가져오는 UseCase를 별도로 만들거나, 기존 UseCase를 수정해야 함
-  final useCase = ref.watch(getPopularMeetingsUseCaseProvider);
+  final useCase = ref.watch(getMeetingsByCategoryUseCaseProvider); // Changed to use new UseCase
   return MeetingListNotifier(useCase: useCase, category: category);
 });
