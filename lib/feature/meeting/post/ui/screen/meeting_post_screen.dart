@@ -59,8 +59,7 @@ class _MeetingPostScreenState extends ConsumerState<MeetingPostScreen>
       return const Scaffold(body: Center(child: Text('게시물을 찾을 수 없습니다.')));
     }
 
-    // 4) 성공: 이제부터는 ! 사용해도 안전하지만,
-    //    변수에 한 번 담아 두고 그 변수를 사용합니다.
+    // 4) 성공
     final d = st.data!;
 
     return Scaffold(
