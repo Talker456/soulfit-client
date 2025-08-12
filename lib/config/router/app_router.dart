@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -21,6 +20,8 @@ import '../../feature/meeting/main/ui/screen/meeting_list_screen.dart';
 import '../../feature/meeting/main/ui/screen/meeting_detail_screen.dart';
 import '../../feature/payment/presentation/ui/portone_delegator.dart';
 import '../../feature/payment/presentation/ui/tosspayments_widget_v2.dart';
+import '../../feature/meeting/opening/ui/screen/create_meeting_wizard_screen.dart';
+import '../../feature/meeting/post/ui/screen/meeting_post_screen.dart';
 import '../di/provider.dart';
 
 class AppRoutes {
@@ -41,9 +42,9 @@ class AppRoutes {
   static const String meetingMain = '/meeting-main';
   static const String meetingList = '/meeting-list';
   static const String meetingDetail = '/meeting-detail';
+  static const String meetingOpening = '/meeting-opening';
+  static const String meetingPost = '/meeting-post';
   static const String chat = '/chat';
-
-
 
   static const List<String> allRoutes = [
     login,
@@ -61,7 +62,9 @@ class AppRoutes {
     meetingMain,
     meetingList,
     meetingDetail,
-    chat
+    meetingOpening,
+    meetingPost,
+    chat,
   ];
 }
 
@@ -109,10 +112,11 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: '/main-profile/:viewer/:target',
       name: 'main-profile',
-      builder: (context, state) => MainProfileScreen(
-        viewerUserId: state.pathParameters['viewer'] as String,
-        targetUserId: state.pathParameters['target'] as String,
-      ),
+      builder:
+          (context, state) => MainProfileScreen(
+            viewerUserId: state.pathParameters['viewer'] as String,
+            targetUserId: state.pathParameters['target'] as String,
+          ),
     ),
     GoRoute(
       path: AppRoutes.lifeSurvey,
@@ -132,16 +136,27 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: '${AppRoutes.meetingList}/:listType',
       name: 'meeting-list',
-      builder: (context, state) => MeetingListScreen(
-        listType: state.pathParameters['listType']!,
-      ),
+      builder:
+          (context, state) =>
+              MeetingListScreen(listType: state.pathParameters['listType']!),
     ),
     GoRoute(
       path: '/meeting-detail/:meetingId',
       name: 'meeting-detail',
-      builder: (context, state) => MeetingDetailScreen(
-        meetingId: state.pathParameters['meetingId']!,
-      ),
+      builder:
+          (context, state) => MeetingDetailScreen(
+            meetingId: state.pathParameters['meetingId']!,
+          ),
+    ),
+    GoRoute(
+      path: AppRoutes.meetingOpening,
+      name: 'meeting-opening',
+      builder: (context, state) => const CreateMeetingWizardScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.meetingPost,
+      name: 'meeting-post',
+      builder: (context, state) => const MeetingPostScreen(postId: 'demo'),
     ),
     // GoRoute(
     //   path: AppRoutes.conversation_received,
@@ -206,17 +221,20 @@ final GoRouter appRouter = GoRouter(
               path: '/profile',
               name: 'profile',
               builder: (context, state) {
-                return Consumer(builder: (context, ref, child) {
-                  final userId =
-                      ref.watch(authNotifierProvider.select((value) => value.user?.id));
-                  if (userId == null) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
-                  return MainProfileScreen(
-                    viewerUserId: userId,
-                    targetUserId: userId,
-                  );
-                });
+                return Consumer(
+                  builder: (context, ref, child) {
+                    final userId = ref.watch(
+                      authNotifierProvider.select((value) => value.user?.id),
+                    );
+                    if (userId == null) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+                    return MainProfileScreen(
+                      viewerUserId: userId,
+                      targetUserId: userId,
+                    );
+                  },
+                );
               },
             ),
           ],
@@ -237,4 +255,3 @@ final GoRouter appRouter = GoRouter(
     return null;
   },
 );
-
