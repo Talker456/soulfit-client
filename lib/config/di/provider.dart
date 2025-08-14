@@ -23,6 +23,7 @@ import '../../feature/authentication/presentation/riverpod/register_riverpod.dar
 import '../../feature/authentication/presentation/riverpod/register_state.dart';
 import '../../feature/notification/data/datasource/fake_noti_remote_datasource_impl.dart';
 import '../../feature/notification/data/datasource/noti_remote_datasource.dart';
+import '../../feature/notification/data/datasource/noti_remote_datasource_impl.dart';
 import '../../feature/notification/data/repository_impl/notification_repository_impl.dart';
 import '../../feature/notification/domain/repository/notification_repository.dart';
 import '../../feature/notification/domain/usecase/delete_noti_usecase.dart';
@@ -31,6 +32,7 @@ import '../../feature/notification/domain/usecase/mark_all_noti_as_read_usecase.
 import '../../feature/notification/domain/usecase/mark_noti_as_read_usecase.dart';
 import '../../feature/notification/presentation/riverpod/notification_notifier.dart';
 import '../../feature/notification/presentation/riverpod/notification_state_data.dart';
+import '../../feature/payment/data/datasource/fake_payment_remote_datasouece_impl.dart';
 import '../../feature/payment/data/datasource/payment_remote_datasource_impl.dart';
 import '../../feature/payment/data/repository_impl/payment_repository_impl.dart';
 import '../../feature/payment/domain/repository/payment_repository.dart';
@@ -42,6 +44,11 @@ import '../../../feature/coupon/domain/repositories/coupon_repository.dart';
 import '../../../feature/coupon/domain/usecases/get_coupon_list_usecase.dart';
 import '../../../feature/coupon/domain/usecases/register_coupon_usecase.dart';
 import '../../../feature/coupon/data/datasources/fake_coupon_remote_datasource.dart';
+
+const bool USE_FAKE_DATASOURCE = true;
+
+const bool _IS_AVD = false; // Android Virtual Device 사용 시 true로 변경
+const String BASE_URL = _IS_AVD ? "10.0.2.2" : "localhost";
 
 /// 1. 외부 패키지 Provider
 final httpClientProvider = Provider<http.Client>((ref) {
@@ -62,16 +69,13 @@ final authLocalDataSourceProvider = Provider<AuthLocalDataSource>((ref) {
 });
 
 final authRemoteDataSourceProvider = Provider<AuthRemoteDataSource>((ref) {
-  const useFake = true;
-  const isAVD = false;
-
-  if (useFake) {
+  if (USE_FAKE_DATASOURCE) {
     return FakeAuthRemoteDataSource();
   } else {
     return AuthRemoteDataSourceImpl(
       client: ref.read(httpClientProvider),
       source: ref.read(authLocalDataSourceProvider),
-      base: isAVD ? "10.0.2.2" : "localhost",
+      base: BASE_URL
     );
   }
 });
@@ -137,16 +141,15 @@ final remoteDataSourceProvider = Provider((ref) {
   final client = ref.watch(httpClientProvider);
   final source = ref.read(authLocalDataSourceProvider);
 
-  // AVD vs Windows
-  final baseUrl = "10.0.2.2";
-  // final baseUrl = "localhost";
-  return PaymentRemoteDataSourceImpl(
-    client: client,
-    baseUrl: baseUrl,
-    source: source,
-  );
-
-  // return FakePaymentRemoteDataSourceImpl(client: client);
+  if(USE_FAKE_DATASOURCE){
+    return FakePaymentRemoteDataSourceImpl(client: client);
+  }else{
+    return PaymentRemoteDataSourceImpl(
+      client: client,
+      baseUrl: BASE_URL,
+      source: source,
+    );
+  }
 });
 
 /// Repository
@@ -169,16 +172,16 @@ final approvePaymentUseCaseProvider = Provider((ref) {
 
 final notificationRemoteDataSourceProvider =
     Provider<NotificationRemoteDataSource>((ref) {
-      // 실제 서버 연동 구현체
-      // return NotificationRemoteDataSourceImpl(
-      //   client: ref.read(httpClientProvider),
-      //   source: ref.read(authLocalDataSourceProvider),
-      //   base: "localhost",
-      // base: "10.0.2.2",
-      // );
 
-      // 현재는 Fake 사용
-      return FakeNotificationRemoteDataSourceImpl();
+      if(USE_FAKE_DATASOURCE){
+        return FakeNotificationRemoteDataSourceImpl();
+      }else{
+        return NotificationRemoteDataSourceImpl(
+              client: ref.read(httpClientProvider),
+              source: ref.read(authLocalDataSourceProvider),
+              base: BASE_URL,
+            );
+      }
     });
 
 final notificationRepositoryProvider = Provider<NotificationRepository>((ref) {
