@@ -29,8 +29,8 @@ class ReceivedConversationRequestScreen extends ConsumerWidget {
             final request = requests[index];
             return ConversationRequestCard(
               request: request,
-              onAccept: () => notifier.accept(request.userId),
-              onReject: () => notifier.reject(request.userId),
+              onAccept: () => notifier.accept(request.requestId),
+              onReject: () => notifier.reject(request.requestId),
               onViewProfile: () {
                 // 추후 상세 프로필 화면으로 라우팅 예정
                 ScaffoldMessenger.of(context).showSnackBar(

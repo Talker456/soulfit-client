@@ -5,7 +5,7 @@ class RejectConversationRequest {
 
   RejectConversationRequest(this.repository);
 
-  Future<void> call(String userId) {
-    return repository.rejectConversationRequest(userId);
+  Future<void> call(int requestId) {
+    return repository.rejectConversationRequest(requestId);
   }
 }

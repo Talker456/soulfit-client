@@ -3,7 +3,6 @@ import '../../domain/usecase/accept_conversation_request.dart';
 import '../../domain/usecase/get_received_conversation_requests.dart';
 import '../../domain/usecase/reject_conversation_request.dart';
 import '../state/conversation_request_state.dart';
-import 'dart:developer';
 
 class ConversationRequestNotifier extends StateNotifier<ConversationRequestState> {
   final GetReceivedConversationRequests getRequests;
@@ -19,6 +18,7 @@ class ConversationRequestNotifier extends StateNotifier<ConversationRequestState
   }
 
   Future<void> fetchRequests() async {
+    print('[conversation request notifier] : start fetching requests');
     state = ConversationRequestLoading();
     try {
       final requests = await getRequests();
@@ -28,31 +28,29 @@ class ConversationRequestNotifier extends StateNotifier<ConversationRequestState
     }
   }
 
-  Future<void> accept(String userId) async {
+  Future<void> accept(int requestId) async {
     if (state is! ConversationRequestLoaded) return;
 
     final current = (state as ConversationRequestLoaded).requests;
-    final optimistic = current.where((r) => r.userId != userId).toList();
+    final optimistic = current.where((r) => r.requestId != requestId).toList();
     state = ConversationRequestLoaded(optimistic);
 
     try {
-      log('[Notifier] Accepting request from user: $userId');
-      final chatRoom = await acceptRequest(userId);
-      log('[Notifier] ChatRoom created: id=${chatRoom.id}, opponent=${chatRoom.opponentUserId}');
+      await acceptRequest(requestId);
     } catch (_) {
       state = ConversationRequestLoaded(current);
     }
   }
 
-  Future<void> reject(String userId) async {
+  Future<void> reject(int requestId) async {
     if (state is! ConversationRequestLoaded) return;
 
     final current = (state as ConversationRequestLoaded).requests;
-    final optimistic = current.where((r) => r.userId != userId).toList();
+    final optimistic = current.where((r) => r.requestId != requestId).toList();
     state = ConversationRequestLoaded(optimistic);
 
     try {
-      await rejectRequest(userId);
+      await rejectRequest(requestId);
     } catch (_) {
       // 롤백 처리
       state = ConversationRequestLoaded(current);
