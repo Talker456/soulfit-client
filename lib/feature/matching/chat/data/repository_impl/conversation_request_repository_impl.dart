@@ -1,11 +1,9 @@
 
-import 'package:soulfit_client/feature/matching/chat/domain/entity/chat_room.dart';
 import 'package:soulfit_client/feature/matching/chat/domain/entity/sent_chat_request.dart';
 
 import '../../../../matching/chat/domain/entity/chat_request.dart';
 import '../../../../matching/chat/domain/repository/conversation_request_repository.dart';
 import '../datasource/conversation_request_remote_data_source.dart';
-import 'dart:developer';
 
 class ConversationRequestRepositoryImpl
     implements ConversationRequestRepository {
@@ -14,7 +12,13 @@ class ConversationRequestRepositoryImpl
   ConversationRequestRepositoryImpl(this.remoteDataSource);
 
   @override
+  Future<void> acceptConversationRequest(int requestId) {
+    return remoteDataSource.acceptRequest(requestId);
+  }
+
+  @override
   Future<List<ChatRequest>> getReceivedConversationRequests() async {
+    print('[conversation request repository impl] : get rcvd conv reqs');
     final models = await remoteDataSource.getReceivedRequests();
     return models;
   }
@@ -26,16 +30,14 @@ class ConversationRequestRepositoryImpl
   }
 
   @override
-  Future<ChatRoom> acceptConversationRequest(String userId) async{
-    log('[RepositoryImpl] acceptConversationRequest called with userId: $userId');
-    final result = await remoteDataSource.acceptRequest(userId);
-    log('[RepositoryImpl] ChatRoomModel returned: id=${result.id}');
-    return result;
+  Future<void> rejectConversationRequest(int requestId) {
+    return remoteDataSource.rejectRequest(requestId);
   }
 
   @override
-  Future<void> rejectConversationRequest(String userId) {
-    return remoteDataSource.rejectRequest(userId);
+  Future<SentChatRequest> sendConversationRequest(
+      {required int toUserId, required String message}) {
+    return remoteDataSource.sendRequest(toUserId: toUserId, message: message);
   }
 }
 

@@ -1,86 +1,157 @@
 import 'dart:async';
 import '../model/chat_request_model.dart';
-import '../model/chat_room_model.dart';
 import '../model/sent_chat_request_model.dart';
+import '../model/user_model.dart'; // Added import
 import 'conversation_request_remote_data_source.dart';
-
-import 'dart:developer';
 
 class FakeConversationRequestRemoteDataSource
     implements ConversationRequestRemoteDataSource {
   final List<ChatRequestModel> _fakeData = [
     ChatRequestModel(
-      userId: 'user_1',
-      username: '사용자 A',
-      age: 25,
-      profileImageUrl: 'https://picsum.photos/400/400?random=1',
-      greetingMessage: '안녕하세요. 만나서 반갑습니다.',
+      id: 1,
+      fromUser: UserModel(
+        userId: 1,
+        nickname: '사용자 A',
+        age: 25,
+        profileImageUrl: 'https://picsum.photos/400/400?random=1',
+      ),
+      toUser: UserModel(
+        userId: 99,
+        nickname: '현재 사용자',
+        age: 30,
+        profileImageUrl: 'https://picsum.photos/400/400?random=99',
+      ),
+      message: '안녕하세요. 만나서 반갑습니다.',
+      status: 'PENDING',
+      createdAt: DateTime.now().subtract(const Duration(days: 1)),
     ),
     ChatRequestModel(
-      userId: 'user_2',
-      username: '사용자 B',
-      age: 28,
-      profileImageUrl: 'https://picsum.photos/400/400?random=2',
-      greetingMessage: '저랑 취미가 비슷하시네요. 친해지고 싶어요.',
+      id: 2,
+      fromUser: UserModel(
+        userId: 2,
+        nickname: '사용자 B',
+        age: 28,
+        profileImageUrl: 'https://picsum.photos/400/400?random=2',
+      ),
+      toUser: UserModel(
+        userId: 99,
+        nickname: '현재 사용자',
+        age: 30,
+        profileImageUrl: 'https://picsum.photos/400/400?random=99',
+      ),
+      message: '저랑 취미가 비슷하시네요. 친해지고 싶어요.',
+      status: 'PENDING',
+      createdAt: DateTime.now().subtract(const Duration(hours: 12)),
     ),
     ChatRequestModel(
-      userId: 'user_3',
-      username: '사용자 C',
-      age: 30,
-      profileImageUrl: 'https://picsum.photos/400/400?random=3',
-      greetingMessage: '더 알아가고 싶어요.',
+      id: 3,
+      fromUser: UserModel(
+        userId: 3,
+        nickname: '사용자 C',
+        age: 30,
+        profileImageUrl: 'https://picsum.photos/400/400?random=3',
+      ),
+      toUser: UserModel(
+        userId: 99,
+        nickname: '현재 사용자',
+        age: 30,
+        profileImageUrl: 'https://picsum.photos/400/400?random=99',
+      ),
+      message: '더 알아가고 싶어요.',
+      status: 'PENDING',
+      createdAt: DateTime.now().subtract(const Duration(hours: 3)),
     ),
   ];
 
   final List<SentChatRequestModel> _fakeSentData = [
     SentChatRequestModel(
-      recipientUserId: 'user_4',
-      recipientUsername: '사용자 D',
-      recipientProfileImageUrl: 'https://picsum.photos/400/400?random=4',
-      sentGreetingMessage: '안녕하세요. 잘 부탁드립니다.',
-      isViewed: false,
+      id: 4,
+      fromUser: UserModel(
+        userId: 99,
+        nickname: '현재 사용자',
+        age: 30,
+        profileImageUrl: 'https://picsum.photos/400/400?random=99',
+      ),
+      toUser: UserModel(
+        userId: 4,
+        nickname: '사용자 D',
+        age: 27,
+        profileImageUrl: 'https://picsum.photos/400/400?random=4',
+      ),
+      message: '안녕하세요. 잘 부탁드립니다.',
+      status: 'PENDING',
+      createdAt: DateTime.now().subtract(const Duration(days: 2)),
     ),
     SentChatRequestModel(
-      recipientUserId: 'user_5',
-      recipientUsername: '사용자 E',
-      recipientProfileImageUrl: 'https://picsum.photos/400/400?random=5',
-      sentGreetingMessage: '우리 같이 운동해요!',
-      isViewed: true,
+      id: 5,
+      fromUser: UserModel(
+        userId: 99,
+        nickname: '현재 사용자',
+        age: 30,
+        profileImageUrl: 'https://picsum.photos/400/400?random=99',
+      ),
+      toUser: UserModel(
+        userId: 5,
+        nickname: '사용자 E',
+        age: 32,
+        profileImageUrl: 'https://picsum.photos/400/400?random=5',
+      ),
+      message: '우리 같이 운동해요!',
+      status: 'ACCEPTED',
+      createdAt: DateTime.now().subtract(const Duration(days: 1, hours: 6)),
     ),
   ];
 
   @override
   Future<List<ChatRequestModel>> getReceivedRequests() async {
-    await Future.delayed(Duration(milliseconds: 300));
+    await Future.delayed(const Duration(milliseconds: 300));
     return List.from(_fakeData);
   }
 
   @override
   Future<List<SentChatRequestModel>> getSentRequests() async {
-    await Future.delayed(Duration(milliseconds: 300));
+    await Future.delayed(const Duration(milliseconds: 300));
     return List.from(_fakeSentData);
   }
 
   @override
-  Future<ChatRoomModel> acceptRequest(String userId) async {
-    log('[FakeDataSource] acceptRequest called with userId: $userId');
-
-    await Future.delayed(Duration(milliseconds: 200));
-    _fakeData.removeWhere((e) => e.userId == userId);
-
-    final chatRoom = ChatRoomModel(
-      id: 'stub-room-$userId',
-      opponentUserId: userId,
-    );
-
-    log('[FakeDataSource] Returning stubbed ChatRoomModel: ${chatRoom.id}');
-    return chatRoom;
+  Future<void> acceptRequest(int requestId) async {
+    await Future.delayed(const Duration(milliseconds: 200));
+    _fakeData.removeWhere((e) => e.requestId == requestId);
+    // Optionally, add to _fakeSentData with status ACCEPTED
   }
 
   @override
-  Future<void> rejectRequest(String userId) async {
-    await Future.delayed(Duration(milliseconds: 200));
-    _fakeData.removeWhere((e) => e.userId == userId);
+  Future<void> rejectRequest(int requestId) async {
+    await Future.delayed(const Duration(milliseconds: 200));
+    _fakeData.removeWhere((e) => e.requestId == requestId);
+    // Optionally, add to _fakeSentData with status REJECTED
+  }
+
+  @override
+  Future<SentChatRequestModel> sendRequest(
+      {required int toUserId, required String message}) async {
+    await Future.delayed(const Duration(milliseconds: 200));
+    final newRequest = SentChatRequestModel(
+      id: _fakeSentData.length + 100, // Dummy ID
+      fromUser: UserModel(
+        userId: 99,
+        nickname: '현재 사용자',
+        age: 30,
+        profileImageUrl: 'https://picsum.photos/400/400?random=99',
+      ),
+      toUser: UserModel(
+        userId: toUserId,
+        nickname: '새로운 사용자',
+        profileImageUrl: 'https://picsum.photos/400/400?random=$toUserId',
+        age: 29, // Dummy age
+      ),
+      message: message,
+      status: 'PENDING',
+      createdAt: DateTime.now(),
+    );
+    _fakeSentData.add(newRequest);
+    return newRequest;
   }
 }
 
