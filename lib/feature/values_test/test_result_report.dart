@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../feature/test_result_check.dart';
+import 'test_result_check.dart';
 import 'dart:math' as math;
 
 // --- 1. 백엔드와 주고받을 데이터의 '약속' (데이터 모델) ---

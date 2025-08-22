@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart'; // For screen navigation
 import 'package:url_launcher/url_launcher.dart';
-import 'package:soulfit_client/feature/dating_main.dart';
-import 'package:soulfit_client/feature/community_main.dart';
-import 'package:soulfit_client/feature/group.dart';
+import 'package:soulfit_client/feature/dating/main/dating_main.dart';
+import 'package:soulfit_client/feature/community/community_main.dart';
+import 'package:soulfit_client/feature/mainscreen/group.dart';
 
 class MainScreen extends StatelessWidget {
   const MainScreen({super.key});

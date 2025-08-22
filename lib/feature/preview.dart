@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:soulfit_client/feature/host_history_group_list.dart';
+import 'package:soulfit_client/feature/history/host_history_group_list.dart';
 
 void main() {
   runApp(const SoulfitApp());
