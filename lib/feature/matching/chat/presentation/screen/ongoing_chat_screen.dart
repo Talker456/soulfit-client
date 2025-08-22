@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:soulfit_client/config/router/app_router.dart';
 import 'package:soulfit_client/feature/matching/chat/presentation/state/ongoing_chat_state.dart';
 import 'package:soulfit_client/feature/matching/chat/presentation/widget/ongoing_chat_card.dart';
 
@@ -23,9 +25,10 @@ class OngoingChatScreen extends ConsumerWidget {
               return OngoingChatCard(
                 chat: chat,
                 onTap: () {
-                  // TODO: Implement navigation to chat detail screen
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('${chat.opponentNickname}님과의 채팅방으로 이동합니다.')),
+                  // Navigate to chat detail screen
+                  context.push(
+                    '${AppRoutes.chatDetail}/${chat.roomId}/${chat.opponentNickname}',
+                    //${AppRoutes.meetingList}/popular'
                   );
                 },
               );

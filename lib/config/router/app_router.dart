@@ -17,6 +17,7 @@ import '../../feature/authentication/presentation/screens/register_screen.dart';
 import '../../feature/community/presentation/screens/community_screen.dart';
 import '../../feature/community/presentation/screens/create_post_screen.dart';
 import '../../feature/matching/chat/presentation/screen/chat_screen.dart';
+import '../../feature/matching/chat/presentation/screen/chat_detail_screen.dart';
 import '../../feature/meeting/main/ui/screen/meeting_list_screen.dart';
 import '../../feature/meeting/main/ui/screen/meeting_detail_screen.dart';
 import '../../feature/payment/presentation/ui/portone_delegator.dart';
@@ -42,6 +43,7 @@ class AppRoutes {
   static const String meetingList = '/meeting-list';
   static const String meetingDetail = '/meeting-detail';
   static const String chat = '/chat';
+  static const String chatDetail = '/chat-detail';
 
 
 
@@ -148,6 +150,14 @@ final GoRouter appRouter = GoRouter(
     //   name: 'conversation-received',
     //   builder: (context, state) => const ReceivedConversationRequestScreen(),
     // ),
+    GoRoute(
+      path: '${AppRoutes.chatDetail}/:chatRoomId/:opponentNickname',
+      name: 'chat-detail',
+      builder: (context, state) => ChatDetailScreen(
+        chatRoomId: state.pathParameters['chatRoomId']!,
+        opponentNickname: state.pathParameters['opponentNickname']!,
+      ),
+    ),
     StatefulShellRoute.indexedStack(
       builder: (context, state, navigationShell) {
         return Scaffold(
