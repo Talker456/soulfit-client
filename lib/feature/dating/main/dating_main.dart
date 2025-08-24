@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class DatingScreen extends StatelessWidget {
-  const DatingScreen({super.key});
+class DatingMain extends StatelessWidget {
+  const DatingMain({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -21,4 +21,13 @@ class DatingScreen extends StatelessWidget {
       ),
     );
   }
+}
+
+void main() {
+  runApp(
+    MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: DatingMain(),
+    ),
+  );
 }

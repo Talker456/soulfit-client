@@ -17,7 +17,7 @@ class Post {
   });
 }
 
-class CommunityScreen extends StatelessWidget {
+class CommunityMain extends StatelessWidget {
   // 예시용 더미 데이터 목록
   final List<Post> posts = [
     Post(
@@ -46,7 +46,7 @@ class CommunityScreen extends StatelessWidget {
         commentCount: 34),
   ];
 
-  CommunityScreen({super.key});
+  CommunityMain({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -127,4 +127,13 @@ class CommunityScreen extends StatelessWidget {
       ),
     );
   }
+}
+
+void main() {
+  runApp(
+    MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: CommunityMain(),
+    ),
+  );
 }

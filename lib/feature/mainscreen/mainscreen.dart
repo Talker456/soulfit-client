@@ -145,7 +145,7 @@ class MainScreen extends StatelessWidget {
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const DatingScreen()),
+                MaterialPageRoute(builder: (context) => const DatingMain()),
               );
             },
           ),
@@ -190,7 +190,7 @@ class MainScreen extends StatelessWidget {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => CommunityScreen()),
+                  MaterialPageRoute(builder: (context) => CommunityMain()),
                 );
               },
               child: const Text(

@@ -78,11 +78,11 @@ final dummyReport = AnalysisReport(
 );
 
 // --- 3. 화면을 그리는 메인 위젯 ---
-class AnalysisReportScreen extends StatelessWidget {
+class TestResultReport extends StatelessWidget {
   // 실제 앱에서는 이 데이터를 외부에서 받아오게 됩니다.
   final AnalysisReport report;
 
-  const AnalysisReportScreen({super.key, required this.report});
+  const TestResultReport({super.key, required this.report});
 
   @override
   Widget build(BuildContext context) {
@@ -195,7 +195,7 @@ class AnalysisReportScreen extends StatelessWidget {
                   onPressed: () {
                     Navigator.of(context).push(
                       MaterialPageRoute(
-                        builder: (context) => ValueTestResultScreen(
+                        builder: (context) => TestResultCheck(
                           answers: [
                             QuestionAnswer(
                               question: "더미 질문 1",
@@ -358,4 +358,14 @@ class AnalysisReportScreen extends StatelessWidget {
       ),
     );
   }
+}
+
+
+void main() {
+  runApp(
+    MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: TestResultReport(report: dummyReport),
+    ),
+  );
 }

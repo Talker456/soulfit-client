@@ -62,11 +62,11 @@ final List<QuestionAnswer> dummyAnswers = [
 ];
 
 // --- 3. 화면을 그리는 메인 위젯 ---
-class ValueTestResultScreen extends StatelessWidget {
+class TestResultCheck extends StatelessWidget {
   // 실제 앱에서는 이 데이터를 외부(백엔드)에서 받아오게 됩니다.
   final List<QuestionAnswer> answers;
 
-  const ValueTestResultScreen({super.key, required this.answers});
+  const TestResultCheck({super.key, required this.answers});
 
   @override
   Widget build(BuildContext context) {

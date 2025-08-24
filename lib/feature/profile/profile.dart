@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:soulfit_client/feature/settings/settings.dart';
 
 // --- 메인 화면 위젯 ---
-class MyPageScreen extends StatelessWidget {
-  const MyPageScreen({super.key});
+class Profile extends StatelessWidget {
+  const Profile({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -396,6 +396,16 @@ Widget _buildChangeNameDialogContent(BuildContext context) {
           ),
         ),
       ],
+    ),
+  );
+}
+
+
+void main() {
+  runApp(
+    MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: Profile(),
     ),
   );
 }

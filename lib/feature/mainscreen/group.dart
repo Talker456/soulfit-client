@@ -177,3 +177,13 @@ class GroupScreen extends StatelessWidget {
     );
   }
 }
+
+
+void main() {
+  runApp(
+    MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: GroupScreen(),
+    ),
+  );
+}

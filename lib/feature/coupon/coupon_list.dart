@@ -15,7 +15,7 @@ class Coupon {
   });
 }
 
-class CouponScreen extends StatelessWidget {
+class CouponList extends StatelessWidget {
   // 예시용 더미 데이터 목록입니다.
   final List<Coupon> coupons = [
     Coupon(
@@ -30,7 +30,7 @@ class CouponScreen extends StatelessWidget {
     ),
   ];
 
-  CouponScreen({super.key});
+  CouponList({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -203,4 +203,13 @@ class CouponScreen extends StatelessWidget {
       ),
     );
   }
+}
+
+void main() {
+  runApp(
+    MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: CouponList(),
+    ),
+  );
 }
