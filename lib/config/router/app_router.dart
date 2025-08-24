@@ -30,8 +30,8 @@ import '../../feature/meeting/main/ui/screen/meeting_detail_screen.dart';
 import '../../feature/meeting/main/ui/screen/recently_open_group.dart';
 import '../../feature/payment/presentation/ui/portone_delegator.dart';
 import '../../feature/payment/presentation/ui/tosspayments_widget_v2.dart';
-import '../../feature/meeting/opening/ui/screen/create_meeting_wizard_screen.dart';
-import '../../feature/meeting/post/ui/screen/meeting_post_screen.dart';
+import '../../feature/meeting/meeting_opening/ui/screen/create_meeting_wizard_screen.dart';
+import '../../feature/meeting/meeting_post/ui/screen/meeting_post_screen.dart';
 import '../di/provider.dart';
 
 import '../../feature/community/presentation/screens/community_main.dart';
@@ -66,6 +66,9 @@ class AppRoutes {
   static const String meetingDetail = '/meeting-detail';
   static const String meetingOpening = '/meeting-opening';
   static const String meetingPost = '/meeting-post';
+  static const String meetingApplication = '/meeting-application';
+  static const String meetingCommunity = '/meeting-community';
+  static const String meetingChat = '/meeting-chat';
   static const String chat = '/chat';
   static const String dummyChatDetail = '/dummy-chat-detail';
   static const String chatDetail = '/chat-detail';
