@@ -45,9 +45,6 @@ class AppRoutes {
   static const String meetingDetail = '/meeting-detail';
   static const String meetingOpening = '/meeting-opening';
   static const String meetingPost = '/meeting-post';
-  static const String meetingApplication = '/meeting-application';
-  static const String meetingCommunity = '/meeting-community';
-  static const String meetingChat = '/meeting-chat';
   static const String chat = '/chat';
   static const String chatDetail = '/chat-detail';
 
@@ -70,9 +67,6 @@ class AppRoutes {
     meetingOpening,
     meetingPost,
     chat,
-    meetingApplication,
-    meetingCommunity,
-    meetingChat,
   ];
 }
 
