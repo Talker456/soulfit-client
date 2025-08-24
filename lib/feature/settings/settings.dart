@@ -19,7 +19,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     return Scaffold(
       appBar: SharedAppBar(
       title: const Text('설정'),
-      showBackButton: true, // 뒤로가기 버튼이 필요하면 true
+      showBackButton: true,
     ),
       body: SingleChildScrollView(
         child: Padding(

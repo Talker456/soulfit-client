@@ -27,6 +27,8 @@ popular_group > 모임 - 11-3 인기모임
 <br/>
 recently_open_group > 모임 - 11-4 최근 개설된 모임
 <br/>
+past_apply_list > 모임 - 11-6 과거신청내역
+<br/>
 
 
 dating_main > 소개팅 - 6 소개팅메인화면
