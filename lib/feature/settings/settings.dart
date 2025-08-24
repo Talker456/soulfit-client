@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:soulfit_client/core/ui/widget/shared_app_bar.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -16,27 +17,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        surfaceTintColor: Colors.white,
-        elevation: 1,
-        leading: IconButton(
-          icon: const Icon(Icons.chevron_left, color: Colors.black),
-          onPressed: () {
-            Navigator.of(context).maybePop();
-          },
-        ),
-        centerTitle: true,
-        title: const Text(
-          '설정',
-          style: TextStyle(
-            color: Colors.black,
-            fontWeight: FontWeight.bold,
-            fontSize: 20,
-          ),
-        ),
-      ),
+      appBar: SharedAppBar(
+      title: const Text('설정'),
+      showBackButton: true, // 뒤로가기 버튼이 필요하면 true
+    ),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(20.0),
