@@ -21,8 +21,8 @@ import '../../feature/meeting/main/ui/screen/meeting_list_screen.dart';
 import '../../feature/meeting/main/ui/screen/meeting_detail_screen.dart';
 import '../../feature/payment/presentation/ui/portone_delegator.dart';
 import '../../feature/payment/presentation/ui/tosspayments_widget_v2.dart';
-import '../../feature/meeting/opening/ui/screen/create_meeting_wizard_screen.dart';
-import '../../feature/meeting/post/ui/screen/meeting_post_screen.dart';
+import '../../feature/meeting/meeting_opening/ui/screen/create_meeting_wizard_screen.dart';
+import '../../feature/meeting/meeting_post/ui/screen/meeting_post_screen.dart';
 import '../di/provider.dart';
 
 class AppRoutes {
@@ -45,6 +45,9 @@ class AppRoutes {
   static const String meetingDetail = '/meeting-detail';
   static const String meetingOpening = '/meeting-opening';
   static const String meetingPost = '/meeting-post';
+  static const String meetingApplication = '/meeting-application';
+  static const String meetingCommunity = '/meeting-community';
+  static const String meetingChat = '/meeting-chat';
   static const String chat = '/chat';
   static const String chatDetail = '/chat-detail';
 
@@ -67,6 +70,9 @@ class AppRoutes {
     meetingOpening,
     meetingPost,
     chat,
+    meetingApplication,
+    meetingCommunity,
+    meetingChat,
   ];
 }
 
@@ -168,10 +174,11 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: '${AppRoutes.chatDetail}/:chatRoomId/:opponentNickname',
       name: 'chat-detail',
-      builder: (context, state) => ChatDetailScreen(
-        chatRoomId: state.pathParameters['chatRoomId']!,
-        opponentNickname: state.pathParameters['opponentNickname']!,
-      ),
+      builder:
+          (context, state) => ChatDetailScreen(
+            chatRoomId: state.pathParameters['chatRoomId']!,
+            opponentNickname: state.pathParameters['opponentNickname']!,
+          ),
     ),
     StatefulShellRoute.indexedStack(
       builder: (context, state, navigationShell) {
