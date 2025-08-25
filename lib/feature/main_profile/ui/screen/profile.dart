@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:soulfit_client/feature/settings/settings.dart';
+import 'package:soulfit_client/feature/main_profile/ui/screen/settings.dart';
 
 // --- 메인 화면 위젯 ---
 class Profile extends StatelessWidget {

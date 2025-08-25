@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'test_result_check.dart';
 import 'dart:math' as math;
+
+import 'package:soulfit_client/feature/main_profile/ui/screen/test_result_check.dart';
 
 // --- 1. 백엔드와 주고받을 데이터의 '약속' (데이터 모델) ---
 // 프론트엔드와 백엔드는 이 구조대로 데이터를 주고받기로 약속합니다.

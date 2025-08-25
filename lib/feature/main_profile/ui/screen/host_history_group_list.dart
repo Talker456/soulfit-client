@@ -56,16 +56,38 @@ final List<HostedEvent> dummyHostedEvents = [
 ];
 
 // --- 3. 화면을 그리는 메인 위젯 ---
-class HistoryGroupList extends StatelessWidget {
-  // 실제 앱에서는 이 데이터를 외부(백엔드)에서 받아오게 됩니다.
-  final List<HostedEvent> events;
-  final String hostName;
 
-  const HistoryGroupList({
+class HostHistoryGroupList extends StatelessWidget {
+  HostHistoryGroupList({
     super.key,
-    required this.events,
+    // required this.events,
     this.hostName = 'OO', // 기본값 설정
   });
+
+  // 연녹색 배경, 둥근 모서리, 진한 글씨의 버튼 위젯
+  Widget _buildActionButton(String text, {required VoidCallback onPressed}) {
+    return TextButton(
+      onPressed: onPressed,
+      style: TextButton.styleFrom(
+        backgroundColor: const Color(0xFFD6EAD9),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
+      ),
+      child: Text(
+        text,
+        style: const TextStyle(
+          color: Color(0xFF2D4739),
+          fontWeight: FontWeight.w600,
+          fontSize: 15,
+        ),
+      ),
+    );
+  }
+
+  final List<HostedEvent> events = dummyHostedEvents;
+  final String hostName;
 
   @override
   Widget build(BuildContext context) {
@@ -131,6 +153,8 @@ class HistoryGroupList extends StatelessWidget {
   }
 
   // --- UI를 작은 조각으로 나누는 private 메서드 ---
+
+  // 연녹색 배경, 둥근 모서리, 진한 글씨의 버튼 위젯
 
   // 각 모임 카드를 만드는 위젯
   Widget _buildEventCard(HostedEvent event) {
@@ -209,6 +233,16 @@ class HistoryGroupList extends StatelessWidget {
                         ],
                       ),
                     ),
+                  ],
+                ),
+                // 버튼 2개 (참가자 관리, 게시글 편집)
+                const SizedBox(height: 16),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    _buildActionButton('참가자 관리', onPressed: () {}),
+                    const SizedBox(width: 12),
+                    _buildActionButton('게시글 편집', onPressed: () {}),
                   ],
                 ),
               ],
