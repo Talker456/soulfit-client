@@ -2,33 +2,81 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:soulfit_client/config/router/app_router.dart';
+import 'package:soulfit_client/core/ui/widget/shared_app_bar.dart';
 import 'package:soulfit_client/feature/matching/chat/presentation/state/ongoing_chat_state.dart';
 import 'package:soulfit_client/feature/matching/chat/presentation/widget/ongoing_chat_card.dart';
 
 import '../provider/ongoing_chat_provider.dart';
 
-class OngoingChatScreen extends ConsumerWidget {
+class OngoingChatScreen extends ConsumerStatefulWidget {
   const OngoingChatScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<OngoingChatScreen> createState() => _OngoingChatScreenState();
+}
+
+class _OngoingChatScreenState extends ConsumerState<OngoingChatScreen> {
+  final _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_onScroll);
+  }
+
+  @override
+  void dispose() {
+    _scrollController
+      ..removeListener(_onScroll)
+      ..dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    if (_isBottom) {
+      ref.read(ongoingChatNotifierProvider.notifier).fetchMoreChats();
+    }
+  }
+
+  bool get _isBottom {
+    if (!_scrollController.hasClients) return false;
+    final maxScroll = _scrollController.position.maxScrollExtent;
+    final currentScroll = _scrollController.offset;
+    return currentScroll >= (maxScroll * 0.9);
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final state = ref.watch(ongoingChatNotifierProvider);
 
     return Scaffold(
+      appBar: SharedAppBar(
+        title: const Text('채팅'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: () {
+              ref.read(ongoingChatNotifierProvider.notifier).fetchOngoingChats();
+            },
+          ),
+        ],
+      ),
       body: switch (state) {
         OngoingChatLoading() => const Center(child: CircularProgressIndicator()),
         OngoingChatError(:final message) => Center(child: Text(message)),
-        OngoingChatLoaded(:final chats) => ListView.builder(
-            itemCount: chats.length,
+        OngoingChatLoaded(:final chats, :final hasReachedMax) => ListView.builder(
+            controller: _scrollController,
+            itemCount: hasReachedMax ? chats.length : chats.length + 1,
             itemBuilder: (context, index) {
+              if (index >= chats.length) {
+                return const Center(child: CircularProgressIndicator());
+              }
               final chat = chats[index];
               return OngoingChatCard(
                 chat: chat,
                 onTap: () {
-                  // Navigate to chat detail screen
                   context.push(
                     '${AppRoutes.chatDetail}/${chat.roomId}/${chat.opponentNickname}',
-                    //${AppRoutes.meetingList}/popular'
                   );
                 },
               );

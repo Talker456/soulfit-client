@@ -8,7 +8,7 @@ class OngoingChatRepositoryImpl implements OngoingChatRepository {
   OngoingChatRepositoryImpl(this.remoteDataSource);
 
   @override
-  Future<List<OngoingChat>> getOngoingChats() async {
-    return remoteDataSource.getOngoingChats();
+  Future<List<OngoingChat>> getOngoingChats(int page, int size) async {
+    return remoteDataSource.getOngoingChats(page, size);
   }
 }

@@ -5,7 +5,7 @@ import 'package:soulfit_client/feature/matching/chat/data/model/ongoing_chat_mod
 import 'package:soulfit_client/feature/matching/chat/presentation/provider/conversation_request_provider.dart';
 
 abstract class OngoingChatRemoteDataSource {
-  Future<List<OngoingChatModel>> getOngoingChats();
+  Future<List<OngoingChatModel>> getOngoingChats(int page, int size);
 }
 
 

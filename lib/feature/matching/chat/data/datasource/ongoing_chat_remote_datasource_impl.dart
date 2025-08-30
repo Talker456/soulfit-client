@@ -17,10 +17,10 @@ class OngoingChatRemoteDataSourceImpl implements OngoingChatRemoteDataSource {
   });
 
   @override
-  Future<List<OngoingChatModel>> getOngoingChats() async {
+  Future<List<OngoingChatModel>> getOngoingChats(int page, int size) async {
     final token = await authLocalDataSource.getAccessToken();
     final response = await client.get(
-      Uri.parse('http://$BASE_URL:8080/api/chats'), // Endpoint assumption
+      Uri.parse('http://$BASE_URL:8080/api/chat/rooms/my?page=$page&size=$size'),
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $token',
@@ -28,8 +28,9 @@ class OngoingChatRemoteDataSourceImpl implements OngoingChatRemoteDataSource {
     );
 
     if (response.statusCode == 200) {
-      final List<dynamic> data = jsonDecode(utf8.decode(response.bodyBytes));
-      return data.map((json) => OngoingChatModel.fromJson(json)).toList();
+      final Map<String, dynamic> data = jsonDecode(utf8.decode(response.bodyBytes));
+      final List<dynamic> content = data['content'];
+      return content.map((json) => OngoingChatModel.fromJson(json)).toList();
     } else {
       throw Exception('Failed to load ongoing chats');
     }
