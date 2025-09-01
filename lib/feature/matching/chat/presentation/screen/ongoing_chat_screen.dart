@@ -64,23 +64,31 @@ class _OngoingChatScreenState extends ConsumerState<OngoingChatScreen> {
       body: switch (state) {
         OngoingChatLoading() => const Center(child: CircularProgressIndicator()),
         OngoingChatError(:final message) => Center(child: Text(message)),
-        OngoingChatLoaded(:final chats, :final hasReachedMax) => ListView.builder(
-            controller: _scrollController,
-            itemCount: hasReachedMax ? chats.length : chats.length + 1,
-            itemBuilder: (context, index) {
-              if (index >= chats.length) {
-                return const Center(child: CircularProgressIndicator());
-              }
-              final chat = chats[index];
-              return OngoingChatCard(
-                chat: chat,
-                onTap: () {
-                  context.push(
-                    '${AppRoutes.chatDetail}/${chat.roomId}/${chat.opponentNickname}',
-                  );
-                },
-              );
-            },
+        OngoingChatLoaded(:final chats, :final hasReachedMax) => Column(
+            children: [
+              Expanded(
+                child: ListView.builder(
+                  controller: _scrollController,
+                  itemCount: chats.length,
+                  itemBuilder: (context, index) {
+                    final chat = chats[index];
+                    return OngoingChatCard(
+                      chat: chat,
+                      onTap: () {
+                        context.push(
+                          '${AppRoutes.chatDetail}/${chat.roomId}/${chat.opponentNickname}',
+                        );
+                      },
+                    );
+                  },
+                ),
+              ),
+              if (!hasReachedMax)
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 16.0),
+                  child: Center(child: CircularProgressIndicator()),
+                ),
+            ],
           ),
       },
     );

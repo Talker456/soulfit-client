@@ -5,13 +5,13 @@ import 'package:soulfit_client/feature/matching/chat/presentation/state/chat_sta
 import 'package:soulfit_client/feature/matching/chat/presentation/widget/message_bubble.dart';
 import 'package:soulfit_client/feature/matching/chat/presentation/widget/message_input_field.dart';
 
-class ChatDetailScreen extends ConsumerWidget {
+class DummyChatDetailScreen extends ConsumerWidget {
   final String chatRoomId;
   final String opponentNickname;
   // A hardcoded user ID for demonstration purposes
   final String myUserId = 'my_id';
 
-  const ChatDetailScreen({
+  const DummyChatDetailScreen({
     super.key,
     required this.chatRoomId,
     required this.opponentNickname,
