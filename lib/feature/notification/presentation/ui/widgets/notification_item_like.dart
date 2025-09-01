@@ -29,9 +29,14 @@ class NotificationItemLike extends ConsumerWidget {
                 padding: EdgeInsets.only(right: 8.0), // Changed from left to right for spacing
                 child: Icon(Icons.fiber_manual_record, color: Colors.blue, size: 12),
               ),
-            const CircleAvatar(
+            CircleAvatar(
               radius: 24,
-              backgroundImage: NetworkImage('https://placehold.co/200x200'),
+              backgroundImage: notification.senderProfileImageUrl != null
+                  ? NetworkImage(notification.senderProfileImageUrl!)
+                  : null,
+              child: notification.senderProfileImageUrl == null
+                  ? const Icon(Icons.person)
+                  : null,
             ),
             const SizedBox(width: 12),
             Expanded(
