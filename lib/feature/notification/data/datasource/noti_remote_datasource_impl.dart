@@ -46,6 +46,7 @@ class NotificationRemoteDataSourceImpl implements NotificationRemoteDataSource  
         targetId: json['targetId'].toString(),
         createdAt: DateTime.parse(json['createdAt']),
         read: json['read'] as bool,
+        senderProfileImageUrl: json['senderProfileImageUrl'],
       )).toList();
     } else {
       throw Exception('Failed to load notifications');

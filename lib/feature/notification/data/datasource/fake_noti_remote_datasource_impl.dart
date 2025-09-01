@@ -12,6 +12,7 @@ class FakeNotificationRemoteDataSourceImpl implements NotificationRemoteDataSour
       targetId: 'post_0',
       createdAt: DateTime.now().subtract(const Duration(minutes: 5)),
       read: false,
+      senderProfileImageUrl: 'https://picsum.photos/400/400?random=1',
     ),
     NotificationEntity(
       id: '1',
@@ -21,6 +22,7 @@ class FakeNotificationRemoteDataSourceImpl implements NotificationRemoteDataSour
       targetId: 'post_1',
       createdAt: DateTime.now().subtract(const Duration(minutes: 10)),
       read: false,
+      senderProfileImageUrl: 'https://picsum.photos/400/400?random=2',
     ),
     NotificationEntity(
       id: '2',
