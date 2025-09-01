@@ -14,13 +14,10 @@ import '../notifier/sent_conversation_request_notifier.dart';
 import '../state/conversation_request_state.dart';
 import '../state/sent_conversation_request_state.dart';
 
-const USE_FAKE = true;
-const IS_AVD= false;
-const BASE_URL = IS_AVD ? "10.0.2.2" : "localhost";
 
 // Repository
 final _fakeRemoteDataSourceProvider = Provider((ref){
-  if(USE_FAKE){
+  if(USE_FAKE_DATASOURCE){
     return FakeConversationRequestRemoteDataSource();
   }else{
     return ConversationRequestRemoteDataSourceImpl(

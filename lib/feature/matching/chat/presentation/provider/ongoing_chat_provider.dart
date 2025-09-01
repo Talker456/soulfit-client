@@ -8,12 +8,8 @@ import '../../domain/usecase/get_ongoing_chats.dart';
 import '../notifier/ongoing_chat_notifier.dart';
 import '../state/ongoing_chat_state.dart';
 
-const USE_FAKE = true;
-const IS_AVD= false;
-const BASE_URL = IS_AVD ? "10.0.2.2" : "localhost";
-
 final _ongoingChatRemoteDataSourceProvider = Provider((ref) {
-  if (USE_FAKE) {
+  if (USE_FAKE_DATASOURCE) {
     return FakeOngoingChatRemoteDataSource();
   } else {
     return OngoingChatRemoteDataSourceImpl(
