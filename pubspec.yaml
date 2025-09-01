@@ -63,6 +63,7 @@ dependencies:
   tosspayments_widget_sdk_flutter: ^2.1.1
 
   image_picker: ^1.1.2
+  stomp_dart_client: ^2.0.0
 dev_dependencies:
   flutter_test:
     sdk: flutter

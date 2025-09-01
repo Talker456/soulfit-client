@@ -18,6 +18,7 @@ import '../../feature/community/presentation/screens/community_screen.dart';
 import '../../feature/community/presentation/screens/create_post_screen.dart';
 import '../../feature/main_profile/ui/screen/past_apply_list.dart';
 import '../../feature/main_profile/ui/screen/test_result_report.dart';
+import '../../feature/matching/chat-detail/presentation/screen/chat_detail_screen.dart';
 import '../../feature/matching/chat/presentation/screen/chat_screen.dart';
 import '../../feature/matching/chat/presentation/screen/chat_detail_screen.dart';
 import '../../feature/meeting/main/ui/screen/meeting_list_screen.dart';
@@ -58,7 +59,8 @@ class AppRoutes {
   static const String meetingList = '/meeting-list';
   static const String meetingDetail = '/meeting-detail';
   static const String chat = '/chat';
-  static const String chatDetail = '/chat-detail';
+  static const String dummyChatDetail = '/dummy-chat-detail';
+  static const String chatDetail='/chat-detail';
 
   static const String communityMain = '/community-main';
   static const String couponList = '/coupon-list';
@@ -195,9 +197,9 @@ final GoRouter appRouter = GoRouter(
     //   builder: (context, state) => const ReceivedConversationRequestScreen(),
     // ),
     GoRoute(
-      path: '${AppRoutes.chatDetail}/:chatRoomId/:opponentNickname',
-      name: 'chat-detail',
-      builder: (context, state) => ChatDetailScreen(
+      path: '${AppRoutes.dummyChatDetail}/:chatRoomId/:opponentNickname',
+      name: 'dummy-chat-detail',
+      builder: (context, state) => DummyChatDetailScreen(
         chatRoomId: state.pathParameters['chatRoomId']!,
         opponentNickname: state.pathParameters['opponentNickname']!,
       ),
@@ -271,6 +273,14 @@ final GoRouter appRouter = GoRouter(
       path: AppRoutes.pastApplyList,
       name: 'past-apply-list',
       builder: (context, state) => const PastApplyList(),
+    ),
+    GoRoute(
+      path: '${AppRoutes.chatDetail}/:chatRoomId/:opponentNickname',
+      name: 'chat-detail',
+      builder: (context, state) => ChatDetailScreen(
+        roomId: state.pathParameters['chatRoomId']!,
+        opponentNickname: state.pathParameters['opponentNickname']!,
+      ),
     ),
     StatefulShellRoute.indexedStack(
       builder: (context, state, navigationShell) {

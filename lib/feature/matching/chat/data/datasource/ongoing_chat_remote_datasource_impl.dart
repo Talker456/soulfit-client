@@ -28,7 +28,9 @@ class OngoingChatRemoteDataSourceImpl implements OngoingChatRemoteDataSource {
     );
 
     if (response.statusCode == 200) {
-      final Map<String, dynamic> data = jsonDecode(utf8.decode(response.bodyBytes));
+      final responseBody = utf8.decode(response.bodyBytes);
+      print('##### Server Response for Ongoing Chats: $responseBody');
+      final Map<String, dynamic> data = jsonDecode(responseBody);
       final List<dynamic> content = data['content'];
       return content.map((json) => OngoingChatModel.fromJson(json)).toList();
     } else {
