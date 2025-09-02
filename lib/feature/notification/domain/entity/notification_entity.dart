@@ -6,7 +6,7 @@ class NotificationEntity {
   final String targetId;
   final DateTime createdAt;
   final bool read;
-  final String? senderProfileImageUrl;
+  final String? thumbnailUrl;
 
   NotificationEntity({
     required this.id,
@@ -16,7 +16,7 @@ class NotificationEntity {
     required this.targetId,
     required this.createdAt,
     required this.read,
-    this.senderProfileImageUrl,
+    this.thumbnailUrl,
   });
 
   NotificationEntity copyWith({
@@ -27,7 +27,7 @@ class NotificationEntity {
     String? targetId,
     DateTime? createdAt,
     bool? isRead,
-    String? senderProfileImageUrl,
+    String? thumbnailUrl,
   }) {
     return NotificationEntity(
       id: id ?? this.id,
@@ -37,7 +37,7 @@ class NotificationEntity {
       targetId: targetId ?? this.targetId,
       createdAt: createdAt ?? this.createdAt,
       read: isRead ?? this.read,
-      senderProfileImageUrl: senderProfileImageUrl ?? this.senderProfileImageUrl,
+      thumbnailUrl: thumbnailUrl ?? this.thumbnailUrl,
     );
   }
 }

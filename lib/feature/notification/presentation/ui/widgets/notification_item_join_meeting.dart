@@ -30,10 +30,10 @@ class NotificationItemJoinMeeting extends StatelessWidget {
               ),
             CircleAvatar(
               radius: 24,
-              backgroundImage: notification.senderProfileImageUrl != null
-                  ? NetworkImage(notification.senderProfileImageUrl!)
+              backgroundImage: notification.thumbnailUrl != null
+                  ? NetworkImage(notification.thumbnailUrl!)
                   : null,
-              child: notification.senderProfileImageUrl == null
+              child: notification.thumbnailUrl == null
                   ? const Icon(Icons.person)
                   : null,
             ),
