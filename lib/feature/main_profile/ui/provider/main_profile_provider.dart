@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:soulfit_client/feature/main_profile/data/datasource/fake_main_profile_remote_data_source_impl.dart';
 
 import '../../data/datasource/main_profile_remote_datasource.dart';
 import '../../data/repository_impl/main_profile_repository_impl.dart';
@@ -7,16 +8,28 @@ import '../../domain/usecase/load_user_profile_screen_data_usecase.dart';
 import '../notifier/main_profile_notifier.dart';
 import '../state/main_profile_state.dart';
 
-import '../../data/datasource/fake_main_profile_remote_data_source_impl.dart';
+import 'package:soulfit_client/config/di/provider.dart';
 
-// Remote DataSource (임시로 Fake 사용)
-final _remoteDataSourceProvider = Provider<MainProfileRemoteDataSource>((ref) {
-  return FakeMainProfileRemoteDataSourceImpl();
+import '../../data/datasource/main_profile_remote_datasource_impl.dart';
+
+// Remote DataSource
+final mainProfileRemoteDataSourceProvider =
+    Provider<MainProfileRemoteDataSource>((ref) {
+      if(USE_FAKE_DATASOURCE){
+        return FakeMainProfileRemoteDataSourceImpl();
+      }else{
+        return MainProfileRemoteDataSourceImpl(
+            client: ref.read(httpClientProvider),
+            authLocalDataSource: ref.read(authLocalDataSourceProvider),
+            base: BASE_URL,
+        );
+      }
+
 });
 
 // Repository
 final mainProfileRepositoryProvider = Provider<MainProfileRepository>((ref) {
-  final remote = ref.watch(_remoteDataSourceProvider);
+  final remote = ref.watch(mainProfileRemoteDataSourceProvider);
   return MainProfileRepositoryImpl(remote);
 });
 
