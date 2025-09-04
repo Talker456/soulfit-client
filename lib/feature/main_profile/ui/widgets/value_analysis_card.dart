@@ -13,7 +13,11 @@ class ValueAnalysisCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      color: Colors.white,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: const BorderSide(color: Color(0xFFDFF5DB), width: 5),
+      ),
       elevation: 1,
       child: Padding(
         padding: const EdgeInsets.all(16),

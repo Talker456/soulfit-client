@@ -107,7 +107,11 @@ class _MainProfileScreenState extends ConsumerState<MainProfileScreen> {
             // ProfileCard(data: data), // 유저 신고 버튼 코드 삭제 시 주석 해제하기
             const SizedBox(height: 12),
             Card(
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              color: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+                side: const BorderSide(color: Color(0xFFDFF5DB), width: 5),
+              ),
               elevation: 1,
               child: Padding(
                 padding: const EdgeInsets.all(16.0),

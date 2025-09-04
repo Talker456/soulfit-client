@@ -23,7 +23,14 @@ class PerceptionCard extends StatelessWidget {
           Wrap(
             spacing: 8,
             children: keywords
-                .map<Widget>((e) => Chip(label: Text(e), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)), backgroundColor: Colors.green[50]))
+                .map<Widget>((e) => Chip(
+                    label: Text(e, style: const TextStyle(fontSize: 12)),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20.0),
+                        side: const BorderSide(color: Colors.white),
+                      ),
+                      backgroundColor: Colors.green[50],
+                    ))
                 .toList(),
           ),
         ],

@@ -13,7 +13,11 @@ class ProfileCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      color: Colors.white,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: const BorderSide(color: Color(0xFFDFF5DB), width: 5),
+      ),
       elevation: 1,
       clipBehavior: Clip.antiAlias,
       child: Column(
@@ -65,8 +69,14 @@ class ProfileCard extends StatelessWidget {
                   spacing: 8,
                   runSpacing: 4,
                   children: data.mainProfileInfo.personalityKeywords
-                      .map<Widget>((e) =>
-                          Chip(label: Text(e), backgroundColor: Colors.green[50], shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0))))
+                      .map<Widget>((e) => Chip(
+                            label: Text(e, style: const TextStyle(fontSize: 12)),
+                            backgroundColor: Colors.green[50],
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20.0),
+                              side: const BorderSide(color: Colors.white),
+                            ),
+                          ))
                       .toList(),
                 ),
               ],
