@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:soulfit_client/core/ui/widget/shared_app_bar_dating.dart';
 import 'package:soulfit_client/core/ui/widget/shared_navigation_bar.dart';
-import 'package:soulfit_client/feature/dating_filter.dart';
+import 'package:soulfit_client/feature/dating/dating_filter.dart';
 
 class RecommendedUser {
   final String name;
   final int age;
-  final double distance; // km 단위
+  final double distance; // km 단위ff
   final String imageUrl;
 
   RecommendedUser({
