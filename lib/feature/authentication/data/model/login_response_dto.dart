@@ -16,7 +16,7 @@ class LoginResponseModel extends User {
 
   factory LoginResponseModel.fromJson(Map<String, dynamic> json) {
     return LoginResponseModel(
-      id: json['id'] ?? '', // Assuming 'id' might not be directly in the response, or needs to be derived
+      id: json['id'].toString() ?? '', // Assuming 'id' might not be directly in the response, or needs to be derived
       email: json['email'] ?? '', // Assuming 'email' might not be directly in the response, or needs to be derived
       username: json['username'],
       accessToken: json['accessToken'],
