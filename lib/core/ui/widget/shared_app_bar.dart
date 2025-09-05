@@ -33,7 +33,7 @@ class SharedAppBar extends StatelessWidget implements PreferredSizeWidget {
                 ),
               title ?? const Text('soulfit',
                   style: TextStyle(
-                      fontSize: 24, color: Colors.green, fontWeight: FontWeight.bold)),
+                      fontSize: 28, color: Colors.green, fontWeight: FontWeight.bold)),
             ],
           ),
           if (actions != null)
