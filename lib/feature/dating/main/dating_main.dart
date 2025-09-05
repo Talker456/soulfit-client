@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:soulfit_client/core/ui/widget/shared_app_bar_dating.dart';
 import 'package:soulfit_client/core/ui/widget/shared_navigation_bar.dart';
 import 'package:soulfit_client/feature/dating/dating_filter.dart';
+import 'package:soulfit_client/feature/first_impression/first_impression_evaluated.dart';
+import 'package:soulfit_client/feature/first_impression/first_impression_vote.dart' as vote_screen;
+import 'package:soulfit_client/feature/recommand_user/recommand_user.dart';
 
 class RecommendedUser {
   final String name;
@@ -91,15 +94,25 @@ class DatingMain extends StatelessWidget {
             const SizedBox(height: 24),
             _buildSection(
               title: '추천 유저',
-              onMorePressed: () => print('추천 유저 더보기 클릭!'),
+              onMorePressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const RecommendedUserScreen()),
+                );
+              },
               content: _buildRecommendedUserList(),
             ),
             const SizedBox(height: 24),
             _buildSection(
               title: '첫인상 투표',
-              onMorePressed: () => print('참여하러가기 클릭!'),
+              onMorePressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const FeedbackScreen()),
+                );
+              },
               moreText: '참여하러가기 >',
-              content: _buildFirstImpressionCard(dummyVote),
+              content: _buildFirstImpressionCard(context, dummyVote),
             ),
             const SizedBox(height: 24),
           ],
@@ -250,7 +263,7 @@ class DatingMain extends StatelessWidget {
   }
 
   // 첫인상 투표 카드
-  Widget _buildFirstImpressionCard(FirstImpressionVote vote) {
+  Widget _buildFirstImpressionCard(BuildContext context, FirstImpressionVote vote) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       child: Card(
@@ -266,7 +279,12 @@ class DatingMain extends StatelessWidget {
           title: Text(vote.name, style: const TextStyle(fontWeight: FontWeight.bold)),
           subtitle: Text(vote.message),
           trailing: const Icon(Icons.chevron_right, size: 28),
-          onTap: () => print('첫인상 투표 카드 클릭!'),
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const vote_screen.FirstImpressionVote()),
+            );
+          },
         ),
       ),
     );

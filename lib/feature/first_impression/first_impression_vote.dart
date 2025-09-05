@@ -72,10 +72,48 @@ class _FirstImpressionVoteState extends State<FirstImpressionVote> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: const SharedAppBar(),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
+      body: Column(
+        children: [
+          // 추가 바 - "첫인상 투표"와 뒤로가기 버튼
+          Container(
+            height: 56,
+            width: double.infinity,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              border: Border(
+                bottom: BorderSide(
+                  color: Colors.grey.shade200,
+                  width: 1,
+                ),
+              ),
+            ),
+            child: Row(
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.arrow_back_ios, color: Colors.black),
+                  onPressed: () => Navigator.of(context).pop(),
+                ),
+                Expanded(
+                  child: const Text(
+                    '첫인상 투표',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 25,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.black,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 48), // 오른쪽 여백 (왼쪽 버튼과 균형)
+              ],
+            ),
+          ),
+          // 기존 body 내용
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                children: [
             // 프로필 카드
             Expanded(
               child: Container(
@@ -258,8 +296,11 @@ class _FirstImpressionVoteState extends State<FirstImpressionVote> {
             ),
 
             const SizedBox(height: 30),
-          ],
-        ),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
       bottomNavigationBar: SharedNavigationBar(
         currentIndex: 1,
