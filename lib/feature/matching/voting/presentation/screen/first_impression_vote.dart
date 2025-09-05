@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:soulfit_client/core/ui/widget/shared_app_bar_dating.dart';
 import 'package:soulfit_client/core/ui/widget/shared_navigation_bar.dart';
 
-class FirstImpressionVote extends StatefulWidget {
-  const FirstImpressionVote({Key? key}) : super(key: key);
+class FirstImpressionVoteScreen extends StatefulWidget {
+  const FirstImpressionVoteScreen({Key? key}) : super(key: key);
 
   @override
-  State<FirstImpressionVote> createState() => _FirstImpressionVoteState();
+  State<FirstImpressionVoteScreen> createState() => _FirstImpressionVoteScreenState();
 }
 
-class _FirstImpressionVoteState extends State<FirstImpressionVote> {
+class _FirstImpressionVoteScreenState extends State<FirstImpressionVoteScreen> {
   int currentImageIndex = 0;
   int currentProfileIndex = 0;
   
@@ -316,7 +316,7 @@ void main() {
   runApp(
     const MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: FirstImpressionVote(),
+      home: FirstImpressionVoteScreen(),
     ),
   );
 }

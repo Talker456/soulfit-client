@@ -4,6 +4,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:soulfit_client/core/ui/widget/shared_navigation_bar.dart';
 import 'package:soulfit_client/feature/authentication/presentation/screens/find_id_screen.dart';
+import 'package:soulfit_client/feature/matching/filter/presentation/screen/dating_filter.dart';
+import 'package:soulfit_client/feature/matching/voting/presentation/screen/first_impression_evaluated.dart';
+import 'package:soulfit_client/feature/meeting/review/presentation/screen/group_review.dart';
+import 'package:soulfit_client/feature/meeting/review/presentation/screen/host_review.dart';
+import 'package:soulfit_client/feature/matching/voting/presentation/screen/first_impression_vote.dart';
 import 'package:soulfit_client/feature/main_profile/ui/screen/main_profile_screen.dart';
 import 'package:soulfit_client/feature/meeting/main/ui/screen/meeting_home_screen.dart';
 import 'package:soulfit_client/feature/notification/presentation/ui/notification_screen.dart';
@@ -76,6 +81,11 @@ class AppRoutes {
   static const String testResultCheck = '/test-result-check';
   static const String testResultReport = '/test-result-report';
   static const String pastApplyList = '/past-apply-list';
+  static const String datingFilter = '/dating-filter';
+  static const String firstImpressionEvaluated = '/first-impression-evaluated';
+  static const String firstImpressionVote = '/first-impression-vote';
+  static const String groupReview = '/group-review';
+  static const String hostReview = '/host-review';
 
 
 
@@ -110,6 +120,11 @@ class AppRoutes {
     testResultCheck,
     testResultReport,
     pastApplyList,
+    datingFilter,
+    firstImpressionEvaluated,
+    firstImpressionVote,
+    groupReview,
+    hostReview,
   ];
 }
 
@@ -281,6 +296,31 @@ final GoRouter appRouter = GoRouter(
         roomId: state.pathParameters['chatRoomId']!,
         opponentNickname: state.pathParameters['opponentNickname']!,
       ),
+    ),
+    GoRoute(
+      path: AppRoutes.datingFilter,
+      name: 'dating-filter',
+      builder: (context, state) => const DatingFilter(),
+    ),
+    GoRoute(
+      path: AppRoutes.firstImpressionEvaluated,
+      name: 'first-impression-evaluated',
+      builder: (context, state) => const FeedbackScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.firstImpressionVote,
+      name: 'first-impression-vote',
+      builder: (context, state) => const FirstImpressionVoteScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.groupReview,
+      name: 'group-review',
+      builder: (context, state) => const GroupReview(),
+    ),
+    GoRoute(
+      path: AppRoutes.hostReview,
+      name: 'host-review',
+      builder: (context, state) => const HostReview(),
     ),
     StatefulShellRoute.indexedStack(
       builder: (context, state, navigationShell) {

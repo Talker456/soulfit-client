@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:soulfit_client/core/ui/widget/shared_app_bar_dating.dart';
 import 'package:soulfit_client/core/ui/widget/shared_navigation_bar.dart';
-import 'package:soulfit_client/feature/dating/dating_filter.dart';
-import 'package:soulfit_client/feature/first_impression/first_impression_evaluated.dart';
-import 'package:soulfit_client/feature/first_impression/first_impression_vote.dart' as vote_screen;
-import 'package:soulfit_client/feature/recommand_user/recommand_user.dart';
+import 'package:soulfit_client/feature/matching/filter/presentation/screen/dating_filter.dart';
+import 'package:soulfit_client/feature/matching/voting/presentation/screen/first_impression_evaluated.dart';
+import 'package:soulfit_client/feature/matching/voting/presentation/screen/first_impression_vote.dart' as vote_screen;
+import 'package:soulfit_client/feature/matching/recommendation/presentation/screen/recommand_user.dart';
 
 class RecommendedUser {
   final String name;
@@ -282,7 +282,7 @@ class DatingMain extends StatelessWidget {
           onTap: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => const vote_screen.FirstImpressionVote()),
+              MaterialPageRoute(builder: (context) => const vote_screen.FirstImpressionVoteScreen()),
             );
           },
         ),
