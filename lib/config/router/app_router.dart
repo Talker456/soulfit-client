@@ -50,8 +50,6 @@ import '../../feature/main_profile/ui/screen/profile.dart';
 import '../../feature/main_profile/ui/screen/settings.dart';
 import '../../feature/main_profile/ui/screen/test_result_check.dart';
 
-import 'package:flutter/foundation.dart'; // 개발 시 사용
-
 class AppRoutes {
   static const String sandbox = '/sandbox';
 
@@ -152,8 +150,7 @@ final _rootNavigatorKey = GlobalKey<NavigatorState>();
 
 final GoRouter appRouter = GoRouter(
   navigatorKey: _rootNavigatorKey,
-  initialLocation: kDebugMode ? AppRoutes.sandbox : AppRoutes.login,
-  //initialLocation: AppRoutes.login, 개발 시
+  initialLocation: AppRoutes.login,
   routes: [
     GoRoute(
       path: AppRoutes.login,
