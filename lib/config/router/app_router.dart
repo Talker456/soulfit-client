@@ -13,6 +13,10 @@ import 'package:soulfit_client/feature/meeting/main/ui/screen/meeting_home_scree
 import 'package:soulfit_client/feature/notification/presentation/ui/notification_screen.dart';
 import 'package:soulfit_client/feature/survey/presentation/screens/life_survey_screen.dart';
 import 'package:soulfit_client/feature/survey/presentation/screens/love_survey_screen.dart';
+import 'package:soulfit_client/feature/meeting/application/ui/screen/meeting_application_screen.dart';
+import 'package:soulfit_client/feature/meeting/meeting_chat/ui/screen/chat_room_screen.dart';
+import 'package:soulfit_client/feature/meeting/meeting_chat/ui/screen/participants_screen.dart';
+import 'package:soulfit_client/feature/meeting/meeting_chat/ui/screen/room_list_screen.dart';
 
 import '../../core/dev/sandbox_screen.dart';
 import '../../feature/authentication/presentation/riverpod/login_riverpod.dart';
@@ -45,7 +49,6 @@ import '../../feature/meeting/main/ui/screen/popular_group.dart';
 import '../../feature/main_profile/ui/screen/profile.dart';
 import '../../feature/main_profile/ui/screen/settings.dart';
 import '../../feature/main_profile/ui/screen/test_result_check.dart';
-import '../../feature/meeting/application/ui/screen/meeting_application_screen.dart';
 
 import 'package:flutter/foundation.dart'; // 개발 시 사용
 
@@ -71,7 +74,11 @@ class AppRoutes {
   static const String meetingPost = '/meeting-post';
   static const String meetingApplication = '/meeting-application';
   static const String meetingCommunity = '/meeting-community';
+
   static const String meetingChat = '/meeting-chat';
+  static const String meetingChatRoom = '/meeting-chat-roomId';
+  static const String meetingChatParticipants = '/meeting-chat-participants';
+
   static const String chat = '/chat';
   static const String dummyChatDetail = '/dummy-chat-detail';
   static const String chatDetail = '/chat-detail';
@@ -135,6 +142,9 @@ class AppRoutes {
     meetingOpening,
     meetingPost,
     meetingApplication,
+    meetingChat,
+    meetingChatRoom,
+    meetingChatParticipants,
   ];
 }
 
@@ -234,7 +244,33 @@ final GoRouter appRouter = GoRouter(
       name: 'meeting-application',
       builder: (context, state) => const MeetingJoinQuestionScreen(),
     ),
-
+    GoRoute(
+      path: AppRoutes.meetingChat,
+      name: 'meeting-chat',
+      builder: (context, state) => const RoomListScreen(),
+      routes: [
+        GoRoute(
+          path: ':roomId',
+          name: 'meeting-chat-room',
+          builder: (context, state) {
+            final roomId = state.pathParameters['roomId']!;
+            final title = state.uri.queryParameters['title'] ?? '';
+            return ChatRoomScreen(roomId: roomId, title: title);
+          },
+          routes: [
+            // 참가자 목록 (/meeting-chat/:roomId/participants)
+            GoRoute(
+              path: AppRoutes.meetingChatParticipants,
+              name: 'meeting-chat-participants',
+              builder: (context, state) {
+                final roomId = state.pathParameters['roomId']!;
+                return ParticipantsScreen(roomId: roomId);
+              },
+            ),
+          ],
+        ),
+      ],
+    ),
     // GoRoute(
     //   path: AppRoutes.conversation_received,
     //   name: 'conversation-received',
@@ -356,6 +392,7 @@ final GoRouter appRouter = GoRouter(
       name: 'host-review',
       builder: (context, state) => const HostReview(),
     ),
+
     StatefulShellRoute.indexedStack(
       builder: (context, state, navigationShell) {
         return Scaffold(
