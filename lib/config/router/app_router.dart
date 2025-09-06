@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -14,6 +13,10 @@ import 'package:soulfit_client/feature/meeting/main/ui/screen/meeting_home_scree
 import 'package:soulfit_client/feature/notification/presentation/ui/notification_screen.dart';
 import 'package:soulfit_client/feature/survey/presentation/screens/life_survey_screen.dart';
 import 'package:soulfit_client/feature/survey/presentation/screens/love_survey_screen.dart';
+import 'package:soulfit_client/feature/meeting/application/ui/screen/meeting_application_screen.dart';
+import 'package:soulfit_client/feature/meeting/meeting_chat/ui/screen/chat_room_screen.dart';
+import 'package:soulfit_client/feature/meeting/meeting_chat/ui/screen/participants_screen.dart';
+import 'package:soulfit_client/feature/meeting/meeting_chat/ui/screen/room_list_screen.dart';
 
 import '../../core/dev/sandbox_screen.dart';
 import '../../feature/authentication/presentation/riverpod/login_riverpod.dart';
@@ -31,6 +34,8 @@ import '../../feature/meeting/main/ui/screen/meeting_detail_screen.dart';
 import '../../feature/meeting/main/ui/screen/recently_open_group.dart';
 import '../../feature/payment/presentation/ui/portone_delegator.dart';
 import '../../feature/payment/presentation/ui/tosspayments_widget_v2.dart';
+import '../../feature/meeting/meeting_opening/ui/screen/create_meeting_wizard_screen.dart';
+import '../../feature/meeting/meeting_post/ui/screen/meeting_post_screen.dart';
 import '../di/provider.dart';
 
 import '../../feature/community/presentation/screens/community_main.dart';
@@ -63,9 +68,18 @@ class AppRoutes {
   static const String meetingMain = '/meeting-main';
   static const String meetingList = '/meeting-list';
   static const String meetingDetail = '/meeting-detail';
+  static const String meetingOpening = '/meeting-opening';
+  static const String meetingPost = '/meeting-post';
+  static const String meetingApplication = '/meeting-application';
+  static const String meetingCommunity = '/meeting-community';
+
+  static const String meetingChat = '/meeting-chat';
+  static const String meetingChatRoom = '/meeting-chat-roomId';
+  static const String meetingChatParticipants = '/meeting-chat-participants';
+
   static const String chat = '/chat';
   static const String dummyChatDetail = '/dummy-chat-detail';
-  static const String chatDetail='/chat-detail';
+  static const String chatDetail = '/chat-detail';
 
   static const String communityMain = '/community-main';
   static const String couponList = '/coupon-list';
@@ -86,8 +100,6 @@ class AppRoutes {
   static const String firstImpressionVote = '/first-impression-vote';
   static const String groupReview = '/group-review';
   static const String hostReview = '/host-review';
-
-
 
   static const List<String> allRoutes = [
     login,
@@ -125,6 +137,12 @@ class AppRoutes {
     firstImpressionVote,
     groupReview,
     hostReview,
+    meetingOpening,
+    meetingPost,
+    meetingApplication,
+    meetingChat,
+    meetingChatRoom,
+    meetingChatParticipants,
   ];
 }
 
@@ -172,10 +190,11 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: '/main-profile/:viewer/:target',
       name: 'main-profile',
-      builder: (context, state) => MainProfileScreen(
-        viewerUserId: state.pathParameters['viewer'] as String,
-        targetUserId: state.pathParameters['target'] as String,
-      ),
+      builder:
+          (context, state) => MainProfileScreen(
+            viewerUserId: state.pathParameters['viewer'] as String,
+            targetUserId: state.pathParameters['target'] as String,
+          ),
     ),
     GoRoute(
       path: AppRoutes.lifeSurvey,
@@ -195,16 +214,59 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: '${AppRoutes.meetingList}/:listType',
       name: 'meeting-list',
-      builder: (context, state) => MeetingListScreen(
-        listType: state.pathParameters['listType']!,
-      ),
+      builder:
+          (context, state) =>
+              MeetingListScreen(listType: state.pathParameters['listType']!),
     ),
     GoRoute(
       path: '/meeting-detail/:meetingId',
       name: 'meeting-detail',
-      builder: (context, state) => MeetingDetailScreen(
-        meetingId: state.pathParameters['meetingId']!,
-      ),
+      builder:
+          (context, state) => MeetingDetailScreen(
+            meetingId: state.pathParameters['meetingId']!,
+          ),
+    ),
+    GoRoute(
+      path: AppRoutes.meetingOpening,
+      name: 'meeting-opening',
+      builder: (context, state) => const CreateMeetingWizardScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.meetingPost,
+      name: 'meeting-post',
+      builder: (context, state) => const MeetingPostScreen(postId: 'demo'),
+    ),
+    GoRoute(
+      path: AppRoutes.meetingApplication,
+      name: 'meeting-application',
+      builder: (context, state) => const MeetingJoinQuestionScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.meetingChat,
+      name: 'meeting-chat',
+      builder: (context, state) => const RoomListScreen(),
+      routes: [
+        GoRoute(
+          path: ':roomId',
+          name: 'meeting-chat-room',
+          builder: (context, state) {
+            final roomId = state.pathParameters['roomId']!;
+            final title = state.uri.queryParameters['title'] ?? '';
+            return ChatRoomScreen(roomId: roomId, title: title);
+          },
+          routes: [
+            // 참가자 목록 (/meeting-chat/:roomId/participants)
+            GoRoute(
+              path: AppRoutes.meetingChatParticipants,
+              name: 'meeting-chat-participants',
+              builder: (context, state) {
+                final roomId = state.pathParameters['roomId']!;
+                return ParticipantsScreen(roomId: roomId);
+              },
+            ),
+          ],
+        ),
+      ],
     ),
     // GoRoute(
     //   path: AppRoutes.conversation_received,
@@ -214,10 +276,11 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: '${AppRoutes.dummyChatDetail}/:chatRoomId/:opponentNickname',
       name: 'dummy-chat-detail',
-      builder: (context, state) => DummyChatDetailScreen(
-        chatRoomId: state.pathParameters['chatRoomId']!,
-        opponentNickname: state.pathParameters['opponentNickname']!,
-      ),
+      builder:
+          (context, state) => DummyChatDetailScreen(
+            chatRoomId: state.pathParameters['chatRoomId']!,
+            opponentNickname: state.pathParameters['opponentNickname']!,
+          ),
     ),
     GoRoute(
       path: AppRoutes.communityMain,
@@ -257,7 +320,8 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: AppRoutes.popularGroup,
       name: 'popular-group',
-      builder: (context, state) => PopularGroupsScreen(groups: dummyPopularGroups),
+      builder:
+          (context, state) => PopularGroupsScreen(groups: dummyPopularGroups),
     ),
     GoRoute(
       path: AppRoutes.userProfile,
@@ -267,7 +331,9 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: AppRoutes.recentlyOpenGroup,
       name: 'recently-open-group',
-      builder: (context, state) => RecentlyOpenGroupScreen(groups: dummyRecentlyOpenGroups),
+      builder:
+          (context, state) =>
+              RecentlyOpenGroupScreen(groups: dummyRecentlyOpenGroups),
     ),
     GoRoute(
       path: AppRoutes.settings,
@@ -292,10 +358,11 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: '${AppRoutes.chatDetail}/:chatRoomId/:opponentNickname',
       name: 'chat-detail',
-      builder: (context, state) => ChatDetailScreen(
-        roomId: state.pathParameters['chatRoomId']!,
-        opponentNickname: state.pathParameters['opponentNickname']!,
-      ),
+      builder:
+          (context, state) => ChatDetailScreen(
+            roomId: state.pathParameters['chatRoomId']!,
+            opponentNickname: state.pathParameters['opponentNickname']!,
+          ),
     ),
     GoRoute(
       path: AppRoutes.datingFilter,
@@ -322,6 +389,7 @@ final GoRouter appRouter = GoRouter(
       name: 'host-review',
       builder: (context, state) => const HostReview(),
     ),
+
     StatefulShellRoute.indexedStack(
       builder: (context, state, navigationShell) {
         return Scaffold(
@@ -380,17 +448,20 @@ final GoRouter appRouter = GoRouter(
               path: '/profile',
               name: 'profile',
               builder: (context, state) {
-                return Consumer(builder: (context, ref, child) {
-                  final userId =
-                      ref.watch(authNotifierProvider.select((value) => value.user?.id));
-                  if (userId == null) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
-                  return MainProfileScreen(
-                    viewerUserId: userId,
-                    targetUserId: userId,
-                  );
-                });
+                return Consumer(
+                  builder: (context, ref, child) {
+                    final userId = ref.watch(
+                      authNotifierProvider.select((value) => value.user?.id),
+                    );
+                    if (userId == null) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+                    return MainProfileScreen(
+                      viewerUserId: userId,
+                      targetUserId: userId,
+                    );
+                  },
+                );
               },
             ),
           ],
@@ -411,4 +482,3 @@ final GoRouter appRouter = GoRouter(
     return null;
   },
 );
-
