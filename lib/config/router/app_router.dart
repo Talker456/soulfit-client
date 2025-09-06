@@ -45,6 +45,9 @@ import '../../feature/meeting/main/ui/screen/popular_group.dart';
 import '../../feature/main_profile/ui/screen/profile.dart';
 import '../../feature/main_profile/ui/screen/settings.dart';
 import '../../feature/main_profile/ui/screen/test_result_check.dart';
+import '../../feature/meeting/application/ui/screen/meeting_application_screen.dart';
+
+import 'package:flutter/foundation.dart'; // 개발 시 사용
 
 class AppRoutes {
   static const String sandbox = '/sandbox';
@@ -131,6 +134,7 @@ class AppRoutes {
     hostReview,
     meetingOpening,
     meetingPost,
+    meetingApplication,
   ];
 }
 
@@ -138,7 +142,8 @@ final _rootNavigatorKey = GlobalKey<NavigatorState>();
 
 final GoRouter appRouter = GoRouter(
   navigatorKey: _rootNavigatorKey,
-  initialLocation: AppRoutes.login,
+  initialLocation: kDebugMode ? AppRoutes.sandbox : AppRoutes.login,
+  //initialLocation: AppRoutes.login, 개발 시
   routes: [
     GoRoute(
       path: AppRoutes.login,
@@ -224,6 +229,12 @@ final GoRouter appRouter = GoRouter(
       name: 'meeting-post',
       builder: (context, state) => const MeetingPostScreen(postId: 'demo'),
     ),
+    GoRoute(
+      path: AppRoutes.meetingApplication,
+      name: 'meeting-application',
+      builder: (context, state) => const MeetingJoinQuestionScreen(),
+    ),
+
     // GoRoute(
     //   path: AppRoutes.conversation_received,
     //   name: 'conversation-received',
