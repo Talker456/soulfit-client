@@ -1,5 +1,7 @@
+
 import 'dart:io';
 
+import 'package:soulfit_client/feature/matching/chat-detail/domain/entity/chat_analysis.dart';
 import 'package:soulfit_client/feature/matching/chat-detail/domain/entity/chat_message.dart';
 
 abstract class ChatDetailRepository {
@@ -9,7 +11,10 @@ abstract class ChatDetailRepository {
   Future<void> leaveChatRoom(String roomId);
 
   // WebSocket 기반 기능
-  Future<void> connectToChat(String roomId, Function(ChatMessage) onMessageReceived);
   void sendTextMessage({required String roomId, required String messageText, required String sender});
-  void disconnectFromChat();
+
+  // Real-time Streams
+  Stream<ChatAnalysis> getAnalysisStream(String roomId);
+  Stream<ChatMessage> getMessageStream(String roomId);
 }
+

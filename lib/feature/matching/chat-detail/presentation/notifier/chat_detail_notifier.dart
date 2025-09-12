@@ -1,85 +1,93 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:soulfit_client/feature/matching/chat-detail/domain/entity/chat_message.dart';
-import 'package:soulfit_client/feature/matching/chat-detail/domain/usecase/connect_to_chat_use_case.dart';
-import 'package:soulfit_client/feature/matching/chat-detail/domain/usecase/disconnect_from_chat_use_case.dart';
+import 'package:soulfit_client/feature/matching/chat-detail/domain/usecase/get_message_stream_use_case.dart';
 import 'package:soulfit_client/feature/matching/chat-detail/domain/usecase/get_messages_use_case.dart';
 import 'package:soulfit_client/feature/matching/chat-detail/domain/usecase/send_image_message_use_case.dart';
 import 'package:soulfit_client/feature/matching/chat-detail/domain/usecase/send_text_message_use_case.dart';
 import 'package:soulfit_client/feature/matching/chat-detail/presentation/state/chat_detail_state.dart';
+import 'package:soulfit_client/feature/matching/chat-detail/presentation/provider/chat_detail_provider.dart';
 
-class ChatDetailNotifier extends StateNotifier<ChatDetailState> {
-  final GetMessagesUseCase _getMessagesUseCase;
-  final SendTextMessageUseCase _sendTextMessageUseCase;
-  final SendImageMessageUseCase _sendImageMessageUseCase;
-  final ConnectToChatUseCase _connectToChatUseCase;
-  final DisconnectFromChatUseCase _disconnectFromChatUseCase;
+class ChatDetailNotifier extends AutoDisposeFamilyAsyncNotifier<ChatDetailState, String> {
+  late final GetMessagesUseCase _getMessagesUseCase;
+  late final SendTextMessageUseCase _sendTextMessageUseCase;
+  late final SendImageMessageUseCase _sendImageMessageUseCase;
+  late final GetMessageStreamUseCase _getMessageStreamUseCase;
 
-  final String roomId;
+  late final String roomId;
   int _page = 0;
-  static const _size = 30; // 한 번에 불러올 메시지 수
+  static const _size = 30;
+  StreamSubscription? _messageSubscription;
 
-  ChatDetailNotifier({
-    required GetMessagesUseCase getMessagesUseCase,
-    required SendTextMessageUseCase sendTextMessageUseCase,
-    required SendImageMessageUseCase sendImageMessageUseCase,
-    required ConnectToChatUseCase connectToChatUseCase,
-    required DisconnectFromChatUseCase disconnectFromChatUseCase,
-    required this.roomId,
-  })  : _getMessagesUseCase = getMessagesUseCase,
-        _sendTextMessageUseCase = sendTextMessageUseCase,
-        _sendImageMessageUseCase = sendImageMessageUseCase,
-        _connectToChatUseCase = connectToChatUseCase,
-        _disconnectFromChatUseCase = disconnectFromChatUseCase,
-        super(ChatDetailLoading()) {
-    _init();
+  @override
+  Future<ChatDetailState> build(String roomId) async {
+    _getMessagesUseCase = await ref.watch(getMessagesUseCaseProvider(roomId).future);
+    _sendTextMessageUseCase = await ref.watch(sendTextMessageUseCaseProvider(roomId).future);
+    _sendImageMessageUseCase = await ref.watch(sendImageMessageUseCaseProvider(roomId).future);
+    _getMessageStreamUseCase = await ref.watch(getMessageStreamUseCaseProvider(roomId).future);
+
+    this.roomId = roomId;
+
+    _page = 0;
+    try {
+      final messages = await _getMessagesUseCase(GetMessagesParams(roomId: roomId, page: _page, size: _size));
+      _listenToMessages();
+      return ChatDetailLoaded(messages: messages.reversed.toList(), hasReachedMax: messages.length < _size);
+    } catch (e, stackTrace) {
+      print('##### Chat Detail Error in build: $e');
+      print('##### Stack Trace in build: $stackTrace');
+      return ChatDetailError('메시지를 불러오는 데 실패했습니다.');
+    }
   }
 
-  Future<void> _init() async {
-    await fetchInitialMessages();
-    _connectToChat();
+  void addMessage(ChatMessage message) {
+    if (state.value is ChatDetailLoaded) {
+      final currentState = state.value as ChatDetailLoaded;
+      if (currentState.messages.any((m) => m.id == message.id)) return;
+      state = AsyncData(currentState.copyWith(messages: [...currentState.messages, message]));
+    }
   }
 
   Future<void> fetchInitialMessages() async {
     _page = 0;
-    state = ChatDetailLoading();
+    state = const AsyncLoading();
     try {
       final messages = await _getMessagesUseCase(GetMessagesParams(roomId: roomId, page: _page, size: _size));
-      state = ChatDetailLoaded(messages: messages.reversed.toList(), hasReachedMax: messages.length < _size);
+      state = AsyncData(ChatDetailLoaded(messages: messages.reversed.toList(), hasReachedMax: messages.length < _size));
     } catch (e, stackTrace) {
       print('##### Chat Detail Error: $e');
       print('##### Stack Trace: $stackTrace');
-      state = const ChatDetailError('메시지를 불러오는 데 실패했습니다.');
+      state = AsyncError(ChatDetailError('메시지를 불러오는 데 실패했습니다.'), stackTrace);
     }
   }
 
   Future<void> fetchOlderMessages() async {
-    if (state is! ChatDetailLoaded || (state as ChatDetailLoaded).hasReachedMax) return;
+    if (state.value is! ChatDetailLoaded || (state.value as ChatDetailLoaded).hasReachedMax) return;
 
-    final currentState = state as ChatDetailLoaded;
+    final currentState = state.value as ChatDetailLoaded;
     _page++;
     try {
       final olderMessages = await _getMessagesUseCase(GetMessagesParams(roomId: roomId, page: _page, size: _size));
-      state = currentState.copyWith(
+      state = AsyncData(currentState.copyWith(
         messages: [...olderMessages.reversed, ...currentState.messages],
         hasReachedMax: olderMessages.length < _size,
-      );
+      ));
     } catch (e) {
-      _page--; // 에러 발생 시 페이지 원상복구
+      _page--;
     }
   }
 
-  void _connectToChat() {
-    _connectToChatUseCase(ConnectToChatParams(
-      roomId: roomId,
-      onMessageReceived: (message) {
-        if (state is ChatDetailLoaded) {
-          final currentState = state as ChatDetailLoaded;
-          state = currentState.copyWith(messages: [...currentState.messages, message]);
-        }
+  void _listenToMessages() {
+    _messageSubscription = _getMessageStreamUseCase(GetMessageStreamParams(roomId: roomId)).listen(
+      (message) {
+        addMessage(message);
       },
-    ));
+      onError: (error) {
+        print('##### Message Stream Error: $error');
+      },
+    );
   }
 
   void sendTextMessage({required String messageText, required String sender}) {
@@ -93,16 +101,13 @@ class ChatDetailNotifier extends StateNotifier<ChatDetailState> {
   Future<void> sendImageMessage(File image) async {
     try {
       await _sendImageMessageUseCase(SendImageMessageParams(roomId: roomId, image: image));
-      // 성공 시 WebSocket을 통해 메시지가 수신되므로 별도 처리가 필요 없을 수 있습니다.
     } catch (e) {
       print('##### Failed to send image: $e');
-      // UI에 이미지 전송 실패 피드백을 줄 수 있습니다.
     }
   }
 
   @override
   void dispose() {
-    _disconnectFromChatUseCase();
-    super.dispose();
+    _messageSubscription?.cancel();
   }
 }

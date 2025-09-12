@@ -1,19 +1,22 @@
+
 import 'dart:io';
 
-import 'package:soulfit_client/feature/authentication/data/datasource/auth_local_datasource.dart';
+import 'package:soulfit_client/feature/matching/chat-detail/data/datasource/chat_analysis_data_source.dart';
 import 'package:soulfit_client/feature/matching/chat-detail/data/datasource/chat_detail_remote_data_source.dart';
-import 'package:soulfit_client/feature/matching/chat-detail/data/datasource/web_socket_service.dart';
+import 'package:soulfit_client/feature/matching/chat-detail/data/datasource/chat_message_data_source.dart';
+import 'package:soulfit_client/feature/matching/chat-detail/domain/entity/chat_analysis.dart';
 import 'package:soulfit_client/feature/matching/chat-detail/domain/entity/chat_message.dart';
 import 'package:soulfit_client/feature/matching/chat-detail/domain/repository/chat_detail_repository.dart';
 
 class ChatDetailRepositoryImpl implements ChatDetailRepository {
   final ChatDetailRemoteDataSource remoteDataSource;
-  final AuthLocalDataSource authLocalDataSource;
-  WebSocketService? _webSocketService;
+  final ChatMessageDataSource messageDataSource;
+  final ChatAnalysisDataSource analysisDataSource;
 
   ChatDetailRepositoryImpl({
     required this.remoteDataSource,
-    required this.authLocalDataSource,
+    required this.messageDataSource,
+    required this.analysisDataSource,
   });
 
   @override
@@ -32,23 +35,30 @@ class ChatDetailRepositoryImpl implements ChatDetailRepository {
   }
 
   @override
-  Future<void> connectToChat(String roomId, Function(ChatMessage) onMessageReceived) async {
-    final token = await authLocalDataSource.getAccessToken();
-    if (token == null) {
-      throw Exception('Authentication token not found');
-    }
-    _webSocketService = WebSocketService(onMessageReceived: onMessageReceived);
-    _webSocketService!.connect(token, roomId);
+  void sendTextMessage({required String roomId, required String messageText, required String sender}) {
+    messageDataSource.sendMessage(roomId: roomId, messageText: messageText, sender: sender);
   }
 
   @override
-  void sendTextMessage({required String roomId, required String messageText, required String sender}) {
-    _webSocketService?.sendMessage(roomId: roomId, messageText: messageText, sender: sender);
+  Stream<ChatAnalysis> getAnalysisStream(String roomId) {
+    return analysisDataSource.analysisStream;
+  }
+
+  @override
+  Stream<ChatMessage> getMessageStream(String roomId) {
+    return messageDataSource.messageStream;
+  }
+  
+  // connectToChat and disconnectFromChat are now managed by the connection manager and data sources directly
+  // so they are removed from the repository interface and implementation.
+  @override
+  Future<void> connectToChat(String roomId) async {
+    // This is now handled by the individual data sources when they are initialized.
   }
 
   @override
   void disconnectFromChat() {
-    _webSocketService?.disconnect();
-    _webSocketService = null;
+    // This is handled by the StompConnectionManager's dispose logic, triggered by the provider.
   }
 }
+
