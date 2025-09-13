@@ -17,6 +17,7 @@ import 'package:soulfit_client/feature/meeting/application/ui/screen/meeting_app
 import 'package:soulfit_client/feature/meeting/meeting_chat/ui/screen/chat_room_screen.dart';
 import 'package:soulfit_client/feature/meeting/meeting_chat/ui/screen/participants_screen.dart';
 import 'package:soulfit_client/feature/meeting/meeting_chat/ui/screen/room_list_screen.dart';
+import 'package:soulfit_client/feature/dating_profile/ui/screen/dating_profile_screen.dart';
 
 import '../../core/dev/sandbox_screen.dart';
 import '../../feature/authentication/presentation/riverpod/login_riverpod.dart';
@@ -100,6 +101,7 @@ class AppRoutes {
   static const String firstImpressionVote = '/first-impression-vote';
   static const String groupReview = '/group-review';
   static const String hostReview = '/host-review';
+  static const String datingProfile = '/dating-profile';
 
   static const List<String> allRoutes = [
     login,
@@ -137,12 +139,6 @@ class AppRoutes {
     firstImpressionVote,
     groupReview,
     hostReview,
-    meetingOpening,
-    meetingPost,
-    meetingApplication,
-    meetingChat,
-    meetingChatRoom,
-    meetingChatParticipants,
   ];
 }
 
@@ -389,7 +385,11 @@ final GoRouter appRouter = GoRouter(
       name: 'host-review',
       builder: (context, state) => const HostReview(),
     ),
-
+    GoRoute(
+      path: '/dating/profile/:userId',
+      name: 'dating-profile',
+      builder: (context, state) => const DatingProfileScreen(),
+    ),
     StatefulShellRoute.indexedStack(
       builder: (context, state, navigationShell) {
         return Scaffold(
