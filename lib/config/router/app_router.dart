@@ -139,6 +139,12 @@ class AppRoutes {
     firstImpressionVote,
     groupReview,
     hostReview,
+    meetingOpening,
+    meetingPost,
+    meetingApplication,
+    meetingChat,
+    meetingChatRoom,
+    meetingChatParticipants,
   ];
 }
 
