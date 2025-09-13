@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../widgets/filter_tab_bar.dart';
 import '../widgets/post_list_view.dart';
-import '../widgets/bottom_nav_bar.dart';
 import '../riverpod/nav_index_provider.dart';
 import 'create_post_screen.dart';
 import 'package:go_router/go_router.dart';
@@ -75,13 +74,6 @@ class CommunityScreen extends ConsumerWidget {
           side: const BorderSide(color: Color(0xFF66A825), width: 1.5),
         ),
         child: const Icon(Icons.add, color: Color(0xFF66A825)),
-      ),
-      bottomNavigationBar: BottomNavBar(
-        currentIndex: navIndex,
-        onTap: (index) {
-          ref.read(navIndexProvider.notifier).state = index;
-          // TODO: 인덱스별 페이지 이동이 필요하면 context.go('/some-path') 사용
-        },
       ),
     );
   }
