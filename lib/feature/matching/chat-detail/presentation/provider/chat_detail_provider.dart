@@ -1,70 +1,97 @@
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:soulfit_client/config/di/provider.dart';
+import 'package:soulfit_client/feature/matching/chat-detail/data/datasource/chat_analysis_data_source.dart';
+import 'package:soulfit_client/feature/matching/chat-detail/data/datasource/chat_analysis_data_source_impl.dart';
 import 'package:soulfit_client/feature/matching/chat-detail/data/datasource/chat_detail_remote_data_source.dart';
+import 'package:soulfit_client/feature/matching/chat-detail/data/datasource/chat_detail_remote_data_source_impl.dart';
+import 'package:soulfit_client/feature/matching/chat-detail/data/datasource/chat_message_data_source.dart';
+import 'package:soulfit_client/feature/matching/chat-detail/data/datasource/chat_message_data_source_impl.dart';
+import 'package:soulfit_client/feature/matching/chat-detail/data/datasource/stomp_connection_manager.dart';
 import 'package:soulfit_client/feature/matching/chat-detail/data/repository_impl/chat_detail_repository_impl.dart';
 import 'package:soulfit_client/feature/matching/chat-detail/domain/repository/chat_detail_repository.dart';
-import 'package:soulfit_client/feature/matching/chat-detail/domain/usecase/connect_to_chat_use_case.dart';
-import 'package:soulfit_client/feature/matching/chat-detail/domain/usecase/disconnect_from_chat_use_case.dart';
+import 'package:soulfit_client/feature/matching/chat-detail/domain/usecase/get_analysis_stream_use_case.dart';
+import 'package:soulfit_client/feature/matching/chat-detail/domain/usecase/get_message_stream_use_case.dart';
 import 'package:soulfit_client/feature/matching/chat-detail/domain/usecase/get_messages_use_case.dart';
-import 'package:soulfit_client/feature/matching/chat-detail/domain/usecase/leave_chat_room_use_case.dart';
 import 'package:soulfit_client/feature/matching/chat-detail/domain/usecase/send_image_message_use_case.dart';
 import 'package:soulfit_client/feature/matching/chat-detail/domain/usecase/send_text_message_use_case.dart';
+import 'package:soulfit_client/feature/matching/chat-detail/presentation/notifier/chat_analysis_notifier.dart';
 import 'package:soulfit_client/feature/matching/chat-detail/presentation/notifier/chat_detail_notifier.dart';
+import 'package:soulfit_client/feature/matching/chat-detail/presentation/state/chat_analysis_state.dart';
 import 'package:soulfit_client/feature/matching/chat-detail/presentation/state/chat_detail_state.dart';
 
-import '../../data/datasource/chat_detail_remote_data_source_impl.dart';
-
 // Data Layer
-final chatDetailRemoteDataSourceProvider =
-    Provider<ChatDetailRemoteDataSource>((ref) {
-      return ChatDetailRemoteDataSourceImpl(
-      client: ref.read(httpClientProvider),
-      authLocalDataSource: ref.read(authLocalDataSourceProvider),
-  );
-});
-
-final chatDetailRepositoryProvider = Provider<ChatDetailRepository>((ref) {
-  return ChatDetailRepositoryImpl(
-    remoteDataSource: ref.read(chatDetailRemoteDataSourceProvider),
+final chatDetailRemoteDataSourceProvider = Provider<ChatDetailRemoteDataSource>((ref) {
+  return ChatDetailRemoteDataSourceImpl(
+    client: ref.read(httpClientProvider),
     authLocalDataSource: ref.read(authLocalDataSourceProvider),
   );
 });
 
+final stompConnectionManagerProvider = FutureProvider.autoDispose.family<StompConnectionManager, String>((ref, roomId) async {
+  final authLocalDataSource = ref.watch(authLocalDataSourceProvider);
+  final token = await authLocalDataSource.getAccessToken();
+  if (token == null) {
+    throw Exception('Access token is not available');
+  }
+  final manager = StompConnectionManager(token, roomId);
+  ref.onDispose(() => manager.disconnect());
+  return manager;
+});
+
+final chatMessageDataSourceProvider = FutureProvider.autoDispose.family<ChatMessageDataSource, String>((ref, roomId) async {
+  final manager = await ref.watch(stompConnectionManagerProvider(roomId).future);
+  final dataSource = ChatMessageDataSourceImpl(manager, roomId);
+  ref.onDispose(() => dataSource.dispose());
+  return dataSource;
+});
+
+final chatAnalysisDataSourceProvider = FutureProvider.autoDispose.family<ChatAnalysisDataSource, String>((ref, roomId) async {
+  final manager = await ref.watch(stompConnectionManagerProvider(roomId).future);
+  final dataSource = ChatAnalysisDataSourceImpl(manager, roomId);
+  ref.onDispose(() => dataSource.dispose());
+  return dataSource;
+});
+
+final chatDetailRepositoryProvider = FutureProvider.autoDispose.family<ChatDetailRepository, String>((ref, roomId) async {
+  final messageDataSource = await ref.watch(chatMessageDataSourceProvider(roomId).future);
+  final analysisDataSource = await ref.watch(chatAnalysisDataSourceProvider(roomId).future);
+  return ChatDetailRepositoryImpl(
+    remoteDataSource: ref.watch(chatDetailRemoteDataSourceProvider),
+    messageDataSource: messageDataSource,
+    analysisDataSource: analysisDataSource,
+  );
+});
+
 // Domain Layer (UseCases)
-final getMessagesUseCaseProvider = Provider<GetMessagesUseCase>((ref) {
-  return GetMessagesUseCase(ref.watch(chatDetailRepositoryProvider));
+final getMessagesUseCaseProvider = FutureProvider.autoDispose.family<GetMessagesUseCase, String>((ref, roomId) async {
+  final repository = await ref.watch(chatDetailRepositoryProvider(roomId).future);
+  return GetMessagesUseCase(repository);
 });
 
-final sendTextMessageUseCaseProvider = Provider<SendTextMessageUseCase>((ref) {
-  return SendTextMessageUseCase(ref.watch(chatDetailRepositoryProvider));
+final sendTextMessageUseCaseProvider = FutureProvider.autoDispose.family<SendTextMessageUseCase, String>((ref, roomId) async {
+  final repository = await ref.watch(chatDetailRepositoryProvider(roomId).future);
+  return SendTextMessageUseCase(repository);
 });
 
-final sendImageMessageUseCaseProvider = Provider<SendImageMessageUseCase>((ref) {
-  return SendImageMessageUseCase(ref.watch(chatDetailRepositoryProvider));
+final sendImageMessageUseCaseProvider = FutureProvider.autoDispose.family<SendImageMessageUseCase, String>((ref, roomId) async {
+  final repository = await ref.watch(chatDetailRepositoryProvider(roomId).future);
+  return SendImageMessageUseCase(repository);
 });
 
-final connectToChatUseCaseProvider = Provider<ConnectToChatUseCase>((ref) {
-  return ConnectToChatUseCase(ref.watch(chatDetailRepositoryProvider));
+final getAnalysisStreamUseCaseProvider = FutureProvider.autoDispose.family<GetAnalysisStreamUseCase, String>((ref, roomId) async {
+  final repository = await ref.watch(chatDetailRepositoryProvider(roomId).future);
+  return GetAnalysisStreamUseCase(repository);
 });
 
-final disconnectFromChatUseCaseProvider =
-    Provider<DisconnectFromChatUseCase>((ref) {
-  return DisconnectFromChatUseCase(ref.watch(chatDetailRepositoryProvider));
-});
-
-final leaveChatRoomUseCaseProvider = Provider<LeaveChatRoomUseCase>((ref) {
-  return LeaveChatRoomUseCase(ref.watch(chatDetailRepositoryProvider));
+final getMessageStreamUseCaseProvider = FutureProvider.autoDispose.family<GetMessageStreamUseCase, String>((ref, roomId) async {
+  final repository = await ref.watch(chatDetailRepositoryProvider(roomId).future);
+  return GetMessageStreamUseCase(repository);
 });
 
 // Presentation Layer (Notifier)
-final chatDetailNotifierProvider = StateNotifierProvider.autoDispose
-    .family<ChatDetailNotifier, ChatDetailState, String>((ref, roomId) {
-  return ChatDetailNotifier(
-    getMessagesUseCase: ref.watch(getMessagesUseCaseProvider),
-    sendTextMessageUseCase: ref.watch(sendTextMessageUseCaseProvider),
-    sendImageMessageUseCase: ref.watch(sendImageMessageUseCaseProvider),
-    connectToChatUseCase: ref.watch(connectToChatUseCaseProvider),
-    disconnectFromChatUseCase: ref.watch(disconnectFromChatUseCaseProvider),
-    roomId: roomId,
-  );
-});
+final chatDetailNotifierProvider = AsyncNotifierProvider.autoDispose.family<ChatDetailNotifier, ChatDetailState, String>(() => ChatDetailNotifier());
+
+final chatAnalysisNotifierProvider = AsyncNotifierProvider.autoDispose.family<ChatAnalysisNotifier, ChatAnalysisState, String>(() => ChatAnalysisNotifier());
+
+

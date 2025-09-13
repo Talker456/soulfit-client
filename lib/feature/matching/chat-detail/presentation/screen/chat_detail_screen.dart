@@ -7,6 +7,7 @@ import 'package:soulfit_client/config/di/provider.dart';
 import 'package:soulfit_client/core/ui/widget/shared_app_bar.dart';
 import 'package:soulfit_client/feature/matching/chat-detail/presentation/provider/chat_detail_provider.dart';
 import 'package:soulfit_client/feature/matching/chat-detail/presentation/state/chat_detail_state.dart';
+import 'package:soulfit_client/feature/matching/chat-detail/presentation/widget/chat_analysis_display.dart';
 
 class ChatDetailScreen extends ConsumerStatefulWidget {
   final String roomId;
@@ -31,7 +32,6 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
   void initState() {
     super.initState();
     _scrollController.addListener(_onScroll);
-    // 초기 메시지 로딩은 Notifier의 init에서 처리됩니다.
   }
 
   @override
@@ -72,12 +72,11 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
   @override
   Widget build(BuildContext context) {
     final myUsername = ref.watch(authNotifierProvider).user?.username;
-    final state = ref.watch(chatDetailNotifierProvider(widget.roomId));
+    final chatDetailAsync = ref.watch(chatDetailNotifierProvider(widget.roomId));
 
-    ref.listen(chatDetailNotifierProvider(widget.roomId).select((state) => state),
+    ref.listen(chatDetailNotifierProvider(widget.roomId),
         (previous, next) {
-      if (next is ChatDetailLoaded) {
-        // UI가 렌더링된 후 스크롤을 이동시켜야 정확하게 동작합니다.
+      if (next.value is ChatDetailLoaded) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (_scrollController.hasClients) {
             _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
@@ -97,35 +96,39 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
       ),
       body: Column(
         children: [
+          ChatAnalysisDisplay(roomId: widget.roomId),
           Expanded(
-            child: switch (state) {
-              ChatDetailLoading() =>
-                const Center(child: CircularProgressIndicator()),
-              ChatDetailError(:final message) => Center(child: Text(message)),
-              ChatDetailLoaded(:final messages) => ListView.builder(
-                  controller: _scrollController,
-                  reverse: false,
-                  itemCount: messages.length,
-                  itemBuilder: (context, index) {
-                    final message = messages[index];
-                    final isMe = message.sender == myUsername;
-                    return Align(
-                      alignment:
-                          isMe ? Alignment.centerRight : Alignment.centerLeft,
-                      child: Container(
-                        margin: const EdgeInsets.symmetric(
-                            vertical: 4, horizontal: 8),
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: isMe ? Colors.blue[100] : Colors.grey[300],
-                          borderRadius: BorderRadius.circular(16),
+            child: chatDetailAsync.when(
+              data: (state) => switch (state) {
+                ChatDetailLoading() => const Center(child: CircularProgressIndicator()),
+                ChatDetailError(:final message) => Center(child: Text(message)),
+                ChatDetailLoaded(:final messages) => ListView.builder(
+                    controller: _scrollController,
+                    reverse: false,
+                    itemCount: messages.length,
+                    itemBuilder: (context, index) {
+                      final message = messages[index];
+                      final isMe = message.sender == myUsername;
+                      return Align(
+                        alignment:
+                            isMe ? Alignment.centerRight : Alignment.centerLeft,
+                        child: Container(
+                          margin: const EdgeInsets.symmetric(
+                              vertical: 4, horizontal: 8),
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: isMe ? Colors.blue[100] : Colors.grey[300],
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: Text(message.message ?? '...'),
                         ),
-                        child: Text(message.message ?? '...'),
-                      ),
-                    );
-                  },
-                ),
-            },
+                      );
+                    },
+                  ),
+              },
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error: (err, stack) => Center(child: Text('Error: $err')),
+            ),
           ),
           _buildMessageInputField(myUsername),
         ],
@@ -173,3 +176,4 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
     );
   }
 }
+
