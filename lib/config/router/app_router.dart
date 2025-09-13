@@ -104,6 +104,7 @@ class AppRoutes {
   static const String hostReview = '/host-review';
   static const String datingProfile = '/dating-profile';
   static const String meetingDashboard = '/meeting-dashboard';
+  static const String datingProfile = '/dating-profile';
 
   static const List<String> allRoutes = [
     login,
@@ -403,6 +404,12 @@ final GoRouter appRouter = GoRouter(
       path: AppRoutes.meetingDashboard,
       name: 'meeting-dashboard',
       builder: (context, state) => const MeetingDashboardScreen(),
+    ),
+
+    GoRoute(
+      path: '/dating/profile/:userId',
+      name: 'dating-profile',
+      builder: (context, state) => const DatingProfileScreen(),
     ),
 
     StatefulShellRoute.indexedStack(
