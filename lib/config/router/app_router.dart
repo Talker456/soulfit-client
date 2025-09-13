@@ -17,7 +17,6 @@ import 'package:soulfit_client/feature/meeting/application/ui/screen/meeting_app
 import 'package:soulfit_client/feature/meeting/meeting_chat/ui/screen/chat_room_screen.dart';
 import 'package:soulfit_client/feature/meeting/meeting_chat/ui/screen/participants_screen.dart';
 import 'package:soulfit_client/feature/meeting/meeting_chat/ui/screen/room_list_screen.dart';
-import 'package:soulfit_client/feature/dating_profile/ui/screen/dating_profile_screen.dart';
 
 import '../../core/dev/sandbox_screen.dart';
 import '../../feature/authentication/presentation/riverpod/login_riverpod.dart';
@@ -51,6 +50,7 @@ import '../../feature/meeting/main/ui/screen/popular_group.dart';
 import '../../feature/main_profile/ui/screen/profile.dart';
 import '../../feature/main_profile/ui/screen/settings.dart';
 import '../../feature/main_profile/ui/screen/test_result_check.dart';
+import '../../feature/dating_profile/ui/screen/dating_profile_screen.dart';
 
 class AppRoutes {
   static const String sandbox = '/sandbox';
