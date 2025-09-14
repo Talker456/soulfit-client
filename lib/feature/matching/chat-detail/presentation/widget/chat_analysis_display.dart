@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:soulfit_client/feature/matching/chat-detail/domain/entity/chat_room_params.dart';
 import 'package:soulfit_client/feature/matching/chat-detail/presentation/provider/chat_detail_provider.dart';
 import 'package:soulfit_client/feature/matching/chat-detail/presentation/state/chat_analysis_state.dart';
 
 class ChatAnalysisDisplay extends ConsumerWidget {
-  final String roomId;
+  final ChatRoomParams params;
 
-  const ChatAnalysisDisplay({super.key, required this.roomId});
+  const ChatAnalysisDisplay({super.key, required this.params});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final analysisAsync = ref.watch(chatAnalysisNotifierProvider(roomId));
+    final analysisAsync = ref.watch(chatAnalysisNotifierProvider(params));
 
     return analysisAsync.when(
       data: (analysisState) => switch (analysisState) {

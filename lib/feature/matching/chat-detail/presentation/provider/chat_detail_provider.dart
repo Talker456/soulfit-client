@@ -9,6 +9,7 @@ import 'package:soulfit_client/feature/matching/chat-detail/data/datasource/chat
 import 'package:soulfit_client/feature/matching/chat-detail/data/datasource/chat_message_data_source_impl.dart';
 import 'package:soulfit_client/feature/matching/chat-detail/data/datasource/stomp_connection_manager.dart';
 import 'package:soulfit_client/feature/matching/chat-detail/data/repository_impl/chat_detail_repository_impl.dart';
+import 'package:soulfit_client/feature/matching/chat-detail/domain/entity/chat_room_params.dart';
 import 'package:soulfit_client/feature/matching/chat-detail/domain/repository/chat_detail_repository.dart';
 import 'package:soulfit_client/feature/matching/chat-detail/domain/usecase/get_analysis_stream_use_case.dart';
 import 'package:soulfit_client/feature/matching/chat-detail/domain/usecase/get_message_stream_use_case.dart';
@@ -28,34 +29,34 @@ final chatDetailRemoteDataSourceProvider = Provider<ChatDetailRemoteDataSource>(
   );
 });
 
-final stompConnectionManagerProvider = FutureProvider.autoDispose.family<StompConnectionManager, String>((ref, roomId) async {
+final stompConnectionManagerProvider = FutureProvider.autoDispose.family<StompConnectionManager, ChatRoomParams>((ref, params) async {
   final authLocalDataSource = ref.watch(authLocalDataSourceProvider);
   final token = await authLocalDataSource.getAccessToken();
   if (token == null) {
     throw Exception('Access token is not available');
   }
-  final manager = StompConnectionManager(token, roomId);
+  final manager = StompConnectionManager(token, params.roomId);
   ref.onDispose(() => manager.disconnect());
   return manager;
 });
 
-final chatMessageDataSourceProvider = FutureProvider.autoDispose.family<ChatMessageDataSource, String>((ref, roomId) async {
-  final manager = await ref.watch(stompConnectionManagerProvider(roomId).future);
-  final dataSource = ChatMessageDataSourceImpl(manager, roomId);
+final chatMessageDataSourceProvider = FutureProvider.autoDispose.family<ChatMessageDataSource, ChatRoomParams>((ref, params) async {
+  final manager = await ref.watch(stompConnectionManagerProvider(params).future);
+  final dataSource = ChatMessageDataSourceImpl(manager, params.roomId);
   ref.onDispose(() => dataSource.dispose());
   return dataSource;
 });
 
-final chatAnalysisDataSourceProvider = FutureProvider.autoDispose.family<ChatAnalysisDataSource, String>((ref, roomId) async {
-  final manager = await ref.watch(stompConnectionManagerProvider(roomId).future);
-  final dataSource = ChatAnalysisDataSourceImpl(manager, roomId);
+final chatAnalysisDataSourceProvider = FutureProvider.autoDispose.family<ChatAnalysisDataSource, ChatRoomParams>((ref, params) async {
+  final manager = await ref.watch(stompConnectionManagerProvider(params).future);
+  final dataSource = ChatAnalysisDataSourceImpl(manager, params.roomId);
   ref.onDispose(() => dataSource.dispose());
   return dataSource;
 });
 
-final chatDetailRepositoryProvider = FutureProvider.autoDispose.family<ChatDetailRepository, String>((ref, roomId) async {
-  final messageDataSource = await ref.watch(chatMessageDataSourceProvider(roomId).future);
-  final analysisDataSource = await ref.watch(chatAnalysisDataSourceProvider(roomId).future);
+final chatDetailRepositoryProvider = FutureProvider.autoDispose.family<ChatDetailRepository, ChatRoomParams>((ref, params) async {
+  final messageDataSource = await ref.watch(chatMessageDataSourceProvider(params).future);
+  final analysisDataSource = await ref.watch(chatAnalysisDataSourceProvider(params).future);
   return ChatDetailRepositoryImpl(
     remoteDataSource: ref.watch(chatDetailRemoteDataSourceProvider),
     messageDataSource: messageDataSource,
@@ -64,34 +65,34 @@ final chatDetailRepositoryProvider = FutureProvider.autoDispose.family<ChatDetai
 });
 
 // Domain Layer (UseCases)
-final getMessagesUseCaseProvider = FutureProvider.autoDispose.family<GetMessagesUseCase, String>((ref, roomId) async {
-  final repository = await ref.watch(chatDetailRepositoryProvider(roomId).future);
+final getMessagesUseCaseProvider = FutureProvider.autoDispose.family<GetMessagesUseCase, ChatRoomParams>((ref, params) async {
+  final repository = await ref.watch(chatDetailRepositoryProvider(params).future);
   return GetMessagesUseCase(repository);
 });
 
-final sendTextMessageUseCaseProvider = FutureProvider.autoDispose.family<SendTextMessageUseCase, String>((ref, roomId) async {
-  final repository = await ref.watch(chatDetailRepositoryProvider(roomId).future);
+final sendTextMessageUseCaseProvider = FutureProvider.autoDispose.family<SendTextMessageUseCase, ChatRoomParams>((ref, params) async {
+  final repository = await ref.watch(chatDetailRepositoryProvider(params).future);
   return SendTextMessageUseCase(repository);
 });
 
-final sendImageMessageUseCaseProvider = FutureProvider.autoDispose.family<SendImageMessageUseCase, String>((ref, roomId) async {
-  final repository = await ref.watch(chatDetailRepositoryProvider(roomId).future);
+final sendImageMessageUseCaseProvider = FutureProvider.autoDispose.family<SendImageMessageUseCase, ChatRoomParams>((ref, params) async {
+  final repository = await ref.watch(chatDetailRepositoryProvider(params).future);
   return SendImageMessageUseCase(repository);
 });
 
-final getAnalysisStreamUseCaseProvider = FutureProvider.autoDispose.family<GetAnalysisStreamUseCase, String>((ref, roomId) async {
-  final repository = await ref.watch(chatDetailRepositoryProvider(roomId).future);
+final getAnalysisStreamUseCaseProvider = FutureProvider.autoDispose.family<GetAnalysisStreamUseCase, ChatRoomParams>((ref, params) async {
+  final repository = await ref.watch(chatDetailRepositoryProvider(params).future);
   return GetAnalysisStreamUseCase(repository);
 });
 
-final getMessageStreamUseCaseProvider = FutureProvider.autoDispose.family<GetMessageStreamUseCase, String>((ref, roomId) async {
-  final repository = await ref.watch(chatDetailRepositoryProvider(roomId).future);
+final getMessageStreamUseCaseProvider = FutureProvider.autoDispose.family<GetMessageStreamUseCase, ChatRoomParams>((ref, params) async {
+  final repository = await ref.watch(chatDetailRepositoryProvider(params).future);
   return GetMessageStreamUseCase(repository);
 });
 
 // Presentation Layer (Notifier)
-final chatDetailNotifierProvider = AsyncNotifierProvider.autoDispose.family<ChatDetailNotifier, ChatDetailState, String>(() => ChatDetailNotifier());
+final chatDetailNotifierProvider = AsyncNotifierProvider.autoDispose.family<ChatDetailNotifier, ChatDetailState, ChatRoomParams>(() => ChatDetailNotifier());
 
-final chatAnalysisNotifierProvider = AsyncNotifierProvider.autoDispose.family<ChatAnalysisNotifier, ChatAnalysisState, String>(() => ChatAnalysisNotifier());
+final chatAnalysisNotifierProvider = AsyncNotifierProvider.family<ChatAnalysisNotifier, ChatAnalysisState, ChatRoomParams>(() => ChatAnalysisNotifier());
 
 
