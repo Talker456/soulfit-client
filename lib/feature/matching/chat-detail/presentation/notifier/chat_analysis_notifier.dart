@@ -1,25 +1,28 @@
 import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:soulfit_client/feature/matching/chat-detail/domain/entity/chat_room_params.dart';
 import 'package:soulfit_client/feature/matching/chat-detail/domain/usecase/get_analysis_stream_use_case.dart';
-import 'package:soulfit_client/feature/matching/chat-detail/presentation/state/chat_analysis_state.dart';
 import 'package:soulfit_client/feature/matching/chat-detail/presentation/provider/chat_detail_provider.dart';
+import 'package:soulfit_client/feature/matching/chat-detail/presentation/state/chat_analysis_state.dart';
 
-class ChatAnalysisNotifier extends AutoDisposeFamilyAsyncNotifier<ChatAnalysisState, String> {
+class ChatAnalysisNotifier extends FamilyAsyncNotifier<ChatAnalysisState, ChatRoomParams> {
   late final GetAnalysisStreamUseCase _getAnalysisStreamUseCase;
   late final String roomId;
   StreamSubscription? _analysisSubscription;
 
   @override
-  Future<ChatAnalysisState> build(String roomId) async {
-    // roomId is now a parameter, no need for this.arg
+  Future<ChatAnalysisState> build(ChatRoomParams arg) async {
+    roomId = arg.roomId;
 
-    _getAnalysisStreamUseCase = await ref.watch(getAnalysisStreamUseCaseProvider(roomId).future);
+    _getAnalysisStreamUseCase = await ref.watch(getAnalysisStreamUseCaseProvider(arg).future);
 
-    // Assign to class member
-    this.roomId = roomId;
+    ref.onDispose(() {
+      print("➡️ [AnalysisNotifier] dispose called for room: $roomId");
+      _analysisSubscription?.cancel();
+    });
 
-    print("✅ [AnalysisNotifier] Created for room: $roomId");
+    print("✅ [AnalysisNotifier] Created for room: $roomId, user: ${arg.userId}");
     _listenToAnalysis();
 
     return ChatAnalysisInitial();
@@ -38,11 +41,5 @@ class ChatAnalysisNotifier extends AutoDisposeFamilyAsyncNotifier<ChatAnalysisSt
         state = AsyncError(ChatAnalysisError('Failed to get chat analysis: $error'), stackTrace);
       },
     );
-  }
-
-  @override
-  void dispose() {
-    print("➡️ [AnalysisNotifier] dispose called for room: $roomId");
-    _analysisSubscription?.cancel();
   }
 }
