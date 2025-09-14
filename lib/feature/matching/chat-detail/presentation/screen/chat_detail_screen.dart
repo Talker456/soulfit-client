@@ -23,15 +23,27 @@ class ChatDetailScreen extends ConsumerStatefulWidget {
   ConsumerState<ChatDetailScreen> createState() => _ChatDetailScreenState();
 }
 
+enum _InputMode { keyboard, analysis }
+
 class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
   final _scrollController = ScrollController();
   final _textController = TextEditingController();
   final _imagePicker = ImagePicker();
+  final _focusNode = FocusNode();
+  var _inputMode = _InputMode.keyboard;
 
   @override
   void initState() {
     super.initState();
     _scrollController.addListener(_onScroll);
+    // 키보드가 화면에 나타날 때, 분석 패널을 닫도록 리스너 추가
+    _focusNode.addListener(() {
+      if (_focusNode.hasFocus && _inputMode == _InputMode.analysis) {
+        setState(() {
+          _inputMode = _InputMode.keyboard;
+        });
+      }
+    });
   }
 
   @override
@@ -39,6 +51,7 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
     _scrollController.removeListener(_onScroll);
     _scrollController.dispose();
     _textController.dispose();
+    _focusNode.dispose();
     super.dispose();
   }
 
@@ -69,6 +82,18 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
     }
   }
 
+  void _toggleInputMode() {
+    setState(() {
+      if (_inputMode == _InputMode.keyboard) {
+        _inputMode = _InputMode.analysis;
+        _focusNode.unfocus();
+      } else {
+        _inputMode = _InputMode.keyboard;
+        _focusNode.requestFocus();
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final myUsername = ref.watch(authNotifierProvider).user?.username;
@@ -96,7 +121,6 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
       ),
       body: Column(
         children: [
-          ChatAnalysisDisplay(roomId: widget.roomId),
           Expanded(
             child: chatDetailAsync.when(
               data: (state) => switch (state) {
@@ -131,6 +155,7 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
             ),
           ),
           _buildMessageInputField(myUsername),
+          _buildBottomPanel(),
         ],
       ),
     );
@@ -156,8 +181,15 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
               icon: const Icon(Icons.add_photo_alternate_outlined),
               onPressed: _sendImage,
             ),
+            IconButton(
+              icon: Icon(_inputMode == _InputMode.analysis
+                  ? Icons.keyboard_alt_outlined
+                  : Icons.analytics_outlined),
+              onPressed: _toggleInputMode,
+            ),
             Expanded(
               child: TextField(
+                focusNode: _focusNode,
                 controller: _textController,
                 decoration: const InputDecoration(
                   hintText: '메시지 입력...',
@@ -173,6 +205,25 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildBottomPanel() {
+    return AnimatedSwitcher(
+      duration: const Duration(milliseconds: 250),
+      transitionBuilder: (Widget child, Animation<double> animation) {
+        return SizeTransition(
+          sizeFactor: animation,
+          child: child,
+        );
+      },
+      child: _inputMode == _InputMode.analysis
+          ? Container(
+              height: 280, // Typical keyboard height
+              color: Theme.of(context).scaffoldBackgroundColor,
+              child: ChatAnalysisDisplay(roomId: widget.roomId),
+            )
+          : const SizedBox.shrink(),
     );
   }
 }
