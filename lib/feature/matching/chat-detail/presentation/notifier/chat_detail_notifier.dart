@@ -3,14 +3,15 @@ import 'dart:io';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:soulfit_client/feature/matching/chat-detail/domain/entity/chat_message.dart';
+import 'package:soulfit_client/feature/matching/chat-detail/domain/entity/chat_room_params.dart';
 import 'package:soulfit_client/feature/matching/chat-detail/domain/usecase/get_message_stream_use_case.dart';
 import 'package:soulfit_client/feature/matching/chat-detail/domain/usecase/get_messages_use_case.dart';
 import 'package:soulfit_client/feature/matching/chat-detail/domain/usecase/send_image_message_use_case.dart';
 import 'package:soulfit_client/feature/matching/chat-detail/domain/usecase/send_text_message_use_case.dart';
-import 'package:soulfit_client/feature/matching/chat-detail/presentation/state/chat_detail_state.dart';
 import 'package:soulfit_client/feature/matching/chat-detail/presentation/provider/chat_detail_provider.dart';
+import 'package:soulfit_client/feature/matching/chat-detail/presentation/state/chat_detail_state.dart';
 
-class ChatDetailNotifier extends AutoDisposeFamilyAsyncNotifier<ChatDetailState, String> {
+class ChatDetailNotifier extends AutoDisposeFamilyAsyncNotifier<ChatDetailState, ChatRoomParams> {
   late final GetMessagesUseCase _getMessagesUseCase;
   late final SendTextMessageUseCase _sendTextMessageUseCase;
   late final SendImageMessageUseCase _sendImageMessageUseCase;
@@ -22,13 +23,13 @@ class ChatDetailNotifier extends AutoDisposeFamilyAsyncNotifier<ChatDetailState,
   StreamSubscription? _messageSubscription;
 
   @override
-  Future<ChatDetailState> build(String roomId) async {
-    _getMessagesUseCase = await ref.watch(getMessagesUseCaseProvider(roomId).future);
-    _sendTextMessageUseCase = await ref.watch(sendTextMessageUseCaseProvider(roomId).future);
-    _sendImageMessageUseCase = await ref.watch(sendImageMessageUseCaseProvider(roomId).future);
-    _getMessageStreamUseCase = await ref.watch(getMessageStreamUseCaseProvider(roomId).future);
+  Future<ChatDetailState> build(ChatRoomParams arg) async {
+    _getMessagesUseCase = await ref.watch(getMessagesUseCaseProvider(arg).future);
+    _sendTextMessageUseCase = await ref.watch(sendTextMessageUseCaseProvider(arg).future);
+    _sendImageMessageUseCase = await ref.watch(sendImageMessageUseCaseProvider(arg).future);
+    _getMessageStreamUseCase = await ref.watch(getMessageStreamUseCaseProvider(arg).future);
 
-    this.roomId = roomId;
+    roomId = arg.roomId;
 
     _page = 0;
     try {

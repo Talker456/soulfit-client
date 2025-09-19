@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:soulfit_client/config/di/provider.dart';
 import 'package:soulfit_client/core/ui/widget/shared_app_bar.dart';
+import 'package:soulfit_client/feature/matching/chat-detail/domain/entity/chat_room_params.dart';
 import 'package:soulfit_client/feature/matching/chat-detail/presentation/provider/chat_detail_provider.dart';
 import 'package:soulfit_client/feature/matching/chat-detail/presentation/state/chat_detail_state.dart';
 import 'package:soulfit_client/feature/matching/chat-detail/presentation/widget/chat_analysis_display.dart';
@@ -23,15 +24,40 @@ class ChatDetailScreen extends ConsumerStatefulWidget {
   ConsumerState<ChatDetailScreen> createState() => _ChatDetailScreenState();
 }
 
+enum _InputMode { keyboard, analysis }
+
 class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
   final _scrollController = ScrollController();
   final _textController = TextEditingController();
   final _imagePicker = ImagePicker();
+  final _focusNode = FocusNode();
+  var _inputMode = _InputMode.keyboard;
+
+  // Add a member variable for params
+  late final ChatRoomParams _params;
 
   @override
   void initState() {
     super.initState();
+
+    // Initialize params in initState using ref.read
+    // Note: This assumes user data is already available upon entering the screen.
+    final myUserId = ref.read(authNotifierProvider).user?.id;
+    if (myUserId == null) {
+      // Handle this case appropriately, maybe pop the screen
+      // For now, we'll throw an error to make it explicit.
+      throw Exception("User not logged in, cannot enter chat.");
+    }
+    _params = ChatRoomParams(roomId: widget.roomId, userId: myUserId);
+
     _scrollController.addListener(_onScroll);
+    _focusNode.addListener(() {
+      if (_focusNode.hasFocus && _inputMode == _InputMode.analysis) {
+        setState(() {
+          _inputMode = _InputMode.keyboard;
+        });
+      }
+    });
   }
 
   @override
@@ -39,21 +65,20 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
     _scrollController.removeListener(_onScroll);
     _scrollController.dispose();
     _textController.dispose();
+    _focusNode.dispose();
     super.dispose();
   }
 
   void _onScroll() {
     if (_scrollController.position.pixels <=
         _scrollController.position.minScrollExtent) {
-      ref
-          .read(chatDetailNotifierProvider(widget.roomId).notifier)
-          .fetchOlderMessages();
+      ref.read(chatDetailNotifierProvider(_params).notifier).fetchOlderMessages();
     }
   }
 
   void _sendMessage(String myUsername) {
     if (_textController.text.trim().isEmpty) return;
-    ref.read(chatDetailNotifierProvider(widget.roomId).notifier).sendTextMessage(
+    ref.read(chatDetailNotifierProvider(_params).notifier).sendTextMessage(
           messageText: _textController.text,
           sender: myUsername,
         );
@@ -64,18 +89,29 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
     final pickedFile = await _imagePicker.pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
       ref
-          .read(chatDetailNotifierProvider(widget.roomId).notifier)
+          .read(chatDetailNotifierProvider(_params).notifier)
           .sendImageMessage(File(pickedFile.path));
     }
+  }
+
+  void _toggleInputMode() {
+    setState(() {
+      if (_inputMode == _InputMode.keyboard) {
+        _inputMode = _InputMode.analysis;
+        _focusNode.unfocus();
+      } else {
+        _inputMode = _InputMode.keyboard;
+        _focusNode.requestFocus();
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     final myUsername = ref.watch(authNotifierProvider).user?.username;
-    final chatDetailAsync = ref.watch(chatDetailNotifierProvider(widget.roomId));
+    final chatDetailAsync = ref.watch(chatDetailNotifierProvider(_params));
 
-    ref.listen(chatDetailNotifierProvider(widget.roomId),
-        (previous, next) {
+    ref.listen(chatDetailNotifierProvider(_params), (previous, next) {
       if (next.value is ChatDetailLoaded) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (_scrollController.hasClients) {
@@ -96,7 +132,6 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
       ),
       body: Column(
         children: [
-          ChatAnalysisDisplay(roomId: widget.roomId),
           Expanded(
             child: chatDetailAsync.when(
               data: (state) => switch (state) {
@@ -131,6 +166,7 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
             ),
           ),
           _buildMessageInputField(myUsername),
+          _buildBottomPanel(),
         ],
       ),
     );
@@ -156,8 +192,15 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
               icon: const Icon(Icons.add_photo_alternate_outlined),
               onPressed: _sendImage,
             ),
+            IconButton(
+              icon: Icon(_inputMode == _InputMode.analysis
+                  ? Icons.keyboard_alt_outlined
+                  : Icons.analytics_outlined),
+              onPressed: _toggleInputMode,
+            ),
             Expanded(
               child: TextField(
+                focusNode: _focusNode,
                 controller: _textController,
                 decoration: const InputDecoration(
                   hintText: '메시지 입력...',
@@ -173,6 +216,25 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildBottomPanel() {
+    return AnimatedSwitcher(
+      duration: const Duration(milliseconds: 250),
+      transitionBuilder: (Widget child, Animation<double> animation) {
+        return SizeTransition(
+          sizeFactor: animation,
+          child: child,
+        );
+      },
+      child: _inputMode == _InputMode.analysis
+          ? Container(
+              height: 280, // Typical keyboard height
+              color: Theme.of(context).scaffoldBackgroundColor,
+              child: ChatAnalysisDisplay(params: _params),
+            )
+          : const SizedBox.shrink(),
     );
   }
 }
