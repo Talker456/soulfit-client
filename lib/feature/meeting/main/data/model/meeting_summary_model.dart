@@ -32,6 +32,33 @@ class MeetingSummaryModel extends MeetingSummary {
     );
   }
 
+  factory MeetingSummaryModel.fromServerJson(Map<String, dynamic> json) {
+    // Safely access imageUrls and provide a default
+    final imageUrls = json['imageUrls'] as List?;
+    final thumbnailUrl = (imageUrls != null && imageUrls.isNotEmpty)
+        ? imageUrls.first
+        : 'https://picsum.photos/400/400'; // A default placeholder
+
+    // Safely access location and map to region
+    final location = json['location'] as Map<String, dynamic>?;
+    final region = location != null ? {'province': location['city'] as String?, 'district': null} : null;
+
+    return MeetingSummaryModel(
+      meetingId: json['id'].toString(),
+      title: json['title'] ?? '제목 없음',
+      thumbnailUrl: thumbnailUrl,
+      category: json['category'] ?? '기타',
+      currentParticipants: json['currentParticipants'] ?? 0,
+      maxParticipants: json['maxParticipants'] ?? 0,
+      price: (json['fee'] as num?)?.toInt() ?? 0,
+      region: region,
+      date: json['meetingTime'] != null ? DateTime.parse(json['meetingTime']) : null,
+      // The spec doesn't consistently provide a rating for a meeting summary.
+      // This might come from a different endpoint or needs to be calculated.
+      rating: (json['meetingRating'] as num?)?.toDouble(),
+    );
+  }
+
   Map<String, dynamic> toJson() {
     return {
       'meetingId': meetingId,
