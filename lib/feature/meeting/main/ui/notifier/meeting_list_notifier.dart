@@ -8,7 +8,7 @@ import '../../domain/entity/meeting_filter_params.dart';
 class MeetingListNotifier extends StateNotifier<MeetingListState> {
   final dynamic useCase;
   final String? category;
-  int _page = 1;
+  int _page = 0;
   static const int _size = 10;
   MeetingFilterParams _currentFilters = const MeetingFilterParams();
 
@@ -27,7 +27,7 @@ class MeetingListNotifier extends StateNotifier<MeetingListState> {
   }
 
   Future<void> fetchFirstPage() async {
-    _page = 1;
+    _page = 0;
     print('[Notifier] Fetching first page (page: $_page, size: ${_size}, filters: $_currentFilters)');
     state = MeetingListLoading();
     try {
