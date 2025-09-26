@@ -51,7 +51,7 @@ class CommunityScreen extends ConsumerWidget {
                   width: double.infinity,
                   child: ElevatedButton(
                     onPressed: () {
-                      context.push('/love-survey-intro'); // 연애 가치관 검사 이동
+                      context.push('/love-survey'); // 연애 가치관 검사 이동
                     },
                     child: const Text('연애 가치관 검사 시작'),
                   ),
