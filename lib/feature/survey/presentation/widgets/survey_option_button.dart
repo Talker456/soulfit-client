@@ -8,6 +8,7 @@ class SurveyOptionButton extends StatelessWidget {
   final Color unselectedColor;
   final Color selectedTextColor;
   final Color unselectedTextColor;
+  final Color borderColor;
 
   const SurveyOptionButton({
     super.key,
@@ -18,6 +19,7 @@ class SurveyOptionButton extends StatelessWidget {
     required this.unselectedColor,
     this.selectedTextColor = Colors.white,
     this.unselectedTextColor = Colors.black,
+    required this.borderColor,
   });
 
   @override
@@ -29,6 +31,12 @@ class SurveyOptionButton extends StatelessWidget {
         style: ElevatedButton.styleFrom(
           backgroundColor: isSelected ? selectedColor : unselectedColor,
           foregroundColor: isSelected ? selectedTextColor : unselectedTextColor,
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16.0),
+            side: BorderSide(color: borderColor, width: 1.5),
+          ),
+          elevation: 0,
         ),
         onPressed: onPressed,
         child: Text(text),

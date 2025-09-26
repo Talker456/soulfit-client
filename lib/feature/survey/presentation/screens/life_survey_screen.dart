@@ -6,6 +6,7 @@ import '../provider/survey_provider.dart';
 import '../state/survey_state.dart';
 import '../widgets/survey_option_button.dart';
 import '../widgets/survey_progress_bar.dart';
+import '../widgets/survey_question_box.dart';
 
 class LifeSurveyScreen extends ConsumerStatefulWidget {
   const LifeSurveyScreen({super.key});
@@ -21,9 +22,7 @@ class _LifeSurveyScreenState extends ConsumerState<LifeSurveyScreen> {
   @override
   void initState() {
     super.initState();
-    // Use post-frame callback to avoid calling notifier during build
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      // TYPE_A for Life Survey
       ref.read(surveyNotifierProvider.notifier).startSurvey('TYPE_A');
     });
   }
@@ -33,30 +32,30 @@ class _LifeSurveyScreenState extends ConsumerState<LifeSurveyScreen> {
       _answers[questionId] = choiceId;
     });
 
-    if (_currentQuestionIndex < totalQuestions - 1) {
-      setState(() {
-        _currentQuestionIndex++;
-      });
-    } else {
-      // Last question answered, submit the survey
-      final surveyState = ref.read(surveyNotifierProvider);
-      if (surveyState.survey != null) {
-        final submission = SurveySubmission(
-          sessionId: surveyState.survey!.sessionId,
-          answers: _answers.entries.map((entry) {
-            return Answer(questionId: entry.key, selectedChoiceId: entry.value);
-          }).toList(),
-        );
-        ref.read(surveyNotifierProvider.notifier).submitSurvey(submission);
+    Future.delayed(const Duration(milliseconds: 300), () {
+      if (_currentQuestionIndex < totalQuestions - 1) {
+        setState(() {
+          _currentQuestionIndex++;
+        });
+      } else {
+        final surveyState = ref.read(surveyNotifierProvider);
+        if (surveyState.survey != null) {
+          final submission = SurveySubmission(
+            sessionId: surveyState.survey!.sessionId,
+            answers: _answers.entries.map((entry) {
+              return Answer(questionId: entry.key, selectedChoiceId: entry.value);
+            }).toList(),
+          );
+          ref.read(surveyNotifierProvider.notifier).submitSurvey(submission);
+        }
       }
-    }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     final surveyState = ref.watch(surveyNotifierProvider);
 
-    // Listen for submission completion to show dialog
     ref.listen<bool>(surveyNotifierProvider.select((state) => state.isSubmitted), (previous, next) {
       if (next) {
         showDialog(
@@ -66,9 +65,7 @@ class _LifeSurveyScreenState extends ConsumerState<LifeSurveyScreen> {
             content: const Text('인생 가치관 검사가 완료되었습니다.'),
             actions: [
               TextButton(
-                onPressed: () {
-                  context.go('/community'); // Go to community
-                },
+                onPressed: () => context.go('/community'),
                 child: const Text('홈으로'),
               ),
             ],
@@ -78,9 +75,15 @@ class _LifeSurveyScreenState extends ConsumerState<LifeSurveyScreen> {
     });
 
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('인생 가치관 검사'),
-        backgroundColor: Colors.grey.shade200,
+        title: const Text('나의 인생가치관은?', style: TextStyle(color: Color(0xFF66A825), fontWeight: FontWeight.bold)),
+        backgroundColor: Colors.white,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios, color: Color(0xFF66A825)),
+          onPressed: () => context.pop(),
+        ),
       ),
       body: _buildBody(surveyState),
     );
@@ -103,49 +106,38 @@ class _LifeSurveyScreenState extends ConsumerState<LifeSurveyScreen> {
     final question = questions[_currentQuestionIndex];
 
     return Padding(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.symmetric(horizontal: 20.0),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Q${_currentQuestionIndex + 1}. ${question.content}',
-                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 24),
-                ...question.choices.map((choice) {
+          const SizedBox(height: 20),
+          SurveyQuestionBox(
+            questionText: question.content,
+            borderColor: const Color(0xFF66A825),
+            textColor: const Color(0xFF66A825),
+          ),
+          const SizedBox(height: 32),
+          ...question.choices.map((choice) {
                   return SurveyOptionButton(
                     text: choice.text,
                     isSelected: _answers[question.id] == choice.id,
                     onPressed: () => _selectOption(question.id, choice.id, questions.length),
                     selectedColor: const Color(0xFF66A825),
-                    unselectedColor: Colors.grey.shade200,
+                    unselectedColor: Colors.white,
+                    borderColor: const Color(0xFF66A825),
+                    unselectedTextColor: const Color(0xFF66A825),
                   );
-                }),
-                if (_currentQuestionIndex > 0)
-                  TextButton(
-                    onPressed: () {
-                      setState(() {
-                        _currentQuestionIndex--;
-                        // Answer for the previous question is not removed to allow re-selection
-                      });
-                    },
-                    child: const Text('← 이전으로'),
-                  ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 12),
+          }),
+          const Spacer(),
           if (surveyState.isLoading)
             const Center(child: CircularProgressIndicator())
           else
-            SurveyProgressBar(
-              currentStep: _currentQuestionIndex,
-              totalSteps: questions.length,
-              color: const Color(0xFF66A825),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 32.0),
+              child: SurveyProgressBar(
+                currentStep: _currentQuestionIndex,
+                totalSteps: questions.length,
+                color: const Color(0xFF66A825),
+              ),
             ),
         ],
       ),

@@ -14,11 +14,25 @@ class SurveyProgressBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return LinearProgressIndicator(
-      value: (currentStep + 1) / totalSteps,
-      backgroundColor: Colors.grey.shade300,
-      color: color,
-      minHeight: 6,
+    double progress = totalSteps > 0 ? (currentStep + 1) / totalSteps : 0;
+
+    return Container(
+      width: 100, // Fixed width for the progress bar
+      height: 8,  // Height of the progress bar
+      decoration: BoxDecoration(
+        color: Colors.grey.shade200,
+        borderRadius: BorderRadius.circular(4),
+      ),
+      child: FractionallySizedBox(
+        alignment: Alignment.centerLeft,
+        widthFactor: progress,
+        child: Container(
+          decoration: BoxDecoration(
+            color: color,
+            borderRadius: BorderRadius.circular(4),
+          ),
+        ),
+      ),
     );
   }
 }
