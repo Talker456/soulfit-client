@@ -5,7 +5,7 @@ import '../datasources/user_report_api.dart';
 import '../../domain/repositories/user_report_repository.dart';
 
 class UserReportRepositoryImpl implements UserReportRepository {
-  final UserReportApi remoteDataSource;
+  final UserReportRemoteDataSource remoteDataSource;
 
   UserReportRepositoryImpl({required this.remoteDataSource});
 

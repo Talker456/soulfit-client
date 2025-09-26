@@ -2,38 +2,16 @@
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/models/user_report_request.dart';
-import '../../domain/usecases/report_user_usecase.dart';
-import '../../data/repository_impl/user_report_repository_impl.dart';
-import '../../data/datasources/user_report_api.dart';
-import 'package:dio/dio.dart';
-
-final dioProvider = Provider<Dio>((ref) => Dio());
-
-final userReportApiProvider = Provider<UserReportApi>((ref) {
-  final dio = ref.read(dioProvider);
-  return UserReportApi(dio: dio);
-});
-
-final userReportRepositoryProvider = Provider<UserReportRepositoryImpl>((ref) {
-  final api = ref.read(userReportApiProvider);
-  return UserReportRepositoryImpl(remoteDataSource: api);
-});
-
-final reportUserUseCaseProvider = Provider<ReportUserUseCase>((ref) {
-  final repository = ref.read(userReportRepositoryProvider);
-  return ReportUserUseCase(repository: repository);
-});
+import '../../../../config/di/provider.dart';
 
 final userReportProvider = AsyncNotifierProvider<UserReportNotifier, void>(
   UserReportNotifier.new,
 );
 
 class UserReportNotifier extends AsyncNotifier<void> {
-  late final ReportUserUseCase _useCase;
-
   @override
   Future<void> build() async {
-    _useCase = ref.read(reportUserUseCaseProvider);
+    // Provider에서 useCase를 가져올 준비
   }
 
   Future<void> reportUser({
@@ -44,12 +22,13 @@ class UserReportNotifier extends AsyncNotifier<void> {
     state = const AsyncLoading();
 
     try {
+      final useCase = ref.read(reportUserUseCaseProvider);
       final request = UserReportRequest(
         reporterUserId: reporterUserId,
         reportedUserId: reportedUserId,
         reason: reason,
       );
-      await _useCase.call(request);
+      await useCase.call(request);
       state = const AsyncData(null);
     } catch (e, st) {
       state = AsyncError(e, st);

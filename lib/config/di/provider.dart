@@ -44,6 +44,11 @@ import '../../../feature/coupon/domain/repositories/coupon_repository.dart';
 import '../../../feature/coupon/domain/usecases/get_coupon_list_usecase.dart';
 import '../../../feature/coupon/domain/usecases/register_coupon_usecase.dart';
 import '../../../feature/coupon/data/datasources/fake_coupon_remote_datasource.dart';
+import '../../feature/user_report/data/datasources/user_report_api.dart';
+import '../../feature/user_report/data/datasources/fake_user_report_remote_datasource.dart';
+import '../../feature/user_report/data/repository_impl/user_report_repository_impl.dart';
+import '../../feature/user_report/domain/repositories/user_report_repository.dart';
+import '../../feature/user_report/domain/usecases/report_user_usecase.dart';
 
 const bool USE_FAKE_DATASOURCE = true;
 
@@ -244,4 +249,27 @@ final getAvailableCouponsUseCaseProvider = Provider<GetAvailableCouponsUseCase>(
 final registerCouponUseCaseProvider = Provider<RegisterCouponUseCase>((ref) {
   final repository = ref.watch(couponRepositoryProvider);
   return RegisterCouponUseCase(repository);
+});
+
+// User Report Providers
+final userReportRemoteDataSourceProvider = Provider<UserReportRemoteDataSource>((ref) {
+  if (USE_FAKE_DATASOURCE) {
+    return FakeUserReportRemoteDataSource();
+  } else {
+    return UserReportRemoteDataSourceImpl(
+      client: ref.read(httpClientProvider),
+      source: ref.read(authLocalDataSourceProvider),
+      baseUrl: BASE_URL,
+    );
+  }
+});
+
+final userReportRepositoryProvider = Provider<UserReportRepository>((ref) {
+  final remoteDataSource = ref.watch(userReportRemoteDataSourceProvider);
+  return UserReportRepositoryImpl(remoteDataSource: remoteDataSource);
+});
+
+final reportUserUseCaseProvider = Provider<ReportUserUseCase>((ref) {
+  final repository = ref.watch(userReportRepositoryProvider);
+  return ReportUserUseCase(repository: repository);
 });
