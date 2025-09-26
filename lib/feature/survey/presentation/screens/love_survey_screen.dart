@@ -4,7 +4,9 @@ import 'package:go_router/go_router.dart';
 import '../../domain/entity/survey_submission.dart';
 import '../provider/survey_provider.dart';
 import '../state/survey_state.dart';
+import '../widgets/survey_option_button.dart';
 import '../widgets/survey_progress_bar.dart';
+import '../widgets/survey_question_box.dart';
 
 class LoveSurveyScreen extends ConsumerStatefulWidget {
   const LoveSurveyScreen({super.key});
@@ -21,7 +23,6 @@ class _LoveSurveyScreenState extends ConsumerState<LoveSurveyScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      // TYPE_B for Love Survey
       ref.read(surveyNotifierProvider.notifier).startSurvey('TYPE_B');
     });
   }
@@ -31,22 +32,24 @@ class _LoveSurveyScreenState extends ConsumerState<LoveSurveyScreen> {
       _answers[questionId] = choiceId;
     });
 
-    if (_currentQuestionIndex < totalQuestions - 1) {
-      setState(() {
-        _currentQuestionIndex++;
-      });
-    } else {
-      final surveyState = ref.read(surveyNotifierProvider);
-      if (surveyState.survey != null) {
-        final submission = SurveySubmission(
-          sessionId: surveyState.survey!.sessionId,
-          answers: _answers.entries.map((entry) {
-            return Answer(questionId: entry.key, selectedChoiceId: entry.value);
-          }).toList(),
-        );
-        ref.read(surveyNotifierProvider.notifier).submitSurvey(submission);
+    Future.delayed(const Duration(milliseconds: 300), () {
+      if (_currentQuestionIndex < totalQuestions - 1) {
+        setState(() {
+          _currentQuestionIndex++;
+        });
+      } else {
+        final surveyState = ref.read(surveyNotifierProvider);
+        if (surveyState.survey != null) {
+          final submission = SurveySubmission(
+            sessionId: surveyState.survey!.sessionId,
+            answers: _answers.entries.map((entry) {
+              return Answer(questionId: entry.key, selectedChoiceId: entry.value);
+            }).toList(),
+          );
+          ref.read(surveyNotifierProvider.notifier).submitSurvey(submission);
+        }
       }
-    }
+    });
   }
 
   @override
@@ -72,9 +75,15 @@ class _LoveSurveyScreenState extends ConsumerState<LoveSurveyScreen> {
     });
 
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('연애 가치관 검사'),
-        backgroundColor: Colors.pinkAccent.shade100,
+        title: const Text('나의 연애가치관은?', style: TextStyle(color: Colors.pink, fontWeight: FontWeight.bold)),
+        backgroundColor: Colors.white,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios, color: Colors.pink),
+          onPressed: () => context.pop(),
+        ),
       ),
       body: _buildBody(surveyState),
     );
@@ -97,57 +106,38 @@ class _LoveSurveyScreenState extends ConsumerState<LoveSurveyScreen> {
     final question = questions[_currentQuestionIndex];
 
     return Padding(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.symmetric(horizontal: 20.0),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Q${_currentQuestionIndex + 1}. ${question.content}',
-                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 24),
-                ...question.choices.map((choice) {
-                  return Container(
-                    width: double.infinity,
-                    margin: const EdgeInsets.only(bottom: 12),
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: _answers[question.id] == choice.id
-                            ? Colors.pink
-                            : Colors.pink.shade100,
-                        foregroundColor: _answers[question.id] == choice.id
-                            ? Colors.white
-                            : Colors.black,
-                      ),
-                      onPressed: () => _selectOption(question.id, choice.id, questions.length),
-                      child: Text(choice.text),
-                    ),
-                  );
-                }),
-                if (_currentQuestionIndex > 0)
-                  TextButton(
-                    onPressed: () {
-                      setState(() {
-                        _currentQuestionIndex--;
-                      });
-                    },
-                    child: const Text('← 이전으로'),
-                  ),
-              ],
-            ),
+          const SizedBox(height: 20),
+          SurveyQuestionBox(
+            questionText: question.content,
+            borderColor: Colors.pink,
+            textColor: Colors.pink,
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 32),
+          ...question.choices.map((choice) {
+            return SurveyOptionButton(
+              text: choice.text,
+              isSelected: _answers[question.id] == choice.id,
+              onPressed: () => _selectOption(question.id, choice.id, questions.length),
+              selectedColor: Colors.pink,
+              unselectedColor: Colors.white,
+              borderColor: Colors.pink,
+              unselectedTextColor: Colors.pink,
+            );
+          }),
+          const Spacer(),
           if (surveyState.isLoading)
             const Center(child: CircularProgressIndicator())
           else
-            SurveyProgressBar(
-              currentStep: _currentQuestionIndex,
-              totalSteps: questions.length,
-              color: const Color(0xFFFF7DAE),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 32.0),
+              child: SurveyProgressBar(
+                currentStep: _currentQuestionIndex,
+                totalSteps: questions.length,
+                color: Colors.pink,
+              ),
             ),
         ],
       ),
