@@ -53,7 +53,7 @@ class _DatingMainState extends ConsumerState<DatingMain> {
             icon: const Icon(Icons.filter_list, color: Colors.black54),
             onPressed: () => Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => const DatingFilter()),
+              MaterialPageRoute(builder: (context) => const DatingFilterScreen()),
             ),
           ),
           IconButton(
