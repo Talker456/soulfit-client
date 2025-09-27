@@ -49,6 +49,17 @@ import '../../feature/user_report/data/datasources/fake_user_report_remote_datas
 import '../../feature/user_report/data/repository_impl/user_report_repository_impl.dart';
 import '../../feature/user_report/domain/repositories/user_report_repository.dart';
 import '../../feature/user_report/domain/usecases/report_user_usecase.dart';
+import '../../feature/community/data/datasources/community_remote_datasource.dart';
+import '../../feature/community/data/datasources/community_remote_datasource_impl.dart';
+import '../../feature/community/data/datasources/fake_community_remote_datasource.dart';
+import '../../feature/community/data/repository_impl/community_repository_impl.dart';
+import '../../feature/community/domain/repositories/community_repository.dart';
+import '../../feature/community/domain/usecases/get_posts_usecase.dart';
+import '../../feature/community/domain/usecases/create_post_usecase.dart';
+import '../../feature/community/domain/usecases/like_post_usecase.dart';
+import '../../feature/community/domain/usecases/unlike_post_usecase.dart';
+import '../../feature/community/domain/usecases/get_comments_usecase.dart';
+import '../../feature/community/domain/usecases/create_comment_usecase.dart';
 
 const bool USE_FAKE_DATASOURCE = true;
 
@@ -272,4 +283,52 @@ final userReportRepositoryProvider = Provider<UserReportRepository>((ref) {
 final reportUserUseCaseProvider = Provider<ReportUserUseCase>((ref) {
   final repository = ref.watch(userReportRepositoryProvider);
   return ReportUserUseCase(repository: repository);
+});
+
+// Community Providers
+final communityRemoteDataSourceProvider = Provider<CommunityRemoteDataSource>((ref) {
+  if (USE_FAKE_DATASOURCE) {
+    return FakeCommunityRemoteDataSource();
+  } else {
+    return CommunityRemoteDataSourceImpl(
+      client: ref.read(httpClientProvider),
+      authSource: ref.read(authLocalDataSourceProvider),
+      baseUrl: BASE_URL,
+    );
+  }
+});
+
+final communityRepositoryProvider = Provider<CommunityRepository>((ref) {
+  final remoteDataSource = ref.watch(communityRemoteDataSourceProvider);
+  return CommunityRepositoryImpl(remoteDataSource: remoteDataSource);
+});
+
+final getPostsUseCaseProvider = Provider<GetPostsUseCase>((ref) {
+  final repository = ref.watch(communityRepositoryProvider);
+  return GetPostsUseCase(repository);
+});
+
+final createPostUseCaseProvider = Provider<CreatePostUseCase>((ref) {
+  final repository = ref.watch(communityRepositoryProvider);
+  return CreatePostUseCase(repository);
+});
+
+final likePostUseCaseProvider = Provider<LikePostUseCase>((ref) {
+  final repository = ref.watch(communityRepositoryProvider);
+  return LikePostUseCase(repository);
+});
+
+final unlikePostUseCaseProvider = Provider<UnlikePostUseCase>((ref) {
+  final repository = ref.watch(communityRepositoryProvider);
+  return UnlikePostUseCase(repository);
+});
+
+final getCommentsUseCaseProvider = Provider<GetCommentsUseCase>((ref) {
+  final repository = ref.watch(communityRepositoryProvider);
+  return GetCommentsUseCase(repository);
+});
+
+final createCommentUseCaseProvider = Provider<CreateCommentUseCase>((ref) {
+  final repository = ref.watch(communityRepositoryProvider);
+  return CreateCommentUseCase(repository);
 });
