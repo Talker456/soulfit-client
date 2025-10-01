@@ -95,7 +95,6 @@ class _MainProfileScreenState extends ConsumerState<MainProfileScreen> {
                         context: context,
                         builder:
                             (_) => UserReportDialog(
-                              reporterUserId: widget.viewerUserId,
                               reportedUserId: widget.targetUserId,
                             ),
                       );
