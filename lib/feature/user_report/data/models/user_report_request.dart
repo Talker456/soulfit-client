@@ -1,21 +1,33 @@
-// lib/feature/user_report/data/models/user_report_request.dart
+import '../../domain/entities/user_report.dart';
 
-class UserReportRequest {
-  final String reporterUserId;
-  final String reportedUserId;
+class UserReportRequestDto {
+  final String targetType;
+  final int targetId;
   final String reason;
+  final String description;
 
-  UserReportRequest({
-    required this.reporterUserId,
-    required this.reportedUserId,
+  UserReportRequestDto({
+    required this.targetType,
+    required this.targetId,
     required this.reason,
+    required this.description,
   });
+
+  factory UserReportRequestDto.fromEntity(UserReport report) {
+    return UserReportRequestDto(
+      targetType: 'USER', // Always 'USER' for this context
+      targetId: report.targetId,
+      reason: report.reason,
+      description: report.description,
+    );
+  }
 
   Map<String, dynamic> toJson() {
     return {
-      'reporter_user_id': reporterUserId,
-      'reported_user_id': reportedUserId,
+      'targetType': targetType,
+      'targetId': targetId,
       'reason': reason,
+      'description': description,
     };
   }
 }
