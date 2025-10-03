@@ -45,7 +45,7 @@ import '../../../feature/coupon/domain/usecases/get_coupon_list_usecase.dart';
 import '../../../feature/coupon/domain/usecases/register_coupon_usecase.dart';
 import '../../../feature/coupon/data/datasources/fake_coupon_remote_datasource.dart';
 
-const bool USE_FAKE_DATASOURCE = false;
+const bool USE_FAKE_DATASOURCE = true;
 
 const bool _IS_AVD = false; // Android Virtual Device 사용 시 true로 변경
 const String BASE_URL = _IS_AVD ? "10.0.2.2" : "localhost";
