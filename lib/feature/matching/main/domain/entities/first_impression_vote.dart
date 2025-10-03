@@ -1,38 +1,34 @@
 class FirstImpressionVote {
-  final String id;
-  final String userId;
-  final String userName;
-  final String message;
-  final String userProfileImageUrl;
-  final DateTime createdAt;
+  final int id;
+  final int creatorId;
+  final String creatorUsername;
+  final String title;
+  final String? creatorProfileImageUrl;
   final bool isRead;
 
   const FirstImpressionVote({
     required this.id,
-    required this.userId,
-    required this.userName,
-    required this.message,
-    required this.userProfileImageUrl,
-    required this.createdAt,
+    required this.creatorId,
+    required this.creatorUsername,
+    required this.title,
+    this.creatorProfileImageUrl,
     this.isRead = false,
   });
 
   FirstImpressionVote copyWith({
-    String? id,
-    String? userId,
-    String? userName,
-    String? message,
-    String? userProfileImageUrl,
-    DateTime? createdAt,
+    int? id,
+    int? creatorId,
+    String? creatorUsername,
+    String? title,
+    String? creatorProfileImageUrl,
     bool? isRead,
   }) {
     return FirstImpressionVote(
       id: id ?? this.id,
-      userId: userId ?? this.userId,
-      userName: userName ?? this.userName,
-      message: message ?? this.message,
-      userProfileImageUrl: userProfileImageUrl ?? this.userProfileImageUrl,
-      createdAt: createdAt ?? this.createdAt,
+      creatorId: creatorId ?? this.creatorId,
+      creatorUsername: creatorUsername ?? this.creatorUsername,
+      title: title ?? this.title,
+      creatorProfileImageUrl: creatorProfileImageUrl ?? this.creatorProfileImageUrl,
       isRead: isRead ?? this.isRead,
     );
   }

@@ -67,13 +67,13 @@ class DatingMainFakeDataSource implements DatingMainRemoteDataSource {
   Future<FirstImpressionVoteModel?> getLatestFirstImpressionVote() async {
     await Future.delayed(const Duration(milliseconds: 300));
 
-    return FirstImpressionVoteModel(
-      id: 'vote_1',
-      userId: '2',
-      userName: '이민지',
-      message: '첫인상이 정말 좋으셨어요! 대화해보고 싶어요 😊',
-      userProfileImageUrl: 'https://picsum.photos/400/400?random=2',
-      createdAt: DateTime.now().subtract(const Duration(hours: 2)),
+    // Updated to match the new FirstImpressionVoteModel structure
+    return const FirstImpressionVoteModel(
+      id: 101, // Changed to int
+      creatorId: 2, // Changed from userId to creatorId, and to int
+      creatorUsername: '이민지', // Changed from userName to creatorUsername
+      title: '주말에 같이 운동 어때요?', // Changed from message to title
+      creatorProfileImageUrl: 'https://picsum.photos/400/400?random=2', // Changed field name
       isRead: false,
     );
   }

@@ -21,7 +21,7 @@ class DatingMainRemoteDataSourceImpl implements DatingMainRemoteDataSource {
     try {
       final token = await authSource.getAccessToken();
       final response = await client.get(
-        Uri.parse('https://$baseUrl:8443/api/matching/recommended?limit=$limit'),
+        Uri.parse('http://$baseUrl:8080/api/swipes/targets?size=$limit'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
           'Authorization': 'Bearer $token',
@@ -29,9 +29,13 @@ class DatingMainRemoteDataSourceImpl implements DatingMainRemoteDataSource {
       );
 
       if (response.statusCode == 200) {
-        final List<dynamic> jsonList = jsonDecode(response.body);
+        final responseBody = utf8.decode(response.bodyBytes);
+        print('Recommended Users Response: $responseBody');
+        final Map<String, dynamic> jsonResponse = jsonDecode(responseBody);
+        final List<dynamic> jsonList = jsonResponse['content'];
         return jsonList.map((json) => RecommendedUserModel.fromJson(json)).toList();
       } else {
+        print('Failed to load recommended users: ${response.statusCode}, body: ${response.body}');
         throw Exception('Failed to load recommended users: ${response.statusCode}');
       }
     } catch (e) {
@@ -43,8 +47,9 @@ class DatingMainRemoteDataSourceImpl implements DatingMainRemoteDataSource {
   Future<FirstImpressionVoteModel?> getLatestFirstImpressionVote() async {
     try {
       final token = await authSource.getAccessToken();
+      // API를 /api/votes/forms 로 변경하고, 최신 1개만 가져오도록 size=1 파라미터를 추가합니다.
       final response = await client.get(
-        Uri.parse('https://$baseUrl:8443/api/matching/first-impression/latest'),
+        Uri.parse('http://$baseUrl:8080/api/votes/forms?page=0&size=1'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
           'Authorization': 'Bearer $token',
@@ -52,10 +57,19 @@ class DatingMainRemoteDataSourceImpl implements DatingMainRemoteDataSource {
       );
 
       if (response.statusCode == 200) {
-        final json = jsonDecode(response.body);
-        return json != null ? FirstImpressionVoteModel.fromJson(json) : null;
+        final responseBody = utf8.decode(response.bodyBytes);
+        final Map<String, dynamic> jsonResponse = jsonDecode(responseBody);
+        final List<dynamic> content = jsonResponse['content'];
+
+        if (content.isNotEmpty) {
+          // content 리스트의 첫 번째 항목을 최신 투표로 간주하고 반환합니다.
+          return FirstImpressionVoteModel.fromJson(content.first);
+        } else {
+          // content가 비어있으면 투표가 없는 것이므로 null을 반환합니다.
+          return null;
+        }
       } else if (response.statusCode == 404) {
-        return null; // 투표가 없는 경우
+        return null; // 404의 경우에도 투표가 없는 것으로 처리합니다.
       } else {
         throw Exception('Failed to load first impression vote: ${response.statusCode}');
       }
@@ -69,7 +83,7 @@ class DatingMainRemoteDataSourceImpl implements DatingMainRemoteDataSource {
     try {
       final token = await authSource.getAccessToken();
       final response = await client.patch(
-        Uri.parse('https://$baseUrl:8443/api/matching/first-impression/$voteId/read'),
+        Uri.parse('http://$baseUrl:8080/api/matching/first-impression/$voteId/read'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
           'Authorization': 'Bearer $token',

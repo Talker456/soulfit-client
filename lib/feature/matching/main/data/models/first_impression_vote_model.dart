@@ -2,39 +2,35 @@ import '../../domain/entities/first_impression_vote.dart';
 
 class FirstImpressionVoteModel extends FirstImpressionVote {
   const FirstImpressionVoteModel({
-    required String id,
-    required String userId,
-    required String userName,
-    required String message,
-    required String userProfileImageUrl,
-    required DateTime createdAt,
+    required int id,
+    required int creatorId,
+    required String creatorUsername,
+    required String title,
+    String? creatorProfileImageUrl,
     bool isRead = false,
   }) : super(
           id: id,
-          userId: userId,
-          userName: userName,
-          message: message,
-          userProfileImageUrl: userProfileImageUrl,
-          createdAt: createdAt,
+          creatorId: creatorId,
+          creatorUsername: creatorUsername,
+          title: title,
+          creatorProfileImageUrl: creatorProfileImageUrl,
           isRead: isRead,
         );
 
   FirstImpressionVoteModel copyWith({
-    String? id,
-    String? userId,
-    String? userName,
-    String? message,
-    String? userProfileImageUrl,
-    DateTime? createdAt,
+    int? id,
+    int? creatorId,
+    String? creatorUsername,
+    String? title,
+    String? creatorProfileImageUrl,
     bool? isRead,
   }) {
     return FirstImpressionVoteModel(
       id: id ?? this.id,
-      userId: userId ?? this.userId,
-      userName: userName ?? this.userName,
-      message: message ?? this.message,
-      userProfileImageUrl: userProfileImageUrl ?? this.userProfileImageUrl,
-      createdAt: createdAt ?? this.createdAt,
+      creatorId: creatorId ?? this.creatorId,
+      creatorUsername: creatorUsername ?? this.creatorUsername,
+      title: title ?? this.title,
+      creatorProfileImageUrl: creatorProfileImageUrl ?? this.creatorProfileImageUrl,
       isRead: isRead ?? this.isRead,
     );
   }
@@ -42,11 +38,10 @@ class FirstImpressionVoteModel extends FirstImpressionVote {
   factory FirstImpressionVoteModel.fromJson(Map<String, dynamic> json) {
     return FirstImpressionVoteModel(
       id: json['id'],
-      userId: json['userId'],
-      userName: json['userName'],
-      message: json['message'],
-      userProfileImageUrl: json['userProfileImageUrl'],
-      createdAt: DateTime.parse(json['createdAt']),
+      creatorId: json['creatorId'],
+      creatorUsername: json['creatorUsername'],
+      title: json['title'],
+      creatorProfileImageUrl: json['creatorProfileImageUrl'],
       isRead: json['isRead'] ?? false,
     );
   }
@@ -54,11 +49,10 @@ class FirstImpressionVoteModel extends FirstImpressionVote {
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'userId': userId,
-      'userName': userName,
-      'message': message,
-      'userProfileImageUrl': userProfileImageUrl,
-      'createdAt': createdAt.toIso8601String(),
+      'creatorId': creatorId,
+      'creatorUsername': creatorUsername,
+      'title': title,
+      'creatorProfileImageUrl': creatorProfileImageUrl,
       'isRead': isRead,
     };
   }
@@ -66,11 +60,10 @@ class FirstImpressionVoteModel extends FirstImpressionVote {
   factory FirstImpressionVoteModel.fromEntity(FirstImpressionVote entity) {
     return FirstImpressionVoteModel(
       id: entity.id,
-      userId: entity.userId,
-      userName: entity.userName,
-      message: entity.message,
-      userProfileImageUrl: entity.userProfileImageUrl,
-      createdAt: entity.createdAt,
+      creatorId: entity.creatorId,
+      creatorUsername: entity.creatorUsername,
+      title: entity.title,
+      creatorProfileImageUrl: entity.creatorProfileImageUrl,
       isRead: entity.isRead,
     );
   }
