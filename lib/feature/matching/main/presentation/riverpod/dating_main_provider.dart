@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:soulfit_client/config/di/provider.dart';
 import '../../domain/entities/recommended_user.dart';
 import '../../domain/entities/first_impression_vote.dart';
 import '../../domain/usecases/get_recommended_users_usecase.dart';
@@ -21,15 +22,13 @@ final _datingMainRemoteDataSourceProvider = Provider((ref) {
   final client = ref.watch(_httpClientProvider);
   final authSource = ref.watch(_authLocalDataSourceProvider);
 
-  const bool useFakeData = true;
-
-  if (useFakeData) {
+  if (USE_FAKE_DATASOURCE) {
     return DatingMainFakeDataSource();
   } else {
     return DatingMainRemoteDataSourceImpl(
       client: client,
       authSource: authSource,
-      baseUrl: 'your-api-base-url.com',
+      baseUrl: BASE_URL,
     );
   }
 });

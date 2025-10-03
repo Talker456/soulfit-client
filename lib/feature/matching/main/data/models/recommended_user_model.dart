@@ -45,10 +45,10 @@ class RecommendedUserModel extends RecommendedUser {
 
   factory RecommendedUserModel.fromJson(Map<String, dynamic> json) {
     return RecommendedUserModel(
-      id: json['id'],
-      name: json['name'],
+      id: json['userId'].toString(),
+      name: json['nickname'],
       age: json['age'],
-      distance: (json['distance']).toDouble(),
+      distance: (json['distanceInKm'] as num).toDouble(),
       profileImageUrl: json['profileImageUrl'],
       bio: json['bio'],
       interests: json['interests'] != null

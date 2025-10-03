@@ -298,14 +298,14 @@ class _DatingMainState extends ConsumerState<DatingMain> {
           contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           leading: CircleAvatar(
             radius: 28,
-            backgroundImage: NetworkImage(vote.userProfileImageUrl),
+            backgroundImage: NetworkImage(vote.creatorProfileImageUrl ?? ''),
           ),
-          title: Text(vote.userName, style: const TextStyle(fontWeight: FontWeight.bold)),
-          subtitle: Text(vote.message),
+          title: Text(vote.creatorUsername, style: const TextStyle(fontWeight: FontWeight.bold)),
+          subtitle: Text(vote.title),
           trailing: const Icon(Icons.chevron_right, size: 28),
           onTap: () {
             // 투표를 읽음 처리
-            ref.read(datingMainProvider.notifier).markVoteAsRead(vote.id);
+            ref.read(datingMainProvider.notifier).markVoteAsRead(vote.id.toString());
             Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => const vote_screen.FirstImpressionVoteScreen()),
