@@ -44,6 +44,17 @@ import '../../../feature/coupon/domain/repositories/coupon_repository.dart';
 import '../../../feature/coupon/domain/usecases/get_coupon_list_usecase.dart';
 import '../../../feature/coupon/domain/usecases/register_coupon_usecase.dart';
 import '../../../feature/coupon/data/datasources/fake_coupon_remote_datasource.dart';
+import '../../feature/matching/filter/data/datasources/filter_remote_datasource.dart';
+import '../../feature/matching/filter/data/datasources/filter_remote_datasource_impl.dart';
+import '../../feature/matching/filter/data/datasources/fake_filter_remote_datasource.dart';
+import '../../feature/matching/filter/data/datasources/filter_local_datasource.dart';
+import '../../feature/matching/filter/data/datasources/filter_local_datasource_impl.dart';
+import '../../feature/matching/filter/data/repository_impl/filter_repository_impl.dart';
+import '../../feature/matching/filter/domain/repositories/filter_repository.dart';
+import '../../feature/matching/filter/domain/usecases/get_filtered_users_usecase.dart';
+import '../../feature/matching/filter/domain/usecases/save_filter_usecase.dart';
+import '../../feature/matching/filter/domain/usecases/get_saved_filter_usecase.dart';
+import '../../feature/matching/filter/domain/usecases/clear_saved_filter_usecase.dart';
 
 const bool USE_FAKE_DATASOURCE = true;
 
@@ -244,4 +255,52 @@ final getAvailableCouponsUseCaseProvider = Provider<GetAvailableCouponsUseCase>(
 final registerCouponUseCaseProvider = Provider<RegisterCouponUseCase>((ref) {
   final repository = ref.watch(couponRepositoryProvider);
   return RegisterCouponUseCase(repository);
+});
+
+// Filter Providers
+final filterRemoteDataSourceProvider = Provider<FilterRemoteDataSource>((ref) {
+  if (USE_FAKE_DATASOURCE) {
+    return FakeFilterRemoteDataSource();
+  } else {
+    return FilterRemoteDataSourceImpl(
+      client: ref.read(httpClientProvider),
+      authSource: ref.read(authLocalDataSourceProvider),
+      baseUrl: BASE_URL,
+    );
+  }
+});
+
+final filterLocalDataSourceProvider = Provider<FilterLocalDataSource>((ref) {
+  return FilterLocalDataSourceImpl(
+    storage: ref.read(secureStorageProvider),
+  );
+});
+
+final filterRepositoryProvider = Provider<FilterRepository>((ref) {
+  final remoteDataSource = ref.watch(filterRemoteDataSourceProvider);
+  final localDataSource = ref.watch(filterLocalDataSourceProvider);
+  return FilterRepositoryImpl(
+    remoteDataSource: remoteDataSource,
+    localDataSource: localDataSource,
+  );
+});
+
+final getFilteredUsersUseCaseProvider = Provider<GetFilteredUsersUseCase>((ref) {
+  final repository = ref.watch(filterRepositoryProvider);
+  return GetFilteredUsersUseCase(repository);
+});
+
+final saveFilterUseCaseProvider = Provider<SaveFilterUseCase>((ref) {
+  final repository = ref.watch(filterRepositoryProvider);
+  return SaveFilterUseCase(repository);
+});
+
+final getSavedFilterUseCaseProvider = Provider<GetSavedFilterUseCase>((ref) {
+  final repository = ref.watch(filterRepositoryProvider);
+  return GetSavedFilterUseCase(repository);
+});
+
+final clearSavedFilterUseCaseProvider = Provider<ClearSavedFilterUseCase>((ref) {
+  final repository = ref.watch(filterRepositoryProvider);
+  return ClearSavedFilterUseCase(repository);
 });
