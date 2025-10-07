@@ -6,10 +6,10 @@ import 'package:soulfit_client/feature/matching/filter/presentation/screen/datin
 import 'package:soulfit_client/feature/matching/voting/presentation/screen/first_impression_evaluated.dart';
 import 'package:soulfit_client/feature/matching/voting/presentation/screen/first_impression_vote.dart' as vote_screen;
 import 'package:soulfit_client/feature/matching/recommendation/presentation/screen/recommand_user.dart' as recommendation;
+import '../../../filter/domain/entities/dating_filter.dart';
 import '../riverpod/dating_main_provider.dart';
 import '../../domain/entities/recommended_user.dart';
 import '../../domain/entities/first_impression_vote.dart';
-
 
 class DatingMain extends ConsumerStatefulWidget {
   const DatingMain({super.key});
@@ -23,7 +23,8 @@ class _DatingMainState extends ConsumerState<DatingMain> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(datingMainProvider.notifier).loadRecommendedUsers();
+      // Load recommended users with the default filter initially
+      ref.read(datingMainProvider.notifier).loadRecommendedUsers(DatingFilter.defaultFilter);
       ref.read(datingMainProvider.notifier).loadLatestFirstImpressionVote();
     });
   }
@@ -31,6 +32,7 @@ class _DatingMainState extends ConsumerState<DatingMain> {
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(datingMainProvider);
+    final datingMainNotifier = ref.read(datingMainProvider.notifier);
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -51,10 +53,17 @@ class _DatingMainState extends ConsumerState<DatingMain> {
         actions: [
           IconButton(
             icon: const Icon(Icons.filter_list, color: Colors.black54),
-            onPressed: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const DatingFilterScreen()),
-            ),
+            onPressed: () async {
+              // Navigate to filter screen and await for a returned filter
+              final DatingFilter? newFilter = await Navigator.push<DatingFilter>(
+                context,
+                MaterialPageRoute(builder: (context) => const DatingFilterScreen()),
+              );
+              // If a new filter is returned, apply it
+              if (newFilter != null) {
+                datingMainNotifier.loadRecommendedUsers(newFilter);
+              }
+            },
           ),
           IconButton(
             icon: const Icon(Icons.send_outlined, color: Colors.black54),
@@ -206,7 +215,7 @@ class _DatingMainState extends ConsumerState<DatingMain> {
             children: [
               // 배경 이미지
               Image.network(
-                user.profileImageUrl,
+                user.profileImageUrl ?? '',
                 fit: BoxFit.cover,
                 alignment: Alignment.center,
               ),
@@ -233,7 +242,7 @@ class _DatingMainState extends ConsumerState<DatingMain> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      '${user.distance.toString()} km away',
+                      '${user.distanceInKm.toString()} km away',
                       style: const TextStyle(
                         color: Colors.white70,
                         fontSize: 14,
@@ -241,7 +250,7 @@ class _DatingMainState extends ConsumerState<DatingMain> {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      '${user.name}, ${user.age}',
+                      '${user.nickname}, ${user.age}',
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 18,

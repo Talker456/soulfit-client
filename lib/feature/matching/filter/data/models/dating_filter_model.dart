@@ -1,88 +1,93 @@
 import '../../domain/entities/dating_filter.dart';
+import 'package:flutter/foundation.dart'; // For debugPrint
 
 class DatingFilterModel extends DatingFilter {
   const DatingFilterModel({
-    required String location,
-    required double minHeight,
-    required double maxHeight,
-    required double distance,
+    required double currentUserLatitude,
+    required double currentUserLongitude,
+    required String region,
     required int minAge,
     required int maxAge,
-    SmokingType? smokingPreference,
-    DrinkingType? drinkingPreference,
+    required int maxDistanceInKm,
+    SmokingStatus? smokingStatus,
+    DrinkingStatus? drinkingStatus,
   }) : super(
-          location: location,
-          minHeight: minHeight,
-          maxHeight: maxHeight,
-          distance: distance,
+          currentUserLatitude: currentUserLatitude,
+          currentUserLongitude: currentUserLongitude,
+          region: region,
           minAge: minAge,
           maxAge: maxAge,
-          smokingPreference: smokingPreference,
-          drinkingPreference: drinkingPreference,
+          maxDistanceInKm: maxDistanceInKm,
+          smokingStatus: smokingStatus,
+          drinkingStatus: drinkingStatus,
         );
 
-  DatingFilterModel copyWith({
-    String? location,
-    double? minHeight,
-    double? maxHeight,
-    double? distance,
-    int? minAge,
-    int? maxAge,
-    SmokingType? smokingPreference,
-    DrinkingType? drinkingPreference,
-  }) {
-    return DatingFilterModel(
-      location: location ?? this.location,
-      minHeight: minHeight ?? this.minHeight,
-      maxHeight: maxHeight ?? this.maxHeight,
-      distance: distance ?? this.distance,
-      minAge: minAge ?? this.minAge,
-      maxAge: maxAge ?? this.maxAge,
-      smokingPreference: smokingPreference ?? this.smokingPreference,
-      drinkingPreference: drinkingPreference ?? this.drinkingPreference,
-    );
-  }
-
+  // fromJson factory to create a model from a local storage map
   factory DatingFilterModel.fromJson(Map<String, dynamic> json) {
     return DatingFilterModel(
-      location: json['location'] ?? '한국',
-      minHeight: (json['minHeight'] ?? 160).toDouble(),
-      maxHeight: (json['maxHeight'] ?? 180).toDouble(),
-      distance: (json['distance'] ?? 40).toDouble(),
+      currentUserLatitude: (json['currentUserLatitude'] ?? 37.5665).toDouble(),
+      currentUserLongitude: (json['currentUserLongitude'] ?? 126.9780).toDouble(),
+      region: json['region'] ?? '',
       minAge: json['minAge'] ?? 20,
       maxAge: json['maxAge'] ?? 30,
-      smokingPreference: json['smokingPreference'] != null
-          ? SmokingType.values[json['smokingPreference']]
+      maxDistanceInKm: json['maxDistanceInKm'] ?? 10,
+      smokingStatus: json['smokingStatus'] != null
+          ? SmokingStatus.values.byName(json['smokingStatus'])
           : null,
-      drinkingPreference: json['drinkingPreference'] != null
-          ? DrinkingType.values[json['drinkingPreference']]
+      drinkingStatus: json['drinkingStatus'] != null
+          ? DrinkingStatus.values.byName(json['drinkingStatus'])
           : null,
     );
   }
 
+  // toJson method to save the model to local storage
   Map<String, dynamic> toJson() {
     return {
-      'location': location,
-      'minHeight': minHeight,
-      'maxHeight': maxHeight,
-      'distance': distance,
+      'currentUserLatitude': currentUserLatitude,
+      'currentUserLongitude': currentUserLongitude,
+      'region': region,
       'minAge': minAge,
       'maxAge': maxAge,
-      'smokingPreference': smokingPreference?.index,
-      'drinkingPreference': drinkingPreference?.index,
+      'maxDistanceInKm': maxDistanceInKm,
+      'smokingStatus': smokingStatus?.name,
+      'drinkingStatus': drinkingStatus?.name,
     };
   }
 
   factory DatingFilterModel.fromEntity(DatingFilter entity) {
     return DatingFilterModel(
-      location: entity.location,
-      minHeight: entity.minHeight,
-      maxHeight: entity.maxHeight,
-      distance: entity.distance,
+      currentUserLatitude: entity.currentUserLatitude,
+      currentUserLongitude: entity.currentUserLongitude,
+      region: entity.region,
       minAge: entity.minAge,
       maxAge: entity.maxAge,
-      smokingPreference: entity.smokingPreference,
-      drinkingPreference: entity.drinkingPreference,
+      maxDistanceInKm: entity.maxDistanceInKm,
+      smokingStatus: entity.smokingStatus,
+      drinkingStatus: entity.drinkingStatus,
     );
+  }
+
+  // Method to convert the model to query parameters for the API call
+  Map<String, String> toQueryParameters() {
+    final Map<String, dynamic> map = {
+      'currentUserLatitude': currentUserLatitude.toString(),
+      'currentUserLongitude': currentUserLongitude.toString(),
+      'region': region,
+      'minAge': minAge.toString(),
+      'maxAge': maxAge.toString(),
+      'maxDistanceInKm': maxDistanceInKm.toString(),
+      'smokingStatus': smokingStatus?.name,
+      'drinkingStatus': drinkingStatus?.name,
+      // 'size': '20', // Pagination can be added here if needed
+      // 'page': '0',
+    };
+
+    // Remove null values so they are not included in the query string
+    map.removeWhere((key, value) => value == null);
+
+    // Ensure all values are strings
+    final queryParams = map.map((key, value) => MapEntry(key, value.toString()));
+    debugPrint('[DatingFilterModel] Generated Query Parameters: $queryParams');
+    return queryParams;
   }
 }

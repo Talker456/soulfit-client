@@ -1,96 +1,74 @@
 import '../../domain/entities/filtered_user.dart';
-import '../../domain/entities/dating_filter.dart';
+import '../../domain/entities/dating_filter.dart'; // For SmokingStatus and DrinkingStatus enums
+import 'package:flutter/foundation.dart'; // For debugPrint
 
 class FilteredUserModel extends FilteredUser {
   const FilteredUserModel({
-    required String id,
-    required String name,
-    required int age,
-    required double height,
-    required String location,
+    required int userId,
+    required String nickname,
     String? profileImageUrl,
-    SmokingType? smokingType,
-    DrinkingType? drinkingType,
-    required double distance,
+    required int age,
+    required double distanceInKm,
+    required double height,
+    SmokingStatus? smokingStatus,
+    DrinkingStatus? drinkingStatus,
+    String? location,
   }) : super(
-          id: id,
-          name: name,
-          age: age,
-          height: height,
-          location: location,
+          userId: userId,
+          nickname: nickname,
           profileImageUrl: profileImageUrl,
-          smokingType: smokingType,
-          drinkingType: drinkingType,
-          distance: distance,
+          age: age,
+          distanceInKm: distanceInKm,
+          height: height,
+          smokingStatus: smokingStatus,
+          drinkingStatus: drinkingStatus,
+          location: location,
         );
 
-  FilteredUserModel copyWith({
-    String? id,
-    String? name,
-    int? age,
-    double? height,
-    String? location,
-    String? profileImageUrl,
-    SmokingType? smokingType,
-    DrinkingType? drinkingType,
-    double? distance,
-  }) {
-    return FilteredUserModel(
-      id: id ?? this.id,
-      name: name ?? this.name,
-      age: age ?? this.age,
-      height: height ?? this.height,
-      location: location ?? this.location,
-      profileImageUrl: profileImageUrl ?? this.profileImageUrl,
-      smokingType: smokingType ?? this.smokingType,
-      drinkingType: drinkingType ?? this.drinkingType,
-      distance: distance ?? this.distance,
-    );
-  }
-
   factory FilteredUserModel.fromJson(Map<String, dynamic> json) {
+    debugPrint('[FilteredUserModel] Parsing JSON: $json');
     return FilteredUserModel(
-      id: json['id'],
-      name: json['name'],
-      age: json['age'],
-      height: (json['height']).toDouble(),
-      location: json['location'],
-      profileImageUrl: json['profileImageUrl'],
-      smokingType: json['smokingType'] != null
-          ? SmokingType.values[json['smokingType']]
+      userId: json['userId'] as int,
+      nickname: json['nickname'] as String,
+      profileImageUrl: json['profileImageUrl'] as String?,
+      age: json['age'] as int,
+      distanceInKm: (json['distanceInKm'] as num).toDouble(),
+      height: (json['height'] as num).toDouble(),
+      smokingStatus: json['smokingStatus'] != null
+          ? SmokingStatus.values.byName(json['smokingStatus'] as String)
           : null,
-      drinkingType: json['drinkingType'] != null
-          ? DrinkingType.values[json['drinkingType']]
+      drinkingStatus: json['drinkingStatus'] != null
+          ? DrinkingStatus.values.byName(json['drinkingStatus'] as String)
           : null,
-      distance: (json['distance']).toDouble(),
+      location: null, // API response does not contain location, so set to null
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
-      'name': name,
-      'age': age,
-      'height': height,
-      'location': location,
+      'userId': userId,
+      'nickname': nickname,
       'profileImageUrl': profileImageUrl,
-      'smokingType': smokingType?.index,
-      'drinkingType': drinkingType?.index,
-      'distance': distance,
+      'age': age,
+      'distanceInKm': distanceInKm,
+      'height': height,
+      'smokingStatus': smokingStatus?.name,
+      'drinkingStatus': drinkingStatus?.name,
+      // 'location': location, // Not included as it's not in API response
     };
   }
 
   factory FilteredUserModel.fromEntity(FilteredUser entity) {
     return FilteredUserModel(
-      id: entity.id,
-      name: entity.name,
-      age: entity.age,
-      height: entity.height,
-      location: entity.location,
+      userId: entity.userId,
+      nickname: entity.nickname,
       profileImageUrl: entity.profileImageUrl,
-      smokingType: entity.smokingType,
-      drinkingType: entity.drinkingType,
-      distance: entity.distance,
+      age: entity.age,
+      distanceInKm: entity.distanceInKm,
+      height: entity.height,
+      smokingStatus: entity.smokingStatus,
+      drinkingStatus: entity.drinkingStatus,
+      location: entity.location,
     );
   }
 }

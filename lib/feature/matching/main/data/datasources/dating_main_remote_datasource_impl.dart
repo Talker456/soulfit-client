@@ -4,6 +4,8 @@ import '../../../../authentication/data/datasource/auth_local_datasource.dart';
 import '../models/recommended_user_model.dart';
 import '../models/first_impression_vote_model.dart';
 import 'dating_main_remote_datasource.dart';
+import '../../../filter/domain/entities/dating_filter.dart'; // Import DatingFilter
+import '../../../filter/data/models/dating_filter_model.dart'; // Import DatingFilterModel
 
 class DatingMainRemoteDataSourceImpl implements DatingMainRemoteDataSource {
   final http.Client client;
@@ -17,11 +19,21 @@ class DatingMainRemoteDataSourceImpl implements DatingMainRemoteDataSource {
   });
 
   @override
-  Future<List<RecommendedUserModel>> getRecommendedUsers({int limit = 10}) async {
+  Future<List<RecommendedUserModel>> getRecommendedUsers(DatingFilter filter, {int limit = 10}) async {
     try {
       final token = await authSource.getAccessToken();
+      
+      // Convert DatingFilter to DatingFilterModel to use toQueryParameters
+      final filterModel = DatingFilterModel.fromEntity(filter);
+      final queryParameters = filterModel.toQueryParameters();
+      
+      // Add limit to query parameters
+      queryParameters['size'] = limit.toString();
+
+      final uri = Uri.http('localhost:8080', '/api/swipes/targets', queryParameters);
+
       final response = await client.get(
-        Uri.parse('http://$baseUrl:8080/api/swipes/targets?size=$limit'),
+        uri,
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
           'Authorization': 'Bearer $token',
