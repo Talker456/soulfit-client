@@ -1,72 +1,74 @@
+enum SmokingStatus {
+  NON_SMOKER,
+  OCCASIONAL,
+  REGULAR,
+}
+
+enum DrinkingStatus {
+  NEVER,
+  SOMETIMES,
+  OFTEN,
+  DAILY,
+}
+
 class DatingFilter {
-  final String location;
-  final double minHeight;
-  final double maxHeight;
-  final double distance;
+  final double currentUserLatitude;
+  final double currentUserLongitude;
+  final String region;
   final int minAge;
   final int maxAge;
-  final SmokingType? smokingPreference;
-  final DrinkingType? drinkingPreference;
+  final int maxDistanceInKm;
+  final SmokingStatus? smokingStatus;
+  final DrinkingStatus? drinkingStatus;
 
   const DatingFilter({
-    required this.location,
-    required this.minHeight,
-    required this.maxHeight,
-    required this.distance,
+    required this.currentUserLatitude,
+    required this.currentUserLongitude,
+    required this.region,
     required this.minAge,
     required this.maxAge,
-    this.smokingPreference,
-    this.drinkingPreference,
+    required this.maxDistanceInKm,
+    this.smokingStatus,
+    this.drinkingStatus,
   });
 
   DatingFilter copyWith({
-    String? location,
-    double? minHeight,
-    double? maxHeight,
-    double? distance,
+    double? currentUserLatitude,
+    double? currentUserLongitude,
+    String? region,
     int? minAge,
     int? maxAge,
-    SmokingType? smokingPreference,
-    DrinkingType? drinkingPreference,
+    int? maxDistanceInKm,
+    Object? smokingStatus = _undefined,  // ← Object 타입 사용!
+    Object? drinkingStatus = _undefined,
   }) {
     return DatingFilter(
-      location: location ?? this.location,
-      minHeight: minHeight ?? this.minHeight,
-      maxHeight: maxHeight ?? this.maxHeight,
-      distance: distance ?? this.distance,
+      currentUserLatitude: currentUserLatitude ?? this.currentUserLatitude,
+      currentUserLongitude: currentUserLongitude ?? this.currentUserLongitude,
+      region: region ?? this.region,
       minAge: minAge ?? this.minAge,
       maxAge: maxAge ?? this.maxAge,
-      smokingPreference: smokingPreference ?? this.smokingPreference,
-      drinkingPreference: drinkingPreference ?? this.drinkingPreference,
+      maxDistanceInKm: maxDistanceInKm ?? this.maxDistanceInKm,
+      smokingStatus: smokingStatus == _undefined
+          ? this.smokingStatus
+          : smokingStatus as SmokingStatus?,  // ← null 허용
+      drinkingStatus: drinkingStatus == _undefined
+          ? this.drinkingStatus
+          : drinkingStatus as DrinkingStatus?,
     );
   }
 
-  // 기본 필터값
+  // Default filter values, assuming some defaults for lat/long
   static const DatingFilter defaultFilter = DatingFilter(
-    location: '한국',
-    minHeight: 160,
-    maxHeight: 180,
-    distance: 40,
+    currentUserLatitude: 37.5665, // Default to Seoul
+    currentUserLongitude: 126.9780,
+    region: '', // Removed default region filter
     minAge: 20,
     maxAge: 30,
-    smokingPreference: null,
-    drinkingPreference: null,
+    maxDistanceInKm: 100, // Effectively removed distance filter
+    smokingStatus: null,
+    drinkingStatus: null,
   );
 }
 
-enum SmokingType {
-  smoker('흡연자'),
-  nonSmoker('비흡연자');
-
-  const SmokingType(this.displayName);
-  final String displayName;
-}
-
-enum DrinkingType {
-  often('자주 마셔요'),
-  sometimes('종종 마셔요'),
-  never('안 마셔요');
-
-  const DrinkingType(this.displayName);
-  final String displayName;
-}
+const _undefined = Object();

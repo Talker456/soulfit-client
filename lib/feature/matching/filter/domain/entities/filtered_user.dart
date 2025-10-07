@@ -1,49 +1,49 @@
-import 'dating_filter.dart';
+import 'package:soulfit_client/feature/matching/filter/domain/entities/dating_filter.dart';
 
 class FilteredUser {
-  final String id;
-  final String name;
-  final int age;
-  final double height;
-  final String location;
+  final int userId;
+  final String nickname;
   final String? profileImageUrl;
-  final SmokingType? smokingType;
-  final DrinkingType? drinkingType;
-  final double distance;
+  final int age;
+  final double distanceInKm;
+  final double height;
+  final SmokingStatus? smokingStatus;
+  final DrinkingStatus? drinkingStatus;
+  final String? location; // Made nullable as it's not in API response
 
   const FilteredUser({
-    required this.id,
-    required this.name,
-    required this.age,
-    required this.height,
-    required this.location,
+    required this.userId,
+    required this.nickname,
     this.profileImageUrl,
-    this.smokingType,
-    this.drinkingType,
-    required this.distance,
+    required this.age,
+    required this.distanceInKm,
+    required this.height,
+    this.smokingStatus,
+    this.drinkingStatus,
+    this.location,
   });
 
   FilteredUser copyWith({
-    String? id,
-    String? name,
-    int? age,
-    double? height,
-    String? location,
+    int? userId,
+    String? nickname,
     String? profileImageUrl,
-    SmokingType? smokingType,
-    DrinkingType? drinkingType,
-    double? distance,
+    int? age,
+    double? distanceInKm,
+    double? height,
+    SmokingStatus? smokingStatus,
+    DrinkingStatus? drinkingStatus,
+    String? location,
   }) {
     return FilteredUser(
-      id: id ?? this.id,
-      name: name ?? this.name,
-      age: age ?? this.age,
-      height: height ?? this.height,
-      location: location ?? this.location,
+      userId: userId ?? this.userId,
+      nickname: nickname ?? this.nickname,
       profileImageUrl: profileImageUrl ?? this.profileImageUrl,
-      smokingType: smokingType ?? this.smokingType,
-      drinkingType: drinkingType ?? this.drinkingType,
-      distance: distance ?? this.distance,
+      age: age ?? this.age,
+      distanceInKm: distanceInKm ?? this.distanceInKm,
+      height: height ?? this.height,
+      smokingStatus: smokingStatus ?? this.smokingStatus,
+      drinkingStatus: drinkingStatus ?? this.drinkingStatus,
+      location: location ?? this.location,
     );
   }
 }

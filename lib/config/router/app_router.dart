@@ -367,7 +367,7 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: AppRoutes.datingFilter,
       name: 'dating-filter',
-      builder: (context, state) => const DatingFilter(),
+      builder: (context, state) => const DatingFilterScreen(),
     ),
     GoRoute(
       path: AppRoutes.firstImpressionEvaluated,
