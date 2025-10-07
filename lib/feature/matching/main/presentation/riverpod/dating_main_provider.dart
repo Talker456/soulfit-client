@@ -11,6 +11,7 @@ import '../../data/repositories/dating_main_repository_impl.dart';
 import '../../data/datasources/dating_main_remote_datasource_impl.dart';
 import '../../data/datasources/dating_main_fake_datasource.dart';
 import '../../../../authentication/data/datasource/auth_local_datasource.dart';
+import '../../../filter/domain/entities/dating_filter.dart'; // Import DatingFilter
 
 final _httpClientProvider = Provider<http.Client>((ref) => http.Client());
 
@@ -59,6 +60,7 @@ class DatingMainState {
   final bool isLoadingUsers;
   final bool isLoadingVote;
   final String? error;
+  final DatingFilter currentFilter; // Added currentFilter
 
   const DatingMainState({
     this.recommendedUsers = const [],
@@ -66,6 +68,7 @@ class DatingMainState {
     this.isLoadingUsers = false,
     this.isLoadingVote = false,
     this.error,
+    required this.currentFilter, // Required for initial state
   });
 
   DatingMainState copyWith({
@@ -74,6 +77,7 @@ class DatingMainState {
     bool? isLoadingUsers,
     bool? isLoadingVote,
     String? error,
+    DatingFilter? currentFilter,
   }) {
     return DatingMainState(
       recommendedUsers: recommendedUsers ?? this.recommendedUsers,
@@ -81,6 +85,7 @@ class DatingMainState {
       isLoadingUsers: isLoadingUsers ?? this.isLoadingUsers,
       isLoadingVote: isLoadingVote ?? this.isLoadingVote,
       error: error ?? this.error,
+      currentFilter: currentFilter ?? this.currentFilter,
     );
   }
 }
@@ -94,12 +99,12 @@ class DatingMainNotifier extends StateNotifier<DatingMainState> {
     this._getRecommendedUsersUseCase,
     this._getLatestFirstImpressionVoteUseCase,
     this._markFirstImpressionVoteAsReadUseCase,
-  ) : super(const DatingMainState());
+  ) : super(DatingMainState(currentFilter: DatingFilter.defaultFilter)); // Initialize with default filter
 
-  Future<void> loadRecommendedUsers({int limit = 10}) async {
+  Future<void> loadRecommendedUsers(DatingFilter filter, {int limit = 10}) async {
     try {
-      state = state.copyWith(isLoadingUsers: true, error: null);
-      final users = await _getRecommendedUsersUseCase(limit: limit);
+      state = state.copyWith(isLoadingUsers: true, error: null, currentFilter: filter);
+      final users = await _getRecommendedUsersUseCase(filter, limit: limit);
       state = state.copyWith(
         recommendedUsers: users,
         isLoadingUsers: false,
@@ -131,7 +136,7 @@ class DatingMainNotifier extends StateNotifier<DatingMainState> {
   Future<void> markVoteAsRead(String voteId) async {
     try {
       await _markFirstImpressionVoteAsReadUseCase(voteId);
-      if (state.latestVote?.id == voteId) {
+      if (state.latestVote?.creatorId.toString() == voteId) { // Changed from id to creatorId
         state = state.copyWith(latestVote: null);
       }
     } catch (e) {
