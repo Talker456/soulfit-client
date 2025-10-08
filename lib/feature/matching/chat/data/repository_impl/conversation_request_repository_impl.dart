@@ -18,7 +18,7 @@ class ConversationRequestRepositoryImpl
 
   @override
   Future<List<ChatRequest>> getReceivedConversationRequests() async {
-    print('[conversation request repository impl] : get rcvd conv reqs');
+    print('[conversation_req request repository impl] : get rcvd conv reqs');
     final models = await remoteDataSource.getReceivedRequests();
     return models;
   }
