@@ -1,4 +1,3 @@
-
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
@@ -24,35 +23,25 @@ class MainProfileRemoteDataSourceImpl implements MainProfileRemoteDataSource {
   @override
   Future<UserMainProfileInfoDto> fetchUserMainProfileInfo(String userId) async {
     final token = await authLocalDataSource.getAccessToken();
+    // Use the correct endpoint for fetching a specific user's profile
     final response = await client.get(
-      Uri.parse('http://$base:8080/api/profile/me'),
+      Uri.parse('http://$base:8080/api/profile/$userId'),
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $token',
       },
     );
 
-    print('[Debug - fetchUserMainProfileInfo] Response Status Code: ${response.statusCode}');
-    print('[Debug - fetchUserMainProfileInfo] Response Body: ${utf8.decode(response.bodyBytes)}');
-
     if (response.statusCode == 200) {
-      final jsonResponse = jsonDecode(response.body);
-      // API spec has 'bio', DTO has 'introduction'.
-      // API spec does not have 'selfKeywords'.
-      return UserMainProfileInfoDto(
-        profileImageUrl: jsonResponse['profileImageUrl'],
-        introduction: jsonResponse['bio'] ?? '', // Mapping bio to introduction
-        personalityKeywords:
-            List<String>.from(jsonResponse['personalityKeywords'] ?? []),
-        selfKeywords: [], // Not provided by API, defaulting to empty list
-      );
+      final jsonResponse = jsonDecode(utf8.decode(response.bodyBytes));
+      return UserMainProfileInfoDto.fromJson(jsonResponse);
     } else {
-      throw Exception('Failed to load main profile info');
+      throw Exception('Failed to load main profile info: ${response.statusCode}');
     }
   }
 
   @override
-  Future<List<String>> fetchUserAlbumImages(String userId) async {
+  Future<List<UserAlbumPhotoDto>> fetchUserAlbumImages(String userId) async {
     final token = await authLocalDataSource.getAccessToken();
     final response = await client.get(
       Uri.parse('http://$base:8080/api/profile/$userId/photos'),
@@ -63,9 +52,9 @@ class MainProfileRemoteDataSourceImpl implements MainProfileRemoteDataSource {
     );
 
     if (response.statusCode == 200) {
-      final List<dynamic> jsonResponse = jsonDecode(response.body);
+      final List<dynamic> jsonResponse = jsonDecode(utf8.decode(response.bodyBytes));
       return jsonResponse
-          .map((photoJson) => UserAlbumPhotoDto.fromJson(photoJson).imageUrl)
+          .map((photoJson) => UserAlbumPhotoDto.fromJson(photoJson))
           .toList();
     } else {
       throw Exception('Failed to load user album images');
@@ -89,8 +78,6 @@ class MainProfileRemoteDataSourceImpl implements MainProfileRemoteDataSource {
 
   @override
   Future<List<String>> fetchPerceivedByOthersKeywords(String userId) async {
-    print('[Debug - fetchPerceivedByOthersKeywords] Received userId: $userId');
-
     final token = await authLocalDataSource.getAccessToken();
     final response = await client.get(
       Uri.parse('http://$base:8080/api/reviews/user/$userId/keywords/summary'),
@@ -99,9 +86,6 @@ class MainProfileRemoteDataSourceImpl implements MainProfileRemoteDataSource {
         'Authorization': 'Bearer $token',
       },
     );
-
-    print('[Debug - fetchPerceivedByOthersKeywords] Response Status Code: ${response.statusCode}');
-    print('[Debug - fetchPerceivedByOthersKeywords] Response Body: ${utf8.decode(response.bodyBytes)}');
 
     if (response.statusCode == 200) {
       final decodedBody = utf8.decode(response.bodyBytes);

@@ -1,12 +1,13 @@
 
 import 'package:flutter/material.dart';
+import 'package:soulfit_client/feature/main_profile/domain/entity/user_album_photo.dart';
 
 class AlbumSection extends StatelessWidget {
-  final List<String> urls;
+  final List<UserAlbumPhoto> photos;
 
   const AlbumSection({
     super.key,
-    required this.urls,
+    required this.photos,
   });
 
   @override
@@ -21,12 +22,12 @@ class AlbumSection extends StatelessWidget {
           height: 100,
           child: ListView.separated(
             scrollDirection: Axis.horizontal,
-            itemCount: urls.length,
+            itemCount: photos.length,
             separatorBuilder: (_, __) => const SizedBox(width: 8),
             itemBuilder: (_, i) => ClipRRect(
               borderRadius: BorderRadius.circular(8),
               child: Image.network(
-                urls[i],
+                photos[i].imageUrl,
                 width: 100,
                 height: 100,
                 fit: BoxFit.cover,
