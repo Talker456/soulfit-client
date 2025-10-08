@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:soulfit_client/feature/main_profile/ui/widgets/album_section.dart';
+import 'package:soulfit_client/feature/main_profile/ui/widgets/conversation_request_dialog.dart';
 import 'package:soulfit_client/feature/main_profile/ui/widgets/hosted_meetings_placeholder.dart';
 import 'package:soulfit_client/feature/main_profile/ui/widgets/perception_card.dart';
 import 'package:soulfit_client/feature/main_profile/ui/widgets/profile_card.dart';
@@ -70,81 +71,95 @@ class _MainProfileScreenState extends ConsumerState<MainProfileScreen> {
           ],
         ),
       ),
-
       body: switch (state) {
-        MainProfileInitial() || MainProfileLoading() => const Center(
-          child: CircularProgressIndicator(),
-        ),
+        MainProfileInitial() ||
+        MainProfileLoading() =>
+          const Center(
+            child: CircularProgressIndicator(),
+          ),
         MainProfileError(:final message) => Center(
-          child: Text("오류 발생: $message"),
-        ),
+            child: Text("오류 발생: $message"),
+          ),
         MainProfileLoaded(:final data) => ListView(
-          padding: const EdgeInsets.all(16),
-          children: [
-            // 유저 신고 버튼 코드 시작
-            Stack(
-              children: [
-                ProfileCard(data: data),
-                Positioned(
-                  top: 8,
-                  right: 8,
-                  child: IconButton(
-                    icon: const Icon(Icons.warning, color: Colors.red),
-                    onPressed: () {
-                      showDialog(
-                        context: context,
-                        builder:
-                            (_) => UserReportDialog(
-                              reportedUserId: widget.targetUserId,
-                            ),
-                      );
-                    },
+            padding: const EdgeInsets.all(16),
+            children: [
+              // 유저 신고 버튼 코드 시작
+              Stack(
+                children: [
+                  ProfileCard(data: data),
+                  Positioned(
+                    top: 8,
+                    right: 8,
+                    child: IconButton(
+                      icon: const Icon(Icons.warning, color: Colors.red),
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder: (_) => UserReportDialog(
+                            reportedUserId: widget.targetUserId,
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ), // 유저 신고 버튼 코드 끝
+              // ProfileCard(data: data), // 유저 신고 버튼 코드 삭제 시 주석 해제하기
+              const SizedBox(height: 12),
+              Card(
+                color: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                  side: const BorderSide(color: Color(0xFFDFF5DB), width: 5),
+                ),
+                elevation: 1,
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      PerceptionCard(
+                        title: "상대방이 보는 나는...",
+                        keywords: data.perceivedByOthersKeywords,
+                      ),
+                      const SizedBox(height: 8),
+                      PerceptionCard(
+                        title: "내가 보는 나는...",
+                        keywords: data.mainProfileInfo.selfKeywords,
+                      ),
+                      const SizedBox(height: 8),
+                      PerceptionCard(
+                        title: "AI가 보는 나는...",
+                        keywords: data.aiPredictedKeywords,
+                      ),
+                    ],
                   ),
                 ),
-              ],
-            ), // 유저 신고 버튼 코드 끝
-            // ProfileCard(data: data), // 유저 신고 버튼 코드 삭제 시 주석 해제하기
-            const SizedBox(height: 12),
-            Card(
-              color: Colors.white,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-                side: const BorderSide(color: Color(0xFFDFF5DB), width: 5),
               ),
-              elevation: 1,
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    PerceptionCard(
-                      title: "상대방이 보는 나는...",
-                      keywords: data.perceivedByOthersKeywords,
-                    ),
-                    const SizedBox(height: 8),
-                    PerceptionCard(
-                      title: "내가 보는 나는...",
-                      keywords: data.mainProfileInfo.selfKeywords,
-                    ),
-                    const SizedBox(height: 8),
-                    PerceptionCard(
-                      title: "AI가 보는 나는...",
-                      keywords: data.aiPredictedKeywords,
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(height: 12),
-            ValueAnalysisCard(data: data),
-            const SizedBox(height: 16),
-            const HostedMeetingsPlaceholder(),
-            const SizedBox(height: 16),
-            AlbumSection(urls: data.albumImages),
-            const SizedBox(height: 16),
-          ],
-        ),
+              const SizedBox(height: 12),
+              ValueAnalysisCard(data: data),
+              const SizedBox(height: 16),
+              const HostedMeetingsPlaceholder(),
+              const SizedBox(height: 16),
+              AlbumSection(urls: data.albumImages),
+              const SizedBox(height: 16),
+            ],
+          ),
       },
+      floatingActionButton: state is MainProfileLoaded
+          ? FloatingActionButton.extended(
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (_) => ConversationRequestDialog(
+                    targetUserId: widget.targetUserId,
+                  ),
+                );
+              },
+              label: const Text('대화 신청 보내기'),
+              icon: const Icon(Icons.send),
+            )
+          : null,
     );
   }
 }
