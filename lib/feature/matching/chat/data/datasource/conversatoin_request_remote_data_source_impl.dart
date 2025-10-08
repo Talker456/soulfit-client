@@ -30,9 +30,9 @@ class ConversationRequestRemoteDataSourceImpl
       body: jsonEncode({'status': 'ACCEPTED'}),
     );
 
-    print('[conversation request remote data source impl] : accept request $requestId');
+    print('[conversation_req request remote data source impl] : accept request $requestId');
     if (response.statusCode != 200) {
-      throw Exception('Failed to accept conversation request');
+      throw Exception('Failed to accept conversation_req request');
     }
   }
 
@@ -48,9 +48,9 @@ class ConversationRequestRemoteDataSourceImpl
       body: jsonEncode({'status': 'REJECTED'}),
     );
 
-    print('[conversation request remote data source impl] : reject request $requestId');
+    print('[conversation_req request remote data source impl] : reject request $requestId');
     if (response.statusCode != 200) {
-      throw Exception('Failed to reject conversation request');
+      throw Exception('Failed to reject conversation_req request');
     }
   }
 
@@ -71,10 +71,10 @@ class ConversationRequestRemoteDataSourceImpl
     );
 
     if (response.statusCode == 201) {
-      print('[conversation request remote data source impl] : send request $message');
+      print('[conversation_req request remote data source impl] : send request $message');
       return SentChatRequestModel.fromJson(jsonDecode(response.body));
     } else {
-      throw Exception('Failed to send conversation request');
+      throw Exception('Failed to send conversation_req request');
     }
   }
 
@@ -93,16 +93,16 @@ class ConversationRequestRemoteDataSourceImpl
     print('[Debug] Response Body: ${utf8.decode(response.bodyBytes)}');
 
     if (response.statusCode == 200) {
-      print('[conversation request remote data source impl] : get received requests');
+      print('[conversation_req request remote data source impl] : get received requests');
       try{
         final List<dynamic> data = jsonDecode(utf8.decode(response.bodyBytes));
         return data.map((json) => ChatRequestModel.fromJson(json)).toList();
       }catch(e){
         print('[Debug] JSON Parsing or Model Conversion Error: $e'); // 에러 로그 추가
-        throw Exception('Failed to parse conversation requests');
+        throw Exception('Failed to parse conversation_req requests');
       }
     } else {
-      print('[conversation request remote data source impl] : failed to get received requests');
+      print('[conversation_req request remote data source impl] : failed to get received requests');
       print('[response] : $response');
       throw Exception('Failed to load received requests');
     }
@@ -120,7 +120,7 @@ class ConversationRequestRemoteDataSourceImpl
     );
 
     if (response.statusCode == 200) {
-      print('[conversation request remote data source impl] : get sent requests $token');
+      print('[conversation_req request remote data source impl] : get sent requests $token');
       final List<dynamic> data = jsonDecode(utf8.decode(response.bodyBytes));
       return data.map((json) => SentChatRequestModel.fromJson(json)).toList();
     } else {

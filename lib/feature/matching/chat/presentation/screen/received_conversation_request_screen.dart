@@ -17,6 +17,12 @@ class ReceivedConversationRequestScreen extends ConsumerWidget {
       appBar: AppBar(
         title: const Text('받은 대화 신청'),
         centerTitle: true,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: () => notifier.fetchRequests(),
+          ),
+        ],
       ),
       body: switch (state) {
         ConversationRequestLoading() => const Center(child: CircularProgressIndicator()),
