@@ -141,7 +141,7 @@ class _MainProfileScreenState extends ConsumerState<MainProfileScreen> {
               const SizedBox(height: 16),
               const HostedMeetingsPlaceholder(),
               const SizedBox(height: 16),
-              AlbumSection(urls: data.albumImages),
+              AlbumSection(photos: data.albumImages),
               const SizedBox(height: 16),
             ],
           ),

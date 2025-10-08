@@ -1,11 +1,10 @@
 import 'package:dartz/dartz.dart';
 
+import '../../domain/entity/user_album_photo.dart';
 import '../../domain/entity/user_main_profile_info.dart';
 import '../../domain/entity/user_value_analysis.dart';
 import '../../domain/repository/main_profile_repository.dart';
 import '../../data/datasource/main_profile_remote_datasource.dart';
-import '../../data/model/user_main_profile_info_dto.dart';
-import '../../data/model/user_value_analysis_dto.dart';
 
 class MainProfileRepositoryImpl implements MainProfileRepository {
   final MainProfileRemoteDataSource remote;
@@ -53,10 +52,11 @@ class MainProfileRepositoryImpl implements MainProfileRepository {
   }
 
   @override
-  Future<Either<Exception, List<String>>> getUserAlbumImages(String userId) async {
+  Future<Either<Exception, List<UserAlbumPhoto>>> getUserAlbumImages(String userId) async {
     try {
-      final result = await remote.fetchUserAlbumImages(userId);
-      return Right(result);
+      final dtoList = await remote.fetchUserAlbumImages(userId);
+      final entityList = dtoList.map((dto) => dto.toEntity()).toList();
+      return Right(entityList);
     } catch (e) {
       return Left(Exception('Failed to load album images: $e'));
     }
