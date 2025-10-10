@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:soulfit_client/feature/main_profile/ui/widgets/album_section.dart';
 import 'package:soulfit_client/feature/main_profile/ui/widgets/conversation_request_dialog.dart';
 import 'package:soulfit_client/feature/main_profile/ui/widgets/hosted_meetings_placeholder.dart';
@@ -7,6 +8,7 @@ import 'package:soulfit_client/feature/main_profile/ui/widgets/perception_card.d
 import 'package:soulfit_client/feature/main_profile/ui/widgets/profile_card.dart';
 import 'package:soulfit_client/feature/main_profile/ui/widgets/value_analysis_card.dart';
 import 'package:soulfit_client/feature/user_report/presentation/widgets/user_report_dialog.dart'; // 유저 신고
+import '../../../../config/router/app_router.dart';
 import '../provider/main_profile_provider.dart';
 import '../state/main_profile_state.dart';
 
@@ -140,6 +142,30 @@ class _MainProfileScreenState extends ConsumerState<MainProfileScreen> {
               ValueAnalysisCard(data: data),
               const SizedBox(height: 16),
               const HostedMeetingsPlaceholder(),
+              const SizedBox(height: 16),
+              Card(
+                elevation: 1,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                child: InkWell(
+                  onTap: () {
+                    context.go(AppRoutes.meetingDashboard);
+                  },
+                  borderRadius: BorderRadius.circular(12),
+                  child: const Padding(
+                    padding: EdgeInsets.all(16.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          '모임 활동 대시보드 보기',
+                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                        ),
+                        Icon(Icons.arrow_forward_ios, size: 18, color: Colors.grey),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
               const SizedBox(height: 16),
               AlbumSection(photos: data.albumImages),
               const SizedBox(height: 16),
