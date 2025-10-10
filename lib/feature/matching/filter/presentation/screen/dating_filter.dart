@@ -55,38 +55,28 @@ class DatingFilterScreen extends ConsumerWidget {
                     const SizedBox(height: 32),
                     _buildChoiceChipSection(
                       '흡연',
-                      ['상관 없음', ...SmokingStatus.values.map((e) => e.name).toList()],
-                      filterState.filter.smokingStatus?.name,
-                      // (selectedName) => filterNotifier.updateSmokingStatus(
-                      //   selectedName != null ? SmokingStatus.values.byName(selectedName) : null,
-                      // ),
-                            (selectedName) {
-                          print('=== BEFORE UPDATE ===');
-                          print('selectedName: $selectedName');
-                          print('current filter: ${filterState.filter.smokingStatus}');
-
-                          final newStatus = selectedName != null
-                              ? SmokingStatus.values.byName(selectedName)
-                              : null;
-                          print('newStatus to set: $newStatus');
-
-                          filterNotifier.updateSmokingStatus(newStatus);
-
-                          // 다음 프레임에서 확인
-                          WidgetsBinding.instance.addPostFrameCallback((_) {
-                            print('=== AFTER UPDATE (next frame) ===');
-                            print('updated filter: ${filterState.filter.smokingStatus}');
-                          });
+                      ['상관 없음', ...SmokingStatus.values.map((e) => e.displayName).toList()],
+                      filterState.filter.smokingStatus?.displayName,
+                      (selectedDisplayName) {
+                        SmokingStatus? newStatus;
+                        if (selectedDisplayName != null) {
+                          newStatus = SmokingStatus.values.firstWhere((e) => e.displayName == selectedDisplayName);
                         }
+                        filterNotifier.updateSmokingStatus(newStatus);
+                      },
                     ),
                     const SizedBox(height: 32),
                     _buildChoiceChipSection(
                       '음주',
-                      ['상관 없음', ...DrinkingStatus.values.map((e) => e.name).toList()],
-                      filterState.filter.drinkingStatus?.name,
-                      (selectedName) => filterNotifier.updateDrinkingStatus(
-                        selectedName != null ? DrinkingStatus.values.byName(selectedName) : null,
-                      ),
+                      ['상관 없음', ...DrinkingStatus.values.map((e) => e.displayName).toList()],
+                      filterState.filter.drinkingStatus?.displayName,
+                      (selectedDisplayName) {
+                        DrinkingStatus? newStatus;
+                        if (selectedDisplayName != null) {
+                          newStatus = DrinkingStatus.values.firstWhere((e) => e.displayName == selectedDisplayName);
+                        }
+                        filterNotifier.updateDrinkingStatus(newStatus);
+                      },
                     ),
                     // TODO: Add UI for currentUserLatitude and currentUserLongitude if needed
                   ],
