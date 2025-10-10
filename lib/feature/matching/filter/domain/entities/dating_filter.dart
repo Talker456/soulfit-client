@@ -17,6 +17,8 @@ class DatingFilter {
   final String region;
   final int minAge;
   final int maxAge;
+  final int? minHeight;
+  final int? maxHeight;
   final int maxDistanceInKm;
   final SmokingStatus? smokingStatus;
   final DrinkingStatus? drinkingStatus;
@@ -27,6 +29,8 @@ class DatingFilter {
     required this.region,
     required this.minAge,
     required this.maxAge,
+    this.minHeight,
+    this.maxHeight,
     required this.maxDistanceInKm,
     this.smokingStatus,
     this.drinkingStatus,
@@ -38,6 +42,8 @@ class DatingFilter {
     String? region,
     int? minAge,
     int? maxAge,
+    int? minHeight,
+    int? maxHeight,
     int? maxDistanceInKm,
     Object? smokingStatus = _undefined,  // ← Object 타입 사용!
     Object? drinkingStatus = _undefined,
@@ -48,6 +54,8 @@ class DatingFilter {
       region: region ?? this.region,
       minAge: minAge ?? this.minAge,
       maxAge: maxAge ?? this.maxAge,
+      minHeight: minHeight ?? this.minHeight,
+      maxHeight: maxHeight ?? this.maxHeight,
       maxDistanceInKm: maxDistanceInKm ?? this.maxDistanceInKm,
       smokingStatus: smokingStatus == _undefined
           ? this.smokingStatus
@@ -65,6 +73,8 @@ class DatingFilter {
     region: '', // Removed default region filter
     minAge: 20,
     maxAge: 30,
+    minHeight: null,
+    maxHeight: null,
     maxDistanceInKm: 100, // Effectively removed distance filter
     smokingStatus: null,
     drinkingStatus: null,
