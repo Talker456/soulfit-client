@@ -36,6 +36,7 @@ import '../../feature/payment/presentation/ui/portone_delegator.dart';
 import '../../feature/payment/presentation/ui/tosspayments_widget_v2.dart';
 import '../../feature/meeting/meeting_opening/ui/screen/create_meeting_wizard_screen.dart';
 import '../../feature/meeting/meeting_post/ui/screen/meeting_post_screen.dart';
+import '../../feature/main_profile/meeting_dashboard/presentation/screen/meeting_dashboard_screen.dart';
 import '../di/provider.dart';
 
 import '../../feature/community/presentation/screens/community_main.dart';
@@ -100,6 +101,7 @@ class AppRoutes {
   static const String firstImpressionVote = '/first-impression-vote';
   static const String groupReview = '/group-review';
   static const String hostReview = '/host-review';
+  static const String meetingDashboard = '/meeting-dashboard';
 
   static const List<String> allRoutes = [
     login,
@@ -143,6 +145,7 @@ class AppRoutes {
     meetingChat,
     meetingChatRoom,
     meetingChatParticipants,
+    meetingDashboard,
   ];
 }
 
@@ -388,6 +391,11 @@ final GoRouter appRouter = GoRouter(
       path: AppRoutes.hostReview,
       name: 'host-review',
       builder: (context, state) => const HostReview(),
+    ),
+    GoRoute(
+      path: AppRoutes.meetingDashboard,
+      name: 'meeting-dashboard',
+      builder: (context, state) => const MeetingDashboardScreen(),
     ),
 
     StatefulShellRoute.indexedStack(
