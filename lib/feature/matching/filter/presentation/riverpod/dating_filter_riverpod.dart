@@ -120,5 +120,13 @@ class DatingFilterNotifier extends StateNotifier<DatingFilterState> {
   void updateDrinkingStatus(DrinkingStatus? status) {
     state = state.copyWith(filter: state.filter.copyWith(drinkingStatus: status));
   }
+
+  void updateMinHeight(int? minHeight) {
+    state = state.copyWith(filter: state.filter.copyWith(minHeight: minHeight));
+  }
+
+  void updateMaxHeight(int? maxHeight) {
+    state = state.copyWith(filter: state.filter.copyWith(maxHeight: maxHeight));
+  }
 }
 

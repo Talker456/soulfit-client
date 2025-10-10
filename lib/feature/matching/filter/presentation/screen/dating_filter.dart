@@ -44,6 +44,15 @@ class DatingFilterScreen extends ConsumerWidget {
                       (values) => filterNotifier.updateMaxAge(values.end.round()),
                     ),
                     const SizedBox(height: 32),
+                    _buildRangeSlider(
+                      '키',
+                      RangeValues((filterState.filter.minHeight ?? 140).toDouble(), (filterState.filter.maxHeight ?? 200).toDouble()),
+                      140,
+                      200,
+                      (values) => filterNotifier.updateMinHeight(values.start.round()),
+                      (values) => filterNotifier.updateMaxHeight(values.end.round()),
+                    ),
+                    const SizedBox(height: 32),
                     _buildChoiceChipSection(
                       '흡연',
                       ['상관 없음', ...SmokingStatus.values.map((e) => e.name).toList()],
