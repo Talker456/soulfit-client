@@ -37,6 +37,7 @@ import '../../feature/payment/presentation/ui/portone_delegator.dart';
 import '../../feature/payment/presentation/ui/tosspayments_widget_v2.dart';
 import '../../feature/meeting/meeting_opening/ui/screen/create_meeting_wizard_screen.dart';
 import '../../feature/meeting/meeting_post/ui/screen/meeting_post_screen.dart';
+import '../../feature/main_profile/meeting_dashboard/presentation/screen/meeting_dashboard_screen.dart';
 import '../di/provider.dart';
 
 import '../../feature/community/presentation/screens/community_main.dart';
@@ -102,6 +103,7 @@ class AppRoutes {
   static const String groupReview = '/group-review';
   static const String hostReview = '/host-review';
   static const String datingProfile = '/dating-profile';
+  static const String meetingDashboard = '/meeting-dashboard';
 
   static const List<String> allRoutes = [
     login,
@@ -145,6 +147,7 @@ class AppRoutes {
     meetingChat,
     meetingChatRoom,
     meetingChatParticipants,
+    meetingDashboard,
   ];
 }
 
@@ -396,6 +399,12 @@ final GoRouter appRouter = GoRouter(
       name: 'dating-profile',
       builder: (context, state) => const DatingProfileScreen(),
     ),
+    GoRoute(
+      path: AppRoutes.meetingDashboard,
+      name: 'meeting-dashboard',
+      builder: (context, state) => const MeetingDashboardScreen(),
+    ),
+
     StatefulShellRoute.indexedStack(
       builder: (context, state, navigationShell) {
         return Scaffold(
