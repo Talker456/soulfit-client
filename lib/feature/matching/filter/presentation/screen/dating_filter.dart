@@ -25,8 +25,8 @@ class DatingFilterScreen extends ConsumerWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // _buildLocationPicker(filterState.filter.region, filterNotifier), // Removed as per user request
-                    // const SizedBox(height: 32),
+                    _buildLocationPicker(context, filterState.filter.region, filterNotifier),
+                    const SizedBox(height: 32),
                     _buildSingleSlider(
                       '거리',
                       filterState.filter.maxDistanceInKm.toDouble(),
@@ -124,37 +124,58 @@ class DatingFilterScreen extends ConsumerWidget {
     );
   }
 
-  // 지역 선택 버튼 (Removed as per user request)
-  // Widget _buildLocationPicker(String selectedRegion, DatingFilterNotifier filterNotifier) {
-  //   return Column(
-  //     crossAxisAlignment: CrossAxisAlignment.start,
-  //     children: [
-  //       const Text('지역', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-  //       const SizedBox(height: 8),
-  //       InkWell(
-  //         onTap: () {
-  //           // TODO: 지역 선택 다이얼로그 구현 및 filterNotifier.updateRegion 호출
-  //           print('지역 선택 팝업 띄우기!');
-  //         },
-  //         borderRadius: BorderRadius.circular(12),
-  //         child: Container(
-  //           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-  //           decoration: BoxDecoration(
-  //             borderRadius: BorderRadius.circular(12),
-  //             border: Border.all(color: Colors.grey.shade300),
-  //           ),
-  //           child: Row(
-  //             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-  //             children: [
-  //               Text(selectedRegion, style: const TextStyle(fontSize: 16)),
-  //               const Icon(Icons.chevron_right, color: Colors.pinkAccent),
-  //             ],
-  //           ),
-  //         ),
-  //       ),
-  //     ],
-  //   );
-  // }
+  // 지역 선택 버튼
+  Widget _buildLocationPicker(BuildContext context, String selectedRegion, DatingFilterNotifier filterNotifier) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text('지역', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+        const SizedBox(height: 8),
+        InkWell(
+          onTap: () async {
+            final regions = ['상관 없음', '서울', '경기', '인천', '강원', '충북', '충남', '대전', '경북', '경남', '대구', '울산', '부산', '전북', '전남', '광주', '제주'];
+            final result = await showDialog<String>(
+              context: context,
+              builder: (BuildContext context) {
+                return SimpleDialog(
+                  title: const Text('지역 선택'),
+                  children: regions.map((region) {
+                    return SimpleDialogOption(
+                      onPressed: () {
+                        // "상관 없음" 선택 시 빈 문자열 반환, 그 외에는 지역명 반환
+                        final valueToReturn = region == '상관 없음' ? '' : region;
+                        Navigator.pop(context, valueToReturn);
+                      },
+                      child: Text(region),
+                    );
+                  }).toList(),
+                );
+              },
+            );
+
+            if (result != null) {
+              filterNotifier.updateRegion(result);
+            }
+          },
+          borderRadius: BorderRadius.circular(12),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: Colors.grey.shade300),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(selectedRegion.isEmpty ? '상관 없음' : selectedRegion, style: const TextStyle(fontSize: 16)),
+                const Icon(Icons.chevron_right, color: Colors.pinkAccent),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
 
   // 범위 슬라이더 (나이)
   Widget _buildRangeSlider(String title, RangeValues values, double min, double max, ValueChanged<RangeValues> onMinChanged, ValueChanged<RangeValues> onMaxChanged) {
