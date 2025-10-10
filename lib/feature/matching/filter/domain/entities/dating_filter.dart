@@ -82,3 +82,31 @@ class DatingFilter {
 }
 
 const _undefined = Object();
+
+extension SmokingStatusExtension on SmokingStatus {
+  String get displayName {
+    switch (this) {
+      case SmokingStatus.NON_SMOKER:
+        return '비흡연';
+      case SmokingStatus.OCCASIONAL:
+        return '가끔';
+      case SmokingStatus.REGULAR:
+        return '자주';
+    }
+  }
+}
+
+extension DrinkingStatusExtension on DrinkingStatus {
+  String get displayName {
+    switch (this) {
+      case DrinkingStatus.NEVER:
+        return '전혀 안 함';
+      case DrinkingStatus.SOMETIMES:
+        return '가끔';
+      case DrinkingStatus.OFTEN:
+        return '자주';
+      case DrinkingStatus.DAILY:
+        return '매일';
+    }
+  }
+}
