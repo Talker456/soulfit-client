@@ -5,7 +5,7 @@ import 'package:soulfit_client/core/ui/widget/shared_navigation_bar.dart';
 import 'package:soulfit_client/feature/matching/filter/presentation/screen/dating_filter.dart';
 import 'package:soulfit_client/feature/matching/voting/presentation/screen/first_impression_evaluated.dart';
 import 'package:soulfit_client/feature/matching/voting/presentation/screen/first_impression_vote.dart' as vote_screen;
-import 'package:soulfit_client/feature/matching/recommendation/presentation/screen/recommand_user.dart' as recommendation;
+import 'package:soulfit_client/feature/matching/recommendation/presentation/screen/recommended_user_screen.dart' as recommendation;
 import '../../../filter/domain/entities/dating_filter.dart';
 import '../riverpod/dating_main_provider.dart';
 import '../../domain/entities/recommended_user.dart';
