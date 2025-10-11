@@ -1,9 +1,14 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../domain/entities/meeting.dart';
+import '../../domain/usecases/create_meeting_usecase.dart';
 import '../state/create_meeting_state.dart';
 
 class CreateMeetingNotifier extends StateNotifier<CreateMeetingState> {
   static const totalSteps = 6;
-  CreateMeetingNotifier() : super(CreateMeetingState(draft: MeetingDraft()));
+  final CreateMeetingUseCase createMeetingUseCase;
+
+  CreateMeetingNotifier(this.createMeetingUseCase)
+      : super(CreateMeetingState(draft: MeetingDraft()));
 
   double get progress => (state.step + 1) / totalSteps;
 
@@ -82,13 +87,43 @@ class CreateMeetingNotifier extends StateNotifier<CreateMeetingState> {
   Future<void> submit() async {
     state = state.copyWith(submitting: true, error: null);
     try {
-      // TODO: 실제 API 호출
-      await Future.delayed(const Duration(milliseconds: 600));
+      // MeetingDraft를 Meeting Entity로 변환
+      final meeting = _draftToEntity(state.draft);
+
+      // UseCase를 통한 모임 생성 API 호출
+      await createMeetingUseCase.execute(meeting);
+
       setStep(5); // 완료
     } catch (e) {
       state = state.copyWith(error: e.toString());
     } finally {
       state = state.copyWith(submitting: false);
     }
+  }
+
+  /// MeetingDraft를 Meeting Entity로 변환
+  Meeting _draftToEntity(MeetingDraft draft) {
+    return Meeting(
+      title: draft.title,
+      description: draft.description,
+      keywords: draft.keywords,
+      imageUrls: draft.imagePaths,
+      startDate: draft.startDate ?? DateTime.now(),
+      endDate: draft.endDate ?? DateTime.now(),
+      schedules: draft.schedules
+          .map((s) => ScheduleItem(
+                minutes: s.minutes,
+                title: s.title,
+              ))
+          .toList(),
+      meetingPlace: draft.meetingPlaceSearch,
+      meetingPlaceDetail: draft.meetingPlaceDetail,
+      equipments: draft.equipments,
+      pickUpAvailable: draft.pickUpAvailable,
+      capacity: draft.capacity ?? 0,
+      pricePerPerson: draft.pricePerPerson ?? 0,
+      costNote: draft.costNote,
+      requiredQuestion: draft.requiredQuestion,
+    );
   }
 }
