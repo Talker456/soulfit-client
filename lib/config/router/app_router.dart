@@ -4,10 +4,11 @@ import 'package:go_router/go_router.dart';
 import 'package:soulfit_client/core/ui/widget/shared_navigation_bar.dart';
 import 'package:soulfit_client/feature/authentication/presentation/screens/find_id_screen.dart';
 import 'package:soulfit_client/feature/matching/filter/presentation/screen/dating_filter.dart';
-import 'package:soulfit_client/feature/matching/voting/presentation/screen/first_impression_evaluated.dart';
+import 'package:soulfit_client/feature/matching/voting/presentation/screen/vote_create_screen.dart';
+import 'package:soulfit_client/feature/matching/voting/presentation/screen/vote_participate_screen.dart';
+import 'package:soulfit_client/feature/matching/voting/presentation/screen/vote_result_screen.dart';
 import 'package:soulfit_client/feature/meeting/review/presentation/screen/group_review.dart';
 import 'package:soulfit_client/feature/meeting/review/presentation/screen/host_review.dart';
-import 'package:soulfit_client/feature/matching/voting/presentation/screen/first_impression_vote.dart';
 import 'package:soulfit_client/feature/main_profile/ui/screen/main_profile_screen.dart';
 import 'package:soulfit_client/feature/meeting/main/ui/screen/meeting_home_screen.dart';
 import 'package:soulfit_client/feature/notification/presentation/ui/notification_screen.dart';
@@ -97,8 +98,9 @@ class AppRoutes {
   static const String testResultReport = '/test-result-report';
   static const String pastApplyList = '/past-apply-list';
   static const String datingFilter = '/dating-filter';
-  static const String firstImpressionEvaluated = '/first-impression-evaluated';
-  static const String firstImpressionVote = '/first-impression-vote';
+  static const String voteCreate = '/vote-create';
+  static const String voteParticipate = '/vote-participate';
+  static const String voteResult = '/vote-result';
   static const String groupReview = '/group-review';
   static const String hostReview = '/host-review';
   static const String meetingDashboard = '/meeting-dashboard';
@@ -135,8 +137,9 @@ class AppRoutes {
     testResultReport,
     pastApplyList,
     datingFilter,
-    firstImpressionEvaluated,
-    firstImpressionVote,
+    voteCreate,
+    voteParticipate,
+    voteResult,
     groupReview,
     hostReview,
     meetingOpening,
@@ -373,14 +376,25 @@ final GoRouter appRouter = GoRouter(
       builder: (context, state) => const DatingFilterScreen(),
     ),
     GoRoute(
-      path: AppRoutes.firstImpressionEvaluated,
-      name: 'first-impression-evaluated',
-      builder: (context, state) => const FeedbackScreen(),
+      path: AppRoutes.voteCreate,
+      name: 'vote-create',
+      builder: (context, state) => const VoteCreateScreen(),
     ),
     GoRoute(
-      path: AppRoutes.firstImpressionVote,
-      name: 'first-impression-vote',
-      builder: (context, state) => const FirstImpressionVoteScreen(),
+      path: '${AppRoutes.voteParticipate}/:voteFormId',
+      name: 'vote-participate',
+      builder: (context, state) {
+        final voteFormId = int.parse(state.pathParameters['voteFormId']!);
+        return VoteParticipateScreen(voteFormId: voteFormId);
+      },
+    ),
+    GoRoute(
+      path: '${AppRoutes.voteResult}/:voteFormId',
+      name: 'vote-result',
+      builder: (context, state) {
+        final voteFormId = int.parse(state.pathParameters['voteFormId']!);
+        return VoteResultScreen(voteFormId: voteFormId);
+      },
     ),
     GoRoute(
       path: AppRoutes.groupReview,
