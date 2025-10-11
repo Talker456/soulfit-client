@@ -15,12 +15,20 @@ class MeetingApplyRemoteDataSourceImpl implements MeetingApplyRemoteDataSource {
   @override
   Future<void> submit(MeetingApplication application) async {
     final model = MeetingApplicationModel.fromEntity(application);
-    final uri = Uri.parse('$baseUrl/api/meeting/applications'); // 예시 엔드포인트
+
+    // TODO: 백엔드 API 명세 확인 필요
+    // 실제 엔드포인트가 다음 중 하나일 수 있음:
+    // - POST /api/meetings/{meetingId}/applications
+    // - POST /api/meetings/{meetingId}/join
+    // - POST /api/meeting/applications (현재 가정)
+    final uri = Uri.parse('$baseUrl/api/meeting/applications');
+
     final res = await client.post(
       uri,
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode(model.toJson()),
     );
+
     if (res.statusCode < 200 || res.statusCode >= 300) {
       throw Exception('신청 제출 실패(${res.statusCode})');
     }

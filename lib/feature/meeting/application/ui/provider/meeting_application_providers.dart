@@ -10,12 +10,12 @@ import '../state/meeting_application_state.dart';
 
 // 환경에 맞게 baseUrl은 주입(예: .env, Flavors)
 final _httpClientProvider = Provider<http.Client>((ref) => http.Client());
-final _baseUrlProvider = Provider<String>(
-  (ref) => const String.fromEnvironment(
-    'API_BASE_URL',
-    defaultValue: 'https://api.example.com',
-  ),
-);
+
+// BASE_URL 상수를 사용 (프로젝트 표준 패턴)
+const bool _IS_AVD = false; // Android Virtual Device 사용 시 true로 변경
+const String _BASE_URL = _IS_AVD ? "10.0.2.2" : "localhost";
+
+final _baseUrlProvider = Provider<String>((ref) => 'http://$_BASE_URL:8080');
 
 final _remoteDsProvider = Provider((ref) {
   return MeetingApplyRemoteDataSourceImpl(
