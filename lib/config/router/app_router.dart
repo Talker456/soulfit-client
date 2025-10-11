@@ -51,6 +51,12 @@ import '../../feature/main_profile/ui/screen/profile.dart';
 import '../../feature/main_profile/ui/screen/settings.dart';
 import '../../feature/main_profile/ui/screen/test_result_check.dart';
 import '../../feature/dating_profile/ui/screen/dating_profile_screen.dart';
+import 'package:soulfit_client/feature/matching/check-impression/presentation/widgets/impression_check_screen.dart';
+import 'package:soulfit_client/feature/matching/write-impression/ui/screen/impression_write_screen.dart';
+import 'package:soulfit_client/feature/matching/check-like/ui/screen/check_like_screen.dart';
+import 'package:soulfit_client/feature/matching/check-like/ui/screen/swipe_like_screen.dart';
+
+import 'package:flutter/foundation.dart'; // 개발 시 사용
 
 class AppRoutes {
   static const String sandbox = '/sandbox';
@@ -104,7 +110,10 @@ class AppRoutes {
   static const String hostReview = '/host-review';
   static const String datingProfile = '/dating-profile';
   static const String meetingDashboard = '/meeting-dashboard';
-  static const String datingProfile = '/dating-profile';
+  static const String checkImpression = '/check-impression';
+  static const String writeImpression = '/write-impression';
+  static const String checkLike = '/check-like';
+  static const String swipeLike = '/swipe-like';
 
   static const List<String> allRoutes = [
     login,
@@ -149,6 +158,11 @@ class AppRoutes {
     meetingChatRoom,
     meetingChatParticipants,
     meetingDashboard,
+    datingProfile,
+    checkImpression,
+    writeImpression,
+    checkLike,
+    swipeLike,
   ];
 }
 
@@ -156,7 +170,8 @@ final _rootNavigatorKey = GlobalKey<NavigatorState>();
 
 final GoRouter appRouter = GoRouter(
   navigatorKey: _rootNavigatorKey,
-  initialLocation: AppRoutes.login,
+  initialLocation: kDebugMode ? AppRoutes.sandbox : AppRoutes.login, // 개발 시 사용
+  //initialLocation: AppRoutes.login,
   routes: [
     GoRoute(
       path: AppRoutes.login,
@@ -396,7 +411,7 @@ final GoRouter appRouter = GoRouter(
       builder: (context, state) => const HostReview(),
     ),
     GoRoute(
-      path: '/dating/profile/:userId',
+      path: AppRoutes.datingProfile,
       name: 'dating-profile',
       builder: (context, state) => const DatingProfileScreen(),
     ),
@@ -405,13 +420,31 @@ final GoRouter appRouter = GoRouter(
       name: 'meeting-dashboard',
       builder: (context, state) => const MeetingDashboardScreen(),
     ),
-
     GoRoute(
-      path: '/dating/profile/:userId',
+      path: AppRoutes.datingProfile,
       name: 'dating-profile',
       builder: (context, state) => const DatingProfileScreen(),
     ),
-
+    GoRoute(
+      path: AppRoutes.checkImpression,
+      name: 'check-impression',
+      builder: (context, state) => const ImpressionCheckScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.writeImpression,
+      name: 'write-impression',
+      builder: (context, state) => const ImpressionWriteScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.checkLike,
+      name: 'check-like',
+      builder: (context, state) => const CheckLikeScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.swipeLike,
+      name: 'swipe-like',
+      builder: (context, state) => const SwipeLikeScreen(),
+    ),
     StatefulShellRoute.indexedStack(
       builder: (context, state, navigationShell) {
         return Scaffold(
