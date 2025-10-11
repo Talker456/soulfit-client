@@ -112,7 +112,6 @@ class AppRoutes {
   static const String writeImpression = '/write-impression';
   static const String checkLike = '/check-like';
   static const String swipeLike = '/swipe-like';
-  static const String meetingDashboard = '/meeting-dashboard';
 
   static const List<String> allRoutes = [
     login,
