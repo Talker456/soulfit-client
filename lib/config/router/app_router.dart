@@ -56,8 +56,6 @@ import 'package:soulfit_client/feature/matching/write-impression/ui/screen/impre
 import 'package:soulfit_client/feature/matching/check-like/ui/screen/check_like_screen.dart';
 import 'package:soulfit_client/feature/matching/check-like/ui/screen/swipe_like_screen.dart';
 
-import 'package:flutter/foundation.dart'; // 개발 시 사용
-
 class AppRoutes {
   static const String sandbox = '/sandbox';
 
@@ -171,8 +169,7 @@ final _rootNavigatorKey = GlobalKey<NavigatorState>();
 
 final GoRouter appRouter = GoRouter(
   navigatorKey: _rootNavigatorKey,
-  initialLocation: kDebugMode ? AppRoutes.sandbox : AppRoutes.login, // 개발 시 사용
-  //initialLocation: AppRoutes.login,
+  initialLocation: AppRoutes.login,
   routes: [
     GoRoute(
       path: AppRoutes.login,
