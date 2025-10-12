@@ -1,11 +1,14 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:soulfit_client/core/ui/widget/shared_app_bar_dating.dart';
 import 'package:soulfit_client/core/ui/widget/shared_navigation_bar.dart';
 import 'package:soulfit_client/feature/matching/main/domain/entities/recommended_user.dart';
 import 'package:soulfit_client/feature/matching/recommendation/presentation/provider/recommended_user_provider.dart';
 import 'package:soulfit_client/feature/matching/recommendation/presentation/state/recommended_user_state.dart';
+
+import 'package:soulfit_client/config/di/provider.dart';
 
 class RecommendedUserScreen extends ConsumerStatefulWidget {
   const RecommendedUserScreen({super.key});
@@ -113,58 +116,70 @@ class _UserCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(16.0),
-      child: Stack(
-        fit: StackFit.expand,
-        children: [
-          Image.network(
-            user.profileImageUrl ?? 'https://picsum.photos/400/600', // Fallback Image
-            fit: BoxFit.cover,
-            loadingBuilder: (context, child, loadingProgress) {
-              if (loadingProgress == null) return child;
-              return const Center(child: CircularProgressIndicator());
-            },
-            errorBuilder: (context, error, stackTrace) {
-              return const Center(child: Icon(Icons.error, color: Colors.red));
-            },
-          ),
-          _buildGradientOverlay(),
-          Positioned(
-            bottom: 12,
-            left: 12,
-            right: 12,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  '${user.nickname}, ${user.age}',
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    shadows: [Shadow(color: Colors.black54, blurRadius: 2)],
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    _buildActionButton(
-                      icon: Icons.close,
-                      onPressed: () => ref.read(recommendedUserNotifierProvider.notifier).swipeUser(userId: user.userId, isLike: false),
-                    ),
-                    _buildActionButton(
-                      icon: Icons.favorite,
-                      onPressed: () => ref.read(recommendedUserNotifierProvider.notifier).swipeUser(userId: user.userId, isLike: true),
-                      iconColor: Colors.pinkAccent,
-                    ),
-                  ],
-                ),
-              ],
+    return InkWell(
+      onTap: () {
+        final viewerId = ref.read(authNotifierProvider).user?.id;
+        if (viewerId == null) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('사용자 정보를 불러올 수 없습니다.')),
+          );
+          return;
+        }
+        context.push('/main-profile/$viewerId/${user.userId}');
+      },
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(16.0),
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            Image.network(
+              user.profileImageUrl ?? 'https://picsum.photos/400/600', // Fallback Image
+              fit: BoxFit.cover,
+              loadingBuilder: (context, child, loadingProgress) {
+                if (loadingProgress == null) return child;
+                return const Center(child: CircularProgressIndicator());
+              },
+              errorBuilder: (context, error, stackTrace) {
+                return const Center(child: Icon(Icons.error, color: Colors.red));
+              },
             ),
-          )
-        ],
+            _buildGradientOverlay(),
+            Positioned(
+              bottom: 12,
+              left: 12,
+              right: 12,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '${user.nickname}, ${user.age}',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      shadows: [Shadow(color: Colors.black54, blurRadius: 2)],
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      _buildActionButton(
+                        icon: Icons.close,
+                        onPressed: () => ref.read(recommendedUserNotifierProvider.notifier).swipeUser(userId: user.userId, isLike: false),
+                      ),
+                      _buildActionButton(
+                        icon: Icons.favorite,
+                        onPressed: () => ref.read(recommendedUserNotifierProvider.notifier).swipeUser(userId: user.userId, isLike: true),
+                        iconColor: Colors.pinkAccent,
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            )
+          ],
+        ),
       ),
     );
   }
