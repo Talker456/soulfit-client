@@ -5,16 +5,12 @@ import '../datasources/meeting_report_remote_datasource.dart';
 import '../../domain/repositories/meeting_report_repository.dart';
 
 class MeetingReportRepositoryImpl implements MeetingReportRepository {
-  final MeetingReportApi remoteDataSource;
+  final MeetingReportRemoteDataSource remoteDataSource;
 
   MeetingReportRepositoryImpl({required this.remoteDataSource});
 
   @override
   Future<void> reportMeeting(MeetingReportRequest request) async {
-    await remoteDataSource.reportMeeting(
-      reporterUserId: request.reporterUserId,
-      meetingId: request.meetingId,
-      reason: request.reason,
-    );
+    await remoteDataSource.reportMeeting(request);
   }
 }

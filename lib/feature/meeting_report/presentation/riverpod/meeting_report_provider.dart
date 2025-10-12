@@ -5,20 +5,22 @@ import '../../data/models/meeting_report_request.dart';
 import '../../domain/usecases/submit_meeting_report.dart';
 import '../../data/repository_impl/meeting_report_repository_impl.dart';
 import '../../data/datasources/meeting_report_remote_datasource.dart';
-import 'package:dio/dio.dart';
+import '../../../../config/di/provider.dart';
 
-final dioProvider = Provider<Dio>((ref) => Dio());
-
-final meetingReportApiProvider = Provider<MeetingReportApi>((ref) {
-  final dio = ref.read(dioProvider);
-  return MeetingReportApi(dio: dio);
+final meetingReportRemoteDataSourceProvider = Provider<MeetingReportRemoteDataSource>((ref) {
+  // TODO: Fake DataSource 구현 시 USE_FAKE_DATASOURCE 스위치 추가
+  return MeetingReportRemoteDataSourceImpl(
+    client: ref.read(httpClientProvider),
+    source: ref.read(authLocalDataSourceProvider),
+    baseUrl: BASE_URL,
+  );
 });
 
 final meetingReportRepositoryProvider = Provider<MeetingReportRepositoryImpl>((
   ref,
 ) {
-  final api = ref.read(meetingReportApiProvider);
-  return MeetingReportRepositoryImpl(remoteDataSource: api);
+  final remoteDataSource = ref.watch(meetingReportRemoteDataSourceProvider);
+  return MeetingReportRepositoryImpl(remoteDataSource: remoteDataSource);
 });
 
 final reportMeetingUseCaseProvider = Provider<ReportMeetingUseCase>((ref) {
