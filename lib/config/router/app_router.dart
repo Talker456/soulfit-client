@@ -408,11 +408,6 @@ final GoRouter appRouter = GoRouter(
       builder: (context, state) => const HostReview(),
     ),
     GoRoute(
-      path: AppRoutes.datingProfile,
-      name: 'dating-profile',
-      builder: (context, state) => const DatingProfileScreen(),
-    ),
-    GoRoute(
       path: AppRoutes.meetingDashboard,
       name: 'meeting-dashboard',
       builder: (context, state) => const MeetingDashboardScreen(),
