@@ -5,5 +5,7 @@ class GetDatingProfileUseCase {
   final DatingProfileRepository repo;
   GetDatingProfileUseCase(this.repo);
 
-  Future<DatingProfile> call(String userId) => repo.getProfile(userId);
+  Future<DatingProfile> call(
+          {required String viewerUserId, required String targetUserId}) =>
+      repo.getProfile(viewerUserId: viewerUserId, targetUserId: targetUserId);
 }

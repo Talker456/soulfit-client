@@ -7,8 +7,9 @@ class DatingProfileRemoteDataSource implements DatingProfileDataSource {
   DatingProfileRemoteDataSource(this.dio);
 
   @override
-  Future<DatingProfileModel> getProfile(String userId) async {
-    final res = await dio.get('/dating/profile/$userId');
+  Future<DatingProfileModel> getProfile(
+      {required String viewerUserId, required String targetUserId}) async {
+    final res = await dio.get('/dating/profile/$targetUserId?viewerId=$viewerUserId');
     return DatingProfileModel.fromJson(res.data as Map<String, dynamic>);
   }
 }
