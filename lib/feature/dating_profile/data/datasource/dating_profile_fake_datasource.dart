@@ -8,7 +8,8 @@ abstract class DatingProfileDataSource {
 class DatingProfileFakeDataSource implements DatingProfileDataSource {
   @override
   Future<DatingProfileModel> getProfile(String userId) async {
-    dev.log('[FakeDS] getProfile($userId) called', name: 'DatingProfileFakeDS');
+    dev.log('[FakeDS] getProfile(userId: $userId) called',
+        name: 'DatingProfileFakeDS');
     await Future<void>.delayed(const Duration(milliseconds: 300));
     dev.log('[FakeDS] returning model', name: 'DatingProfileFakeDS');
 

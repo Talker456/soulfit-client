@@ -1,8 +1,9 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:soulfit_client/config/di/provider.dart';
 
 import 'package:soulfit_client/feature/dating_profile/data/datasource/dating_profile_fake_datasource.dart';
-import 'package:soulfit_client/feature/dating_profile/data/datasource/dating_profile_remote_datasource.dart';
+import 'package:soulfit_client/feature/dating_profile/data/datasource/dating_profile_remote_datasource_impl.dart';
 import 'package:soulfit_client/feature/dating_profile/data/repository_impl/dating_profile_repository_impl.dart';
 import 'package:soulfit_client/feature/dating_profile/domain/repository/dating_profile_repository.dart';
 import 'package:soulfit_client/feature/dating_profile/domain/usecase/get_dating_profile_usecase.dart';
@@ -17,10 +18,15 @@ final dioProvider = Provider<Dio>((ref) {
 });
 
 final dataSourceProvider = Provider<DatingProfileDataSource>((ref) {
-  if (_useRemote) {
-    return DatingProfileRemoteDataSource(ref.read(dioProvider));
+  if (USE_FAKE_DATASOURCE) {
+    return DatingProfileRemoteDataSourceImpl(
+      client: ref.read(httpClientProvider),
+      authLocalDataSource: ref.read(authLocalDataSourceProvider),
+      base: BASE_URL,
+    );
+  } else {
+    return DatingProfileFakeDataSource();
   }
-  return DatingProfileFakeDataSource();
 });
 
 final datingProfileRepositoryProvider = Provider<DatingProfileRepository>((

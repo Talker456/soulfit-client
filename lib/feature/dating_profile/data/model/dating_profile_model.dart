@@ -30,19 +30,27 @@ class DatingProfileModel {
   });
 
   factory DatingProfileModel.fromJson(Map<String, dynamic> j) {
+    String formatSmokingDrinking(String? smoking, String? drinking) {
+      final smokeStatus = smoking == 'NON_SMOKER' ? '비흡연' : (smoking ?? '정보 없음');
+      final drinkStatus = drinking == 'SOMETIMES' ? '가끔 음주' : (drinking ?? '정보 없음');
+      return '$smokeStatus, $drinkStatus';
+    }
+
     return DatingProfileModel(
-      nickname: j['nickname'],
-      age: j['age'],
-      mbti: j['mbti'],
-      personalityTags: List<String>.from(j['personalityTags'] ?? []),
-      introduction: j['introduction'],
-      idealKeywords: List<String>.from(j['idealKeywords'] ?? []),
-      job: j['job'],
-      heightBody: j['heightBody'],
-      religion: j['religion'],
-      smokingDrinking: j['smokingDrinking'],
-      loveValues: j['loveValues'],
-      imageUrl: j['imageUrl'],
+      nickname: j['username'] ?? '이름 없음',
+      age: j['age'] ?? 0,
+      mbti: j['mbti'] ?? 'XXXX',
+      personalityTags: List<String>.from(j['personalityKeywords'] ?? []),
+      introduction: j['bio'] ?? '자기소개가 없습니다.',
+      idealKeywords: List<String>.from(j['idealTypes'] ?? []),
+      job: j['job'] ?? '직업 정보 없음',
+      heightBody: (j['heightCm'] != null && j['weightKg'] != null)
+          ? "${j['heightCm']}cm, ${j['weightKg']}kg"
+          : "키/몸무게 정보 없음",
+      religion: j['religion'] ?? '정보 없음',
+      smokingDrinking: formatSmokingDrinking(j['smoking'], j['drinking']),
+      loveValues: j['loveValues'] ?? "가치관 정보가 없습니다.", // Placeholder
+      imageUrl: j['profileImageUrl'] ?? '',
     );
   }
 

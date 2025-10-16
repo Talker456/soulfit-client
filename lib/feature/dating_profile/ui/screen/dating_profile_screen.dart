@@ -9,10 +9,15 @@ import 'package:soulfit_client/feature/dating_profile/ui/widgets/profile_header.
 import 'package:soulfit_client/feature/dating_profile/ui/widgets/profile_info_section.dart';
 import 'package:soulfit_client/feature/dating_profile/ui/widgets/love_values_card.dart';
 
-final selectedUserIdProvider = StateProvider<String?>((_) => null);
-
 class DatingProfileScreen extends ConsumerStatefulWidget {
-  const DatingProfileScreen({super.key});
+  final String viewerUserId;
+  final String targetUserId;
+
+  const DatingProfileScreen({
+    super.key,
+    required this.viewerUserId,
+    required this.targetUserId,
+  });
 
   @override
   ConsumerState<DatingProfileScreen> createState() =>
@@ -20,33 +25,18 @@ class DatingProfileScreen extends ConsumerStatefulWidget {
 }
 
 class _DatingProfileScreenState extends ConsumerState<DatingProfileScreen> {
-  bool _loadedOnce = false;
+  late final bool isMyProfile;
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (_loadedOnce) return;
-      _loadedOnce = true;
 
-      final s = GoRouterState.of(context);
-      final fromQuery = s.uri.queryParameters['userId'];
-      final fromPath = s.pathParameters['userId'];
-      final fromExtra = s.extra is String ? s.extra as String : null;
-      final fromProv = ref.read(selectedUserIdProvider);
+    isMyProfile = widget.viewerUserId == widget.targetUserId;
 
-      // 실제 연동 시 제거
-      const kDefaultUserId = 'mock-001';
-
-      final userId =
-          fromQuery ?? fromPath ?? fromExtra ?? fromProv ?? kDefaultUserId;
-
-      debugPrint(
-        '[DatingProfile] params -> '
-        'query=$fromQuery, path=$fromPath, extra=$fromExtra, prov=$fromProv, choose=$userId',
-      );
-
-      ref.read(datingProfileNotifierProvider.notifier).load(userId: userId);
+    Future.microtask(() {
+      ref
+          .read(datingProfileNotifierProvider.notifier)
+          .load(userId: widget.targetUserId);
     });
   }
 
@@ -65,14 +55,52 @@ class _DatingProfileScreenState extends ConsumerState<DatingProfileScreen> {
     }
     if (st.profile == null) {
       return Scaffold(
-        appBar: AppBar(title: Text('소개팅 프로필')),
-        body: Center(child: Text('프로필이 없습니다.')),
+        appBar: AppBar(title: const Text('소개팅 프로필')),
+        body: const Center(child: Text('프로필이 없습니다.')),
       );
     }
     final p = st.profile!;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('소개팅 프로필')),
+      backgroundColor: const Color(0xFFFFF0F5),
+      appBar: AppBar(
+        backgroundColor: const Color(0xFFFFF0F5),
+        elevation: 0,
+        centerTitle: true,
+        title: PopupMenuButton<String>(
+          onSelected: (value) {
+            if (value == 'mainProfile') {
+              context.go(
+                  '/main-profile/${widget.viewerUserId}/${widget.targetUserId}');
+            }
+          },
+          itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+            const PopupMenuItem<String>(
+              value: 'mainProfile',
+              child: Text('메인 프로필 보기'),
+            ),
+          ],
+          child: const Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                '소개팅 프로필',
+                style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+              ),
+              Icon(Icons.keyboard_arrow_down, color: Colors.black),
+            ],
+          ),
+        ),
+        actions: [
+          if (isMyProfile)
+            IconButton(
+              icon: const Icon(Icons.edit, color: Colors.black),
+              onPressed: () {
+                // TODO: Implement profile edit navigation
+              },
+            ),
+        ],
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -95,7 +123,7 @@ class _DatingProfileScreenState extends ConsumerState<DatingProfileScreen> {
               smokingDrinking: p.smokingDrinking,
             ),
             const SizedBox(height: 16),
-            LoveValuesCard(text: p.loveValues),
+            LoveValuesCard(text: p.loveValues, nickname: p.nickname),
           ],
         ),
       ),

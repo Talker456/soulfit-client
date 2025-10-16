@@ -106,7 +106,7 @@ class AppRoutes {
   static const String firstImpressionVote = '/first-impression-vote';
   static const String groupReview = '/group-review';
   static const String hostReview = '/host-review';
-  static const String datingProfile = '/dating-profile';
+  static const String datingProfile = '/dating-profile/1/2';
   static const String meetingDashboard = '/meeting-dashboard';
   static const String checkImpression = '/check-impression';
   static const String writeImpression = '/write-impression';
@@ -413,9 +413,16 @@ final GoRouter appRouter = GoRouter(
       builder: (context, state) => const MeetingDashboardScreen(),
     ),
     GoRoute(
-      path: AppRoutes.datingProfile,
+      path: '/dating-profile/:viewerId/:targetId',
       name: 'dating-profile',
-      builder: (context, state) => const DatingProfileScreen(),
+      builder: (context, state) {
+        final viewerId = state.pathParameters['viewerId']!;
+        final targetId = state.pathParameters['targetId']!;
+        return DatingProfileScreen(
+          viewerUserId: viewerId,
+          targetUserId: targetId,
+        );
+      },
     ),
     GoRoute(
       path: AppRoutes.checkImpression,
