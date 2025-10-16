@@ -62,12 +62,25 @@ class _DatingProfileScreenState extends ConsumerState<DatingProfileScreen> {
     final p = st.profile!;
 
     return Scaffold(
+      backgroundColor: const Color(0xFFFFF0F5),
       appBar: AppBar(
-        title: const Text('소개팅 프로필'),
+        backgroundColor: const Color(0xFFFFF0F5),
+        elevation: 0,
+        centerTitle: true,
+        title: const Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              '소개팅 프로필',
+              style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+            ),
+            Icon(Icons.keyboard_arrow_down, color: Colors.black),
+          ],
+        ),
         actions: [
           if (isMyProfile)
             IconButton(
-              icon: const Icon(Icons.edit),
+              icon: const Icon(Icons.edit, color: Colors.black),
               onPressed: () {
                 // TODO: Implement profile edit navigation
               },
@@ -96,7 +109,7 @@ class _DatingProfileScreenState extends ConsumerState<DatingProfileScreen> {
               smokingDrinking: p.smokingDrinking,
             ),
             const SizedBox(height: 16),
-            LoveValuesCard(text: p.loveValues),
+            LoveValuesCard(text: p.loveValues, nickname: p.nickname),
           ],
         ),
       ),
