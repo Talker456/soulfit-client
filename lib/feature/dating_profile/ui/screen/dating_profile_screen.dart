@@ -67,15 +67,29 @@ class _DatingProfileScreenState extends ConsumerState<DatingProfileScreen> {
         backgroundColor: const Color(0xFFFFF0F5),
         elevation: 0,
         centerTitle: true,
-        title: const Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              '소개팅 프로필',
-              style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+        title: PopupMenuButton<String>(
+          onSelected: (value) {
+            if (value == 'mainProfile') {
+              context.go(
+                  '/main-profile/${widget.viewerUserId}/${widget.targetUserId}');
+            }
+          },
+          itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+            const PopupMenuItem<String>(
+              value: 'mainProfile',
+              child: Text('메인 프로필 보기'),
             ),
-            Icon(Icons.keyboard_arrow_down, color: Colors.black),
           ],
+          child: const Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                '소개팅 프로필',
+                style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+              ),
+              Icon(Icons.keyboard_arrow_down, color: Colors.black),
+            ],
+          ),
         ),
         actions: [
           if (isMyProfile)

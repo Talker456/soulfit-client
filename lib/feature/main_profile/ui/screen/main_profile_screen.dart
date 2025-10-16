@@ -47,30 +47,44 @@ class _MainProfileScreenState extends ConsumerState<MainProfileScreen> {
         backgroundColor: Colors.white,
         elevation: 0,
         centerTitle: true,
-        title: const Column(
-          children: [
-            Text(
-              "soulfit",
-              style: TextStyle(
-                fontFamily: 'Serif',
-                fontSize: 20,
-                color: Colors.green,
-              ),
-            ),
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  "메인 프로필",
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                Icon(Icons.keyboard_arrow_down, color: Colors.black),
-              ],
+        title: PopupMenuButton<String>(
+          onSelected: (value) {
+            if (value == 'datingProfile') {
+              context.go(
+                  '/dating-profile/${widget.viewerUserId}/${widget.targetUserId}');
+            }
+          },
+          itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+            const PopupMenuItem<String>(
+              value: 'datingProfile',
+              child: Text('소개팅 프로필 보기'),
             ),
           ],
+          child: const Column(
+            children: [
+              Text(
+                "soulfit",
+                style: TextStyle(
+                  fontFamily: 'Serif',
+                  fontSize: 20,
+                  color: Colors.green,
+                ),
+              ),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    "메인 프로필",
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Icon(Icons.keyboard_arrow_down, color: Colors.black),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
       body: switch (state) {
