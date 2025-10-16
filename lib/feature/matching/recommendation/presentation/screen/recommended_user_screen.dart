@@ -8,7 +8,9 @@ import 'package:soulfit_client/feature/matching/main/domain/entities/recommended
 import 'package:soulfit_client/feature/matching/recommendation/presentation/provider/recommended_user_provider.dart';
 import 'package:soulfit_client/feature/matching/recommendation/presentation/state/recommended_user_state.dart';
 
-import 'package:soulfit_client/config/di/provider.dart';
+import 'package:soulfit_client/config/router/app_router.dart';
+
+import '../../../../../config/di/provider.dart';
 
 class RecommendedUserScreen extends ConsumerStatefulWidget {
   const RecommendedUserScreen({super.key});
@@ -57,6 +59,14 @@ class _RecommendedUserScreenState extends ConsumerState<RecommendedUserScreen> {
       appBar: SharedAppBar(
         showBackButton: true,
         title: const Text('추천 유저', style: TextStyle(color: Colors.black)),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.favorite_border, color: Colors.black54),
+            onPressed: () {
+              context.push(AppRoutes.checkLike);
+            },
+          ),
+        ],
       ),
       bottomNavigationBar: SharedNavigationBar(
         currentIndex: 0,
