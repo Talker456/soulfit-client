@@ -7,19 +7,14 @@ class CheckLikeRepositoryImpl implements CheckLikeRepository {
   CheckLikeRepositoryImpl(this.remote);
 
   @override
-  Future<List<LikeUser>> getUsersWhoLikeMe({
-    List<String> filters = const [],
-  }) async {
-    final m = await remote.fetchUsersWhoLikeMe(filters);
+  Future<List<LikeUser>> getUsersWhoLikeMe() async {
+    final m = await remote.fetchUsersWhoLikeMe();
     return m.map((e) => e.toEntity()).toList();
   }
 
   @override
-  Future<List<LikeUser>> getUsersILike({
-    List<String> filters = const [],
-    String sub = 'viewed',
-  }) async {
-    final m = await remote.fetchUsersILike(filters, sub: sub);
+  Future<List<LikeUser>> getUsersILike() async {
+    final m = await remote.fetchUsersILike();
     return m.map((e) => e.toEntity()).toList();
   }
 }

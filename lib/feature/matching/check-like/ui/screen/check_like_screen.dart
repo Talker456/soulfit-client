@@ -2,21 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../../config/router/app_router.dart';
 import '../provider/check_like_providers.dart';
 import '../notifier/check_like_notifier.dart';
 import '../widgets/user_bubble.dart';
-import '../widgets/filter_chip.dart';
-import 'package:soulfit_client/config/router/app_router.dart';
+import 'package:soulfit_client/config/di/provider.dart';
 
 class CheckLikeScreen extends ConsumerWidget {
   const CheckLikeScreen({super.key});
-
-  static const likedMeFilters = ['30대', '키 180이상', '가치관 비슷한', 'ENTJ'];
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(checkLikeNotifierProvider);
     final notifier = ref.read(checkLikeNotifierProvider.notifier);
+    final viewerId = ref.watch(authNotifierProvider).user?.id; // Get viewer ID
 
     return Scaffold(
       appBar: AppBar(
@@ -31,53 +30,25 @@ class CheckLikeScreen extends ConsumerWidget {
           children: [
             const SizedBox(height: 4),
 
-            if (state.tab == LikeTab.likedMe) ...[
-              Wrap(
-                spacing: 8,
-                runSpacing: 8,
-                children: [
-                  for (final f in likedMeFilters)
-                    FilterChipPill(
-                      label: f,
-                      selected: state.filters.contains(f),
-                      onTap: () => notifier.toggleFilter(f),
-                    ),
-                ],
-              ),
-            ] else ...[
-              Row(
+            // Removed filter chips and sub-tabs as per plan.
+
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
                 children: [
                   ChoiceChip(
-                    label: const Text('내 프로필 열람한 사람들'),
-                    selected: state.iLikeSub == ILikeSub.viewed,
-                    onSelected: (_) => notifier.setILikeSub(ILikeSub.viewed),
+                    label: const Text('나를 좋아하는 사람들'),
+                    selected: state.tab == LikeTab.likedMe,
+                    onSelected: (_) => notifier.switchTab(LikeTab.likedMe),
                   ),
                   const SizedBox(width: 8),
                   ChoiceChip(
-                    label: const Text('서로 좋아해요'),
-                    selected: state.iLikeSub == ILikeSub.mutual,
-                    onSelected: (_) => notifier.setILikeSub(ILikeSub.mutual),
+                    label: const Text('내가 좋아하는 사람들'),
+                    selected: state.tab == LikeTab.iLike,
+                    onSelected: (_) => notifier.switchTab(LikeTab.iLike),
                   ),
                 ],
               ),
-            ],
-
-            const SizedBox(height: 16),
-
-            Row(
-              children: [
-                ChoiceChip(
-                  label: const Text('나를 좋아하는 사람들'),
-                  selected: state.tab == LikeTab.likedMe,
-                  onSelected: (_) => notifier.switchTab(LikeTab.likedMe),
-                ),
-                const SizedBox(width: 8),
-                ChoiceChip(
-                  label: const Text('내가 좋아하는 사람들'),
-                  selected: state.tab == LikeTab.iLike,
-                  onSelected: (_) => notifier.switchTab(LikeTab.iLike),
-                ),
-              ],
             ),
 
             const SizedBox(height: 16),
@@ -110,17 +81,28 @@ class CheckLikeScreen extends ConsumerWidget {
                           ),
                       itemBuilder: (ctx, i) {
                         final u = state.users[i];
-                        return Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            UserBubble(avatarUrl: u.avatarUrl),
-                            const SizedBox(height: 6),
-                            Text(
-                              u.name,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ],
+                        return InkWell(
+                          onTap: () {
+                            if (viewerId == null) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text('사용자 정보를 불러올 수 없습니다.')),
+                              );
+                              return;
+                            }
+                            context.push('/dating-profile/$viewerId/${u.id}');
+                          },
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              UserBubble(avatarUrl: u.avatarUrl),
+                              const SizedBox(height: 6),
+                              Text(
+                                u.name,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ],
+                          ),
                         );
                       },
                     );

@@ -14,17 +14,17 @@ class _SwipeLikeScreenState extends State<SwipeLikeScreen>
     {
       'name': '파랑님',
       'img': 'https://cdn-icons-png.flaticon.com/512/149/149071.png',
-      'tags': ['다정한', '활발한', '신중한'],
+      // 'tags': ['다정한', '활발한', '신중한'], // Removed tags
     },
     {
       'name': '하늘님',
       'img': 'https://cdn-icons-png.flaticon.com/512/4140/4140048.png',
-      'tags': ['귀여운', '쿨한', '재치있는'],
+      // 'tags': ['귀여운', '쿨한', '재치있는'], // Removed tags
     },
     {
       'name': '보라님',
       'img': 'https://cdn-icons-png.flaticon.com/512/921/921071.png',
-      'tags': ['적극적', '긍정적', '무뚝뚝'],
+      // 'tags': ['적극적', '긍정적', '무뚝뚝'], // Removed tags
     },
   ];
 
@@ -76,7 +76,7 @@ class _SwipeLikeScreenState extends State<SwipeLikeScreen>
   @override
   Widget build(BuildContext context) {
     final user = users[currentIndex];
-    final tags = user['tags'] as List<String>;
+    // final tags = user['tags'] as List<String>; // Removed tags
 
     return Scaffold(
       backgroundColor: const Color(0xFFFFEEF5),
@@ -98,7 +98,7 @@ class _SwipeLikeScreenState extends State<SwipeLikeScreen>
                   child: _ProfileCard(
                     name: user['name'],
                     img: user['img'],
-                    tags: tags,
+                    // tags: tags, // Removed tags
                   ),
                 ),
               ),
@@ -137,12 +137,12 @@ class _SwipeLikeScreenState extends State<SwipeLikeScreen>
 class _ProfileCard extends StatelessWidget {
   final String name;
   final String img;
-  final List<String> tags;
+  // final List<String> tags; // Removed tags
 
   const _ProfileCard({
     required this.name,
     required this.img,
-    required this.tags,
+    // required this.tags, // Removed tags
   });
 
   @override
@@ -174,10 +174,10 @@ class _ProfileCard extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 6),
-                Text(
-                  '#${tags.join(' #')}',
-                  style: const TextStyle(color: Colors.white70),
-                ),
+                // Text( // Removed tags display
+                //   '#${tags.join(' #')}',
+                //   style: const TextStyle(color: Colors.white70),
+                // ),
               ],
             ),
           ),

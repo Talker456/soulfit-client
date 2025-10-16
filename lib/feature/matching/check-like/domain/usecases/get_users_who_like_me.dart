@@ -4,6 +4,6 @@ import '../repositories/check_like_repository.dart';
 class GetUsersWhoLikeMe {
   final CheckLikeRepository repo;
   GetUsersWhoLikeMe(this.repo);
-  Future<List<LikeUser>> call({List<String> filters = const []}) =>
-      repo.getUsersWhoLikeMe(filters: filters);
+  Future<List<LikeUser>> call() =>
+      repo.getUsersWhoLikeMe();
 }
