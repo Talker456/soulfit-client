@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../../config/router/app_router.dart';
 import '../provider/check_like_providers.dart';
 import '../notifier/check_like_notifier.dart';
 import '../widgets/user_bubble.dart';
-import 'package:soulfit_client/config/router/app_router.dart';
+import 'package:soulfit_client/config/di/provider.dart';
 
 class CheckLikeScreen extends ConsumerWidget {
   const CheckLikeScreen({super.key});
@@ -14,6 +15,7 @@ class CheckLikeScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(checkLikeNotifierProvider);
     final notifier = ref.read(checkLikeNotifierProvider.notifier);
+    final viewerId = ref.watch(authNotifierProvider).user?.id; // Get viewer ID
 
     return Scaffold(
       appBar: AppBar(
@@ -79,17 +81,28 @@ class CheckLikeScreen extends ConsumerWidget {
                           ),
                       itemBuilder: (ctx, i) {
                         final u = state.users[i];
-                        return Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            UserBubble(avatarUrl: u.avatarUrl),
-                            const SizedBox(height: 6),
-                            Text(
-                              u.name,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ],
+                        return InkWell(
+                          onTap: () {
+                            if (viewerId == null) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text('사용자 정보를 불러올 수 없습니다.')),
+                              );
+                              return;
+                            }
+                            context.push('/dating-profile/$viewerId/${u.id}');
+                          },
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              UserBubble(avatarUrl: u.avatarUrl),
+                              const SizedBox(height: 6),
+                              Text(
+                                u.name,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ],
+                          ),
                         );
                       },
                     );
