@@ -5,8 +5,5 @@ class GetUsersILike {
   final CheckLikeRepository repo;
   GetUsersILike(this.repo);
 
-  Future<List<LikeUser>> call({
-    List<String> filters = const [],
-    String sub = 'viewed',
-  }) => repo.getUsersILike(filters: filters, sub: sub);
+  Future<List<LikeUser>> call() => repo.getUsersILike();
 }

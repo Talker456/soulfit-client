@@ -1,56 +1,33 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:dio/dio.dart';
+import 'package:http/http.dart' as http; // Use http package
+import 'package:soulfit_client/config/di/provider.dart'; // Assuming this provides AuthLocalDataSource
 
 import '../../data/datasources/check_like_remote_ds.dart';
+import '../../data/datasources/check_like_remote_ds_impl.dart';
 import '../../data/datasources/check_like_remote_ds_mock.dart';
 import '../../data/repository_impl/check_like_repository_impl.dart';
-import '../../data/models/like_user_model.dart';
 import '../../domain/repositories/check_like_repository.dart';
 import '../../domain/usecases/get_users_who_like_me.dart';
 import '../../domain/usecases/get_users_i_like.dart';
 import '../../ui/notifier/check_like_notifier.dart';
 
-const _USE_MOCK = bool.fromEnvironment(
-  'USE_MOCK_CHECK_LIKE',
-  defaultValue: true,
-);
 const _base = String.fromEnvironment(
   'API_BASE',
-  defaultValue: 'https://mock.api',
+  defaultValue: 'localhost', // Changed default to localhost as per API docs
 );
 
-final _dioProvider = Provider<Dio>((ref) => Dio(BaseOptions(baseUrl: _base)));
+final _httpClientProvider = Provider<http.Client>((ref) => http.Client()); // Provide http client
 
 final _remoteProvider = Provider<CheckLikeRemoteDataSource>((ref) {
-  if (_USE_MOCK) {
-    final mock = CheckLikeRemoteDataSourceMock();
-    return CheckLikeRemoteDataSourceAdapter.fromMock(mock);
+  if (USE_FAKE_DATASOURCE) {
+    return CheckLikeRemoteDataSourceMockImpl();
   }
-  return CheckLikeRemoteDataSource(ref.watch(_dioProvider));
+  return CheckLikeRemoteDataSourceImpl(
+    client: ref.watch(_httpClientProvider),
+    authLocalDataSource: ref.watch(authLocalDataSourceProvider), // Assuming this provider exists
+    base: _base,
+  );
 });
-
-class CheckLikeRemoteDataSourceAdapter extends CheckLikeRemoteDataSource {
-  CheckLikeRemoteDataSourceAdapter._(super.dio) : super();
-  late final CheckLikeRemoteDataSourceMock _mock;
-
-  factory CheckLikeRemoteDataSourceAdapter.fromMock(
-    CheckLikeRemoteDataSourceMock mock,
-  ) {
-    final adapter = CheckLikeRemoteDataSourceAdapter._(Dio());
-    adapter._mock = mock;
-    return adapter;
-  }
-
-  @override
-  Future<List<LikeUserModel>> fetchUsersWhoLikeMe(List<String> filters) =>
-      _mock.fetchUsersWhoLikeMe(filters);
-
-  @override
-  Future<List<LikeUserModel>> fetchUsersILike(
-    List<String> filters, {
-    String sub = 'viewed',
-  }) => _mock.fetchUsersILike(filters, sub: sub);
-}
 
 final checkLikeRepoProvider = Provider<CheckLikeRepository>(
   (ref) => CheckLikeRepositoryImpl(ref.watch(_remoteProvider)),
