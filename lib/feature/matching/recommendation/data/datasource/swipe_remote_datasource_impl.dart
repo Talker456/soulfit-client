@@ -24,11 +24,10 @@ class SwipeRemoteDataSourceImpl implements SwipeRemoteDataSource {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $token',
       },
-      body: jsonEncode({
-        'targetUserId': userId,
-        'choice': isLike ? 'LIKE' : 'PASS',
-      }),
-    );
+          body: jsonEncode({
+            'swipedUserId': userId,
+            'type': isLike ? 'LIKE' : 'DISLIKE',
+          }),    );
 
     if (response.statusCode != 201 && response.statusCode != 200) {
       throw Exception('Failed to send swipe action');
