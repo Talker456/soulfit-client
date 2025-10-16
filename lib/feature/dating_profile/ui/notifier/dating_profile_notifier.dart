@@ -13,14 +13,12 @@ class DatingProfileNotifier extends AutoDisposeNotifier<DatingProfileState> {
     state = state.copyWith(loading: false, error: msg);
   }
 
-  Future<void> load(
-      {required String viewerUserId, required String targetUserId}) async {
-    dev.log('[Notifier] load start for $targetUserId by $viewerUserId');
+  Future<void> load({required String userId}) async {
+    dev.log('[Notifier] load start for $userId');
     state = state.copyWith(loading: true, error: null);
     final usecase = ref.read(getDatingProfileUseCaseProvider);
     try {
-      final profile = await usecase(viewerUserId: viewerUserId, targetUserId: targetUserId)
-          .timeout(const Duration(seconds: 5));
+      final profile = await usecase(userId).timeout(const Duration(seconds: 5));
       dev.log('[Notifier] profile loaded: ${profile.nickname}');
       state = state.copyWith(loading: false, profile: profile);
     } on TimeoutException {

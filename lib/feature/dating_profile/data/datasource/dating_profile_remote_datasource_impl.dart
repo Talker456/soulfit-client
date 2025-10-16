@@ -18,12 +18,11 @@ class DatingProfileRemoteDataSourceImpl implements DatingProfileDataSource {
   });
 
   @override
-  Future<DatingProfileModel> getProfile(
-      {required String viewerUserId, required String targetUserId}) async {
+  Future<DatingProfileModel> getProfile(String userId) async {
     final token = await authLocalDataSource.getAccessToken();
     // Use the correct endpoint for fetching a specific user's profile
     final response = await client.get(
-      Uri.parse('http://$base:8080/api/matching-profiles/$targetUserId'),
+      Uri.parse('http://$base:8080/api/matching-profiles/$userId'),
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $token',

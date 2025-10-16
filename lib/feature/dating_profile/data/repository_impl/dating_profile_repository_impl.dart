@@ -7,10 +7,8 @@ class DatingProfileRepositoryImpl implements DatingProfileRepository {
   DatingProfileRepositoryImpl(this.dataSource);
 
   @override
-  Future<DatingProfile> getProfile(
-      {required String viewerUserId, required String targetUserId}) async {
-    final model = await dataSource.getProfile(
-        viewerUserId: viewerUserId, targetUserId: targetUserId);
+  Future<DatingProfile> getProfile(String userId) async {
+    final model = await dataSource.getProfile(userId);
     return model.toEntity();
   }
 }

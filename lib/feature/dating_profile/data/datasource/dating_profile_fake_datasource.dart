@@ -2,15 +2,13 @@ import 'dart:developer' as dev;
 import 'package:soulfit_client/feature/dating_profile/data/model/dating_profile_model.dart';
 
 abstract class DatingProfileDataSource {
-  Future<DatingProfileModel> getProfile(
-      {required String viewerUserId, required String targetUserId});
+  Future<DatingProfileModel> getProfile(String userId);
 }
 
 class DatingProfileFakeDataSource implements DatingProfileDataSource {
   @override
-  Future<DatingProfileModel> getProfile(
-      {required String viewerUserId, required String targetUserId}) async {
-    dev.log('[FakeDS] getProfile(viewer: $viewerUserId, target: $targetUserId) called',
+  Future<DatingProfileModel> getProfile(String userId) async {
+    dev.log('[FakeDS] getProfile(userId: $userId) called',
         name: 'DatingProfileFakeDS');
     await Future<void>.delayed(const Duration(milliseconds: 300));
     dev.log('[FakeDS] returning model', name: 'DatingProfileFakeDS');

@@ -25,14 +25,18 @@ class DatingProfileScreen extends ConsumerStatefulWidget {
 }
 
 class _DatingProfileScreenState extends ConsumerState<DatingProfileScreen> {
+  late final bool isMyProfile;
+
   @override
   void initState() {
     super.initState();
+
+    isMyProfile = widget.viewerUserId == widget.targetUserId;
+
     Future.microtask(() {
-      ref.read(datingProfileNotifierProvider.notifier).load(
-            viewerUserId: widget.viewerUserId,
-            targetUserId: widget.targetUserId,
-          );
+      ref
+          .read(datingProfileNotifierProvider.notifier)
+          .load(userId: widget.targetUserId);
     });
   }
 
@@ -58,7 +62,18 @@ class _DatingProfileScreenState extends ConsumerState<DatingProfileScreen> {
     final p = st.profile!;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('소개팅 프로필')),
+      appBar: AppBar(
+        title: const Text('소개팅 프로필'),
+        actions: [
+          if (isMyProfile)
+            IconButton(
+              icon: const Icon(Icons.edit),
+              onPressed: () {
+                // TODO: Implement profile edit navigation
+              },
+            ),
+        ],
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
