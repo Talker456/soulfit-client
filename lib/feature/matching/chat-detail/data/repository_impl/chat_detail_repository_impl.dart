@@ -35,6 +35,11 @@ class ChatDetailRepositoryImpl implements ChatDetailRepository {
   }
 
   @override
+  Future<void> readChatRoom(String roomId) {
+    return remoteDataSource.readChatRoom(roomId);
+  }
+
+  @override
   void sendTextMessage({required String roomId, required String messageText, required String sender}) {
     messageDataSource.sendMessage(roomId: roomId, messageText: messageText, sender: sender);
   }

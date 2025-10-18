@@ -6,6 +6,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:soulfit_client/config/di/provider.dart';
 import 'package:soulfit_client/core/ui/widget/shared_app_bar.dart';
 import 'package:soulfit_client/feature/matching/chat-detail/domain/entity/chat_room_params.dart';
+import 'package:soulfit_client/feature/matching/chat-detail/domain/usecase/read_chat_room_use_case.dart';
 import 'package:soulfit_client/feature/matching/chat-detail/presentation/provider/chat_detail_provider.dart';
 import 'package:soulfit_client/feature/matching/chat-detail/presentation/state/chat_detail_state.dart';
 import 'package:soulfit_client/feature/matching/chat-detail/presentation/widget/chat_analysis_display.dart';
@@ -50,6 +51,8 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
     }
     _params = ChatRoomParams(roomId: widget.roomId, userId: myUserId);
 
+    _readChatRoom();
+
     _scrollController.addListener(_onScroll);
     _focusNode.addListener(() {
       if (_focusNode.hasFocus && _inputMode == _InputMode.analysis) {
@@ -58,6 +61,18 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
         });
       }
     });
+  }
+
+  void _readChatRoom() async {
+    print('##### [ChatDetailScreen] Attempting to mark room ${widget.roomId} as read.');
+    try {
+      final readChatRoomUseCase = await ref.read(readChatRoomUseCaseProvider(_params).future);
+      await readChatRoomUseCase(ReadChatRoomParams(roomId: widget.roomId));
+      print('##### [ChatDetailScreen] Successfully marked room ${widget.roomId} as read.');
+    } catch (e) {
+      // Handle error appropriately
+      print('##### [ChatDetailScreen] Failed to mark chat room as read: $e');
+    }
   }
 
   @override
