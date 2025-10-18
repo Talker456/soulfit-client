@@ -14,6 +14,7 @@ import 'package:soulfit_client/feature/matching/chat-detail/domain/repository/ch
 import 'package:soulfit_client/feature/matching/chat-detail/domain/usecase/get_analysis_stream_use_case.dart';
 import 'package:soulfit_client/feature/matching/chat-detail/domain/usecase/get_message_stream_use_case.dart';
 import 'package:soulfit_client/feature/matching/chat-detail/domain/usecase/get_messages_use_case.dart';
+import 'package:soulfit_client/feature/matching/chat-detail/domain/usecase/read_chat_room_use_case.dart';
 import 'package:soulfit_client/feature/matching/chat-detail/domain/usecase/send_image_message_use_case.dart';
 import 'package:soulfit_client/feature/matching/chat-detail/domain/usecase/send_text_message_use_case.dart';
 import 'package:soulfit_client/feature/matching/chat-detail/presentation/notifier/chat_analysis_notifier.dart';
@@ -88,6 +89,11 @@ final getAnalysisStreamUseCaseProvider = FutureProvider.autoDispose.family<GetAn
 final getMessageStreamUseCaseProvider = FutureProvider.autoDispose.family<GetMessageStreamUseCase, ChatRoomParams>((ref, params) async {
   final repository = await ref.watch(chatDetailRepositoryProvider(params).future);
   return GetMessageStreamUseCase(repository);
+});
+
+final readChatRoomUseCaseProvider = FutureProvider.autoDispose.family<ReadChatRoomUseCase, ChatRoomParams>((ref, params) async {
+  final repository = await ref.watch(chatDetailRepositoryProvider(params).future);
+  return ReadChatRoomUseCase(repository);
 });
 
 // Presentation Layer (Notifier)

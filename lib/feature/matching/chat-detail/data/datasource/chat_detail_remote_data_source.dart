@@ -8,4 +8,6 @@ abstract class ChatDetailRemoteDataSource {
   Future<ChatMessageModel> sendImage(String roomId, File image);
 
   Future<void> leaveChatRoom(String roomId);
+
+  Future<void> readChatRoom(String roomId);
 }

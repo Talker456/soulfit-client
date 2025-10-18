@@ -71,4 +71,24 @@ class ChatDetailRemoteDataSourceImpl implements ChatDetailRemoteDataSource {
       throw Exception('Failed to leave chat room');
     }
   }
+
+  @override
+  Future<void> readChatRoom(String roomId) async {
+    print('##### [ChatDetailRemoteDataSource] Reading chat room: $roomId');
+    final token = await authLocalDataSource.getAccessToken();
+    final response = await client.post(
+      Uri.parse('http://$BASE_URL:8080/api/chat/$roomId/read'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      print('##### [ChatDetailRemoteDataSource] Successfully read chat room: $roomId, status: ${response.statusCode}');
+    } else {
+      print('##### [ChatDetailRemoteDataSource] Failed to read chat room: $roomId, status: ${response.statusCode}');
+      throw Exception('Failed to mark chat room as read');
+    }
+  }
 }
