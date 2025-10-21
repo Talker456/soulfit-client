@@ -46,7 +46,7 @@ class ChatDetailRepositoryImpl implements ChatDetailRepository {
 
   @override
   Stream<ChatAnalysis> getAnalysisStream(String roomId) {
-    return analysisDataSource.analysisStream;
+    return analysisDataSource.analysisStream.map((model) => model.toEntity());
   }
 
   @override
