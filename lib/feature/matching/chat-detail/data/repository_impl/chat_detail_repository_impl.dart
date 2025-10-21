@@ -4,8 +4,10 @@ import 'dart:io';
 import 'package:soulfit_client/feature/matching/chat-detail/data/datasource/chat_analysis_data_source.dart';
 import 'package:soulfit_client/feature/matching/chat-detail/data/datasource/chat_detail_remote_data_source.dart';
 import 'package:soulfit_client/feature/matching/chat-detail/data/datasource/chat_message_data_source.dart';
+import 'package:soulfit_client/feature/matching/chat-detail/data/model/recommended_replies_model.dart';
 import 'package:soulfit_client/feature/matching/chat-detail/domain/entity/chat_analysis.dart';
 import 'package:soulfit_client/feature/matching/chat-detail/domain/entity/chat_message.dart';
+import 'package:soulfit_client/feature/matching/chat-detail/domain/entity/recommended_replies.dart';
 import 'package:soulfit_client/feature/matching/chat-detail/domain/repository/chat_detail_repository.dart';
 
 class ChatDetailRepositoryImpl implements ChatDetailRepository {
@@ -40,6 +42,12 @@ class ChatDetailRepositoryImpl implements ChatDetailRepository {
   }
 
   @override
+  Future<RecommendedReplies> getRecommendedReplies(String roomId) async {
+    final model = await remoteDataSource.getRecommendedReplies(roomId);
+    return (model as RecommendedRepliesModel).toEntity();
+  }
+
+  @override
   void sendTextMessage({required String roomId, required String messageText, required String sender}) {
     messageDataSource.sendMessage(roomId: roomId, messageText: messageText, sender: sender);
   }
@@ -52,18 +60,6 @@ class ChatDetailRepositoryImpl implements ChatDetailRepository {
   @override
   Stream<ChatMessage> getMessageStream(String roomId) {
     return messageDataSource.messageStream;
-  }
-  
-  // connectToChat and disconnectFromChat are now managed by the connection manager and data sources directly
-  // so they are removed from the repository interface and implementation.
-  @override
-  Future<void> connectToChat(String roomId) async {
-    // This is now handled by the individual data sources when they are initialized.
-  }
-
-  @override
-  void disconnectFromChat() {
-    // This is handled by the StompConnectionManager's dispose logic, triggered by the provider.
   }
 }
 

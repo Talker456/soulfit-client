@@ -6,6 +6,7 @@ import 'package:soulfit_client/feature/matching/chat-detail/domain/entity/chat_m
 import 'package:soulfit_client/feature/matching/chat-detail/domain/entity/chat_room_params.dart';
 import 'package:soulfit_client/feature/matching/chat-detail/domain/usecase/get_message_stream_use_case.dart';
 import 'package:soulfit_client/feature/matching/chat-detail/domain/usecase/get_messages_use_case.dart';
+import 'package:soulfit_client/feature/matching/chat-detail/domain/usecase/get_recommended_replies_use_case.dart';
 import 'package:soulfit_client/feature/matching/chat-detail/domain/usecase/send_image_message_use_case.dart';
 import 'package:soulfit_client/feature/matching/chat-detail/domain/usecase/send_text_message_use_case.dart';
 import 'package:soulfit_client/feature/matching/chat-detail/presentation/provider/chat_detail_provider.dart';
@@ -16,6 +17,7 @@ class ChatDetailNotifier extends AutoDisposeFamilyAsyncNotifier<ChatDetailState,
   late final SendTextMessageUseCase _sendTextMessageUseCase;
   late final SendImageMessageUseCase _sendImageMessageUseCase;
   late final GetMessageStreamUseCase _getMessageStreamUseCase;
+  late final GetRecommendedRepliesUseCase _getRecommendedRepliesUseCase;
 
   late final String roomId;
   int _page = 0;
@@ -28,6 +30,7 @@ class ChatDetailNotifier extends AutoDisposeFamilyAsyncNotifier<ChatDetailState,
     _sendTextMessageUseCase = await ref.watch(sendTextMessageUseCaseProvider(arg).future);
     _sendImageMessageUseCase = await ref.watch(sendImageMessageUseCaseProvider(arg).future);
     _getMessageStreamUseCase = await ref.watch(getMessageStreamUseCaseProvider(arg).future);
+    _getRecommendedRepliesUseCase = await ref.watch(getRecommendedRepliesUseCaseProvider(arg).future);
 
     roomId = arg.roomId;
 
@@ -104,6 +107,25 @@ class ChatDetailNotifier extends AutoDisposeFamilyAsyncNotifier<ChatDetailState,
       await _sendImageMessageUseCase(SendImageMessageParams(roomId: roomId, image: image));
     } catch (e) {
       print('##### Failed to send image: $e');
+    }
+  }
+
+  Future<void> getRecommendedReplies() async {
+    if (state.value is! ChatDetailLoaded) return;
+    final currentState = state.value as ChatDetailLoaded;
+
+    state = AsyncData(currentState.copyWith(isFetchingRecommendations: true));
+
+    try {
+      final result = await _getRecommendedRepliesUseCase(GetRecommendedRepliesParams(roomId: roomId));
+      state = AsyncData(currentState.copyWith(
+        recommendedReplies: result.recommendations,
+        isFetchingRecommendations: false,
+      ));
+    } catch (e) {
+      state = AsyncData(currentState.copyWith(isFetchingRecommendations: false));
+      // Optionally, handle the error in the UI
+      print('##### Failed to get recommended replies: $e');
     }
   }
 
