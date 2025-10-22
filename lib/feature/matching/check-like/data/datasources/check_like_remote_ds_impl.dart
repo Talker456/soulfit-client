@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:soulfit_client/feature/authentication/data/datasource/auth_local_datasource.dart';
 
+import '../models/ai_match_response_model.dart';
 import '../models/like_user_model.dart';
 import 'check_like_remote_ds.dart';
 
@@ -47,10 +48,31 @@ class CheckLikeRemoteDataSourceImpl implements CheckLikeRemoteDataSource {
     );
 
     if (response.statusCode == 200) {
-      final List<dynamic> jsonResponse = jsonDecode(utf8.decode(response.bodyBytes));
+      final List<dynamic> jsonResponse = jsonDecode(
+          utf8.decode(response.bodyBytes));
       return jsonResponse.map((json) => LikeUserModel.fromJson(json)).toList();
     } else {
       throw Exception('Failed to load users I liked: ${response.statusCode}');
+    }
+  }
+
+  @override
+  Future<List<AiMatchResponseModel>> getAiMatch(List<int> candidateUserIds) async {
+    final token = await authLocalDataSource.getAccessToken();
+    final response = await client.post(
+      Uri.parse('http://$base:8080/api/matching/ai-match'), // Assuming new endpoint
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode({'candidateUserIds': candidateUserIds}),
+    );
+
+    if (response.statusCode == 200) {
+      final List<dynamic> jsonResponse = jsonDecode(utf8.decode(response.bodyBytes));
+      return jsonResponse.map((json) => AiMatchResponseModel.fromJson(json)).toList();
+    } else {
+      throw Exception('Failed to get AI match: ${response.statusCode}');
     }
   }
 }
