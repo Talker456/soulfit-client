@@ -1,3 +1,4 @@
+import '../../domain/entities/ai_match.dart';
 import '../../domain/entities/like_user.dart';
 import '../../domain/repositories/check_like_repository.dart';
 import '../datasources/check_like_remote_ds.dart';
@@ -16,5 +17,11 @@ class CheckLikeRepositoryImpl implements CheckLikeRepository {
   Future<List<LikeUser>> getUsersILike() async {
     final m = await remote.fetchUsersILike();
     return m.map((e) => e.toEntity()).toList();
+  }
+
+  @override
+  Future<List<AiMatch>> getAiMatch(List<int> candidateUserIds) async {
+    final result = await remote.getAiMatch(candidateUserIds);
+    return result.map((e) => e.toEntity()).toList();
   }
 }

@@ -7,6 +7,7 @@ import '../../data/datasources/check_like_remote_ds_impl.dart';
 import '../../data/datasources/check_like_remote_ds_mock.dart';
 import '../../data/repository_impl/check_like_repository_impl.dart';
 import '../../domain/repositories/check_like_repository.dart';
+import '../../domain/usecases/get_ai_match.dart';
 import '../../domain/usecases/get_users_who_like_me.dart';
 import '../../domain/usecases/get_users_i_like.dart';
 import '../../ui/notifier/check_like_notifier.dart';
@@ -41,11 +42,16 @@ final getUsersILikeProvider = Provider(
   (ref) => GetUsersILike(ref.watch(checkLikeRepoProvider)),
 );
 
+final getAiMatchProvider = Provider(
+  (ref) => GetAiMatch(ref.watch(checkLikeRepoProvider)),
+);
+
 final checkLikeNotifierProvider =
     StateNotifierProvider.autoDispose<CheckLikeNotifier, CheckLikeState>((ref) {
       final likedMe = ref.watch(getUsersWhoLikeMeProvider);
       final iLike = ref.watch(getUsersILikeProvider);
-      final n = CheckLikeNotifier(likedMe, iLike);
+      final getAiMatch = ref.watch(getAiMatchProvider);
+      final n = CheckLikeNotifier(likedMe, iLike, getAiMatch);
       Future.microtask(n.load);
       return n;
     });

@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../../config/router/app_router.dart';
 import '../provider/check_like_providers.dart';
 import '../notifier/check_like_notifier.dart';
+import '../widgets/ai_match_result_dialog.dart';
 import '../widgets/user_bubble.dart';
 import 'package:soulfit_client/config/di/provider.dart';
 
@@ -15,13 +16,50 @@ class CheckLikeScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(checkLikeNotifierProvider);
     final notifier = ref.read(checkLikeNotifierProvider.notifier);
-    final viewerId = ref.watch(authNotifierProvider).user?.id; // Get viewer ID
+    final viewer = ref.watch(authNotifierProvider).user;
+
+    ref.listen(checkLikeNotifierProvider.select((value) => value.aiMatchState),
+        (previous, next) {
+      next.when(
+        data: (data) {
+          if (data.isNotEmpty) {
+            showDialog(
+              context: context,
+              builder: (context) => AiMatchResultDialog(matchResult: data.first),
+            );
+          }
+        },
+        loading: () {
+          // You can show a loading indicator here if you want
+        },
+        error: (error, stackTrace) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('AI 매칭 분석 중 오류가 발생했습니다: $error')),
+          );
+        },
+      );
+    });
 
     return Scaffold(
       appBar: AppBar(
         title: Text(
           state.tab == LikeTab.likedMe ? '나를 좋아하는 사람들' : '내가 좋아하는 사람들',
         ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              final candidateUserIds = state.users.map((u) => int.parse(u.id)).toList();
+              if (candidateUserIds.isEmpty) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('분석할 사용자가 없습니다.')),
+                );
+                return;
+              }
+              notifier.getAiMatch(candidateUserIds);
+            },
+            child: const Text('AI 매칭 분석'),
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
@@ -83,13 +121,13 @@ class CheckLikeScreen extends ConsumerWidget {
                         final u = state.users[i];
                         return InkWell(
                           onTap: () {
-                            if (viewerId == null) {
+                            if (viewer == null) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(content: Text('사용자 정보를 불러올 수 없습니다.')),
                               );
                               return;
                             }
-                            context.push('/dating-profile/$viewerId/${u.id}');
+                            context.push('/dating-profile/${viewer.id}/${u.id}');
                           },
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
