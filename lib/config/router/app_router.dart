@@ -29,6 +29,7 @@ import '../../feature/main_profile/ui/screen/test_result_report.dart';
 import '../../feature/matching/chat-detail/presentation/screen/chat_detail_screen.dart';
 import '../../feature/matching/chat/presentation/screen/chat_screen.dart';
 import '../../feature/matching/chat/presentation/screen/chat_detail_screen.dart';
+import '../../feature/matching/recommendation/presentation/screen/recommended_user_screen.dart';
 import '../../feature/meeting/main/ui/screen/meeting_list_screen.dart';
 import '../../feature/meeting/main/ui/screen/meeting_detail_screen.dart';
 import '../../feature/meeting/main/ui/screen/recently_open_group.dart';
@@ -112,6 +113,7 @@ class AppRoutes {
   static const String writeImpression = '/write-impression';
   static const String checkLike = '/check-like';
   static const String swipeLike = '/swipe-like';
+  static const String recommendedUser = '/recommended-uesr';
 
   static const List<String> allRoutes = [
     login,
@@ -161,6 +163,7 @@ class AppRoutes {
     writeImpression,
     checkLike,
     swipeLike,
+    recommendedUser,
   ];
 }
 
@@ -443,6 +446,11 @@ final GoRouter appRouter = GoRouter(
       path: AppRoutes.swipeLike,
       name: 'swipe-like',
       builder: (context, state) => const SwipeLikeScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.recommendedUser,
+      name: 'recommended-user',
+      builder: (context, state) => const RecommendedUserScreen(),
     ),
 
     StatefulShellRoute.indexedStack(
