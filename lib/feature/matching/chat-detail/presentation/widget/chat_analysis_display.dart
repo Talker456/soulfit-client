@@ -15,7 +15,9 @@ class ChatAnalysisDisplay extends ConsumerWidget {
 
     return analysisAsync.when(
       data: (analysisState) => switch (analysisState) {
-        ChatAnalysisLoading() || ChatAnalysisInitial() => const Padding(
+        ChatAnalysisLoading() ||
+        ChatAnalysisInitial() =>
+          const Padding(
             padding: EdgeInsets.all(8.0),
             child: Center(child: Text("대화 분석 중...")),
           ),
@@ -23,39 +25,67 @@ class ChatAnalysisDisplay extends ConsumerWidget {
             padding: const EdgeInsets.all(8.0),
             child: Center(child: Text(message, style: const TextStyle(color: Colors.red))),
           ),
-        ChatAnalysisLoaded(:final analysis) => Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            color: Colors.lightGreen.withOpacity(0.1),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        ChatAnalysisLoaded(:final analysis) => SingleChildScrollView(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Mood Icon
-                _buildMoodIcon(analysis.mood),
-                const SizedBox(width: 12),
-                // Keywords
-                Expanded(
-                  child: Wrap(
-                    spacing: 6.0,
-                    runSpacing: 4.0,
-                    children: analysis.keywords
-                        .map((kw) => Chip(
-                              label: Text(kw, style: const TextStyle(fontSize: 12)),
-                              padding: EdgeInsets.zero,
-                            ))
-                        .toList(),
+                Text(
+                  '대화 분석 결과',
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
+                const SizedBox(height: 16),
+                _buildSection(
+                  context,
+                  title: '대화 분위기',
+                  content: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(analysis.vibe.summary),
+                      const SizedBox(height: 8),
+                      Wrap(
+                        spacing: 8.0,
+                        children: analysis.vibe.keywords
+                            .map((keyword) => Chip(label: Text(keyword)))
+                            .toList(),
+                      ),
+                    ],
                   ),
                 ),
-                const SizedBox(width: 12),
-                // Positive Score
-                Column(
-                  children: [
-                    const Text("긍정", style: TextStyle(fontSize: 10)),
-                    Text(
-                      "${(analysis.positiveScore * 100).toStringAsFixed(0)}%",
-                      style: const TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                  ],
-                )
+                const SizedBox(height: 16),
+                _buildSection(
+                  context,
+                  title: '관심도',
+                  content: Text(analysis.interestLevel),
+                ),
+                const SizedBox(height: 16),
+                _buildComparisonSection(
+                  context,
+                  title: '성향',
+                  userAData: analysis.personality.userA.join(', '),
+                  userBData: analysis.personality.userB.join(', '),
+                ),
+                const SizedBox(height: 16),
+                _buildComparisonSection(
+                  context,
+                  title: '공감',
+                  userAData: analysis.empathy.userA,
+                  userBData: analysis.empathy.userB,
+                ),
+                const SizedBox(height: 16),
+                _buildComparisonSection(
+                  context,
+                  title: '답장 속도',
+                  userAData: analysis.responseSpeed.userA,
+                  userBData: analysis.responseSpeed.userB,
+                ),
+                const SizedBox(height: 16),
+                _buildComparisonSection(
+                  context,
+                  title: '질문 빈도',
+                  userAData: analysis.questionFrequency.userA,
+                  userBData: analysis.questionFrequency.userB,
+                ),
               ],
             ),
           ),
@@ -71,22 +101,31 @@ class ChatAnalysisDisplay extends ConsumerWidget {
     );
   }
 
-  Widget _buildMoodIcon(String mood) {
-    IconData iconData;
-    Color color;
-    switch (mood) {
-      case 'UPBEAT':
-        iconData = Icons.sentiment_very_satisfied;
-        color = Colors.green;
-        break;
-      case 'TENSE':
-        iconData = Icons.sentiment_very_dissatisfied;
-        color = Colors.red;
-        break;
-      default:
-        iconData = Icons.sentiment_neutral;
-        color = Colors.grey;
-    }
-    return Icon(iconData, color: color, size: 32);
+  Widget _buildSection(BuildContext context, {required String title, required Widget content}) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: Theme.of(context).textTheme.titleMedium,
+        ),
+        const SizedBox(height: 8),
+        content,
+      ],
+    );
+  }
+
+  Widget _buildComparisonSection(BuildContext context,
+      {required String title, required String userAData, required String userBData}) {
+    return _buildSection(
+      context,
+      title: title,
+      content: Row(
+        children: [
+          Expanded(child: Text('나: $userAData')),
+          Expanded(child: Text('상대: $userBData')),
+        ],
+      ),
+    );
   }
 }

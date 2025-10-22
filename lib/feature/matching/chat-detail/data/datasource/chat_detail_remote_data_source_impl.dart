@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:soulfit_client/config/di/provider.dart';
 import 'package:soulfit_client/feature/authentication/data/datasource/auth_local_datasource.dart';
 import 'package:soulfit_client/feature/matching/chat-detail/data/model/chat_message_model.dart';
+import 'package:soulfit_client/feature/matching/chat-detail/data/model/recommended_replies_model.dart';
 
 import 'chat_detail_remote_data_source.dart';
 
@@ -89,6 +90,24 @@ class ChatDetailRemoteDataSourceImpl implements ChatDetailRemoteDataSource {
     } else {
       print('##### [ChatDetailRemoteDataSource] Failed to read chat room: $roomId, status: ${response.statusCode}');
       throw Exception('Failed to mark chat room as read');
+    }
+  }
+
+  @override
+  Future<RecommendedRepliesModel> getRecommendedReplies(String roomId) async {
+    final token = await authLocalDataSource.getAccessToken();
+    final response = await client.get(
+      Uri.parse('http://$BASE_URL:8080/api/chat/rooms/$roomId/messages/recommend'),
+      headers: {
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> data = jsonDecode(utf8.decode(response.bodyBytes));
+      return RecommendedRepliesModel.fromJson(data);
+    } else {
+      throw Exception('Failed to load recommended replies');
     }
   }
 }

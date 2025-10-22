@@ -23,10 +23,27 @@ class FakeChatAnalysisDataSource {
       final keywords = message.split(' ').where((word) => word.length > 1).take(2).toList();
 
       final analysis = ChatAnalysis(
-        positiveScore: random.nextDouble() * 0.8 + 0.1, // 0.1 ~ 0.9
-        negativeScore: random.nextDouble() * 0.2,      // 0.0 ~ 0.2
-        mood: ['UPBEAT', 'CALM', 'NEUTRAL'][random.nextInt(3)],
-        keywords: ['#가상분석', ...keywords],
+        personality: Personality(
+          userA: ['분석적', '신중함'],
+          userB: ['외향적', '낙천적'],
+        ),
+        empathy: Empathy(
+          userA: '높음',
+          userB: '보통',
+        ),
+        responseSpeed: ResponseSpeed(
+          userA: '빠름',
+          userB: '보통',
+        ),
+        questionFrequency: QuestionFrequency(
+          userA: '많음',
+          userB: '적음',
+        ),
+        interestLevel: '높음',
+        vibe: Vibe(
+          keywords: ['#가상분석', '#페이크데이터'],
+          summary: '가상으로 생성된 대화 분석 결과입니다.',
+        ),
       );
       _controller.add(analysis);
     });
