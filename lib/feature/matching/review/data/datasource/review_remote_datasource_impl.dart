@@ -17,17 +17,22 @@ class ReviewRemoteDataSourceImpl implements ReviewRemoteDataSource {
     required this.baseUrl,
   });
 
+
   @override
   Future<ReviewResponseDto> createReview(CreateReviewRequestDto request) async {
     final token = await authLocalDataSource.getAccessToken();
+    String uri = 'http://$baseUrl:8080/api/reviews';
+
+    print('request : '+ request.toJson().toString());
     final response = await client.post(
-      Uri.parse('http://$baseUrl:8080/api/reviews'),
+      Uri.parse(uri),
       headers: {
         'Content-Type': 'application/json; charset=UTF-8',
         'Authorization': 'Bearer $token',
       },
       body: jsonEncode(request.toJson()),
     );
+
 
     if (response.statusCode == 201) {
       return ReviewResponseDto.fromJson(jsonDecode(response.body));
@@ -76,7 +81,7 @@ class ReviewRemoteDataSourceImpl implements ReviewRemoteDataSource {
   Future<List<String>> getReviewKeywords() async {
     final token = await authLocalDataSource.getAccessToken();
     final response = await client.get(
-      Uri.parse('https://$baseUrl:8080/api/reviews/keywords'),
+      Uri.parse('http://$baseUrl:8080/api/reviews/keywords'),
       headers: {
         'Authorization': 'Bearer $token',
       },
@@ -94,7 +99,7 @@ class ReviewRemoteDataSourceImpl implements ReviewRemoteDataSource {
   Future<List<String>> getUserKeywordSummary(int userId) async {
     final token = await authLocalDataSource.getAccessToken();
     final response = await client.get(
-      Uri.parse('https://$baseUrl:8443/api/reviews/user/$userId/keywords/summary'),
+      Uri.parse('http://$baseUrl:8080/api/reviews/user/$userId/keywords/summary'),
       headers: {
         'Authorization': 'Bearer $token',
       },

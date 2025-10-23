@@ -2,8 +2,10 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:soulfit_client/config/di/provider.dart';
+import 'package:soulfit_client/config/router/app_router.dart';
 import 'package:soulfit_client/core/ui/widget/shared_app_bar.dart';
 import 'package:soulfit_client/feature/matching/chat-detail/domain/entity/chat_room_params.dart';
 import 'package:soulfit_client/feature/matching/chat-detail/domain/usecase/read_chat_room_use_case.dart';
@@ -15,11 +17,13 @@ import 'package:soulfit_client/feature/matching/chat-detail/presentation/widget/
 class ChatDetailScreen extends ConsumerStatefulWidget {
   final String roomId;
   final String opponentNickname;
+  final String opponentId;
 
   const ChatDetailScreen({
     super.key,
     required this.roomId,
     required this.opponentNickname,
+    required this.opponentId,
   });
 
   @override
@@ -150,6 +154,29 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
       appBar: SharedAppBar(
         showBackButton: true,
         title: Text(widget.opponentNickname),
+        actions: [
+          PopupMenuButton<String>(
+            onSelected: (value) {
+              if (value == 'review') {
+                context.push(
+                  AppRoutes.createReview,
+                  extra: {
+                    'revieweeId': int.parse(widget.opponentId),
+                    'conversationRequestId': int.parse(widget.roomId),
+                  },
+                );
+                print('Navigate to Review Screen');
+              }
+            },
+            itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+              const PopupMenuItem<String>(
+                value: 'review',
+                child: Text('대화 상대 리뷰하기'),
+              ),
+            ],
+            icon: const Icon(Icons.more_vert, color: Colors.black),
+          ),
+        ],
       ),
       body: Column(
         children: [

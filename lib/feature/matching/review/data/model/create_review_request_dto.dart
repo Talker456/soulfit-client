@@ -1,13 +1,13 @@
 
 class CreateReviewRequestDto {
   final int revieweeId;
-  final int conversationRequestId;
+  final int chatRoomId;
   final String comment;
   final List<String> keywords;
 
   CreateReviewRequestDto({
     required this.revieweeId,
-    required this.conversationRequestId,
+    required this.chatRoomId,
     required this.comment,
     required this.keywords,
   });
@@ -15,7 +15,7 @@ class CreateReviewRequestDto {
   Map<String, dynamic> toJson() {
     return {
       'revieweeId': revieweeId,
-      'conversationRequestId': conversationRequestId,
+      'chatRoomId': chatRoomId,
       'comment': comment,
       'keywords': keywords,
     };

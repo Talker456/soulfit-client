@@ -20,7 +20,7 @@ class ReviewRepositoryImpl implements ReviewRepository {
     // and convert it to a DTO here.
     final requestDto = CreateReviewRequestDto(
       revieweeId: revieweeId,
-      conversationRequestId: conversationRequestId,
+      chatRoomId: conversationRequestId,
       comment: comment,
       keywords: keywords,
     );

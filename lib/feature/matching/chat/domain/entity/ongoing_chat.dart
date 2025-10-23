@@ -5,6 +5,7 @@ class OngoingChat {
   final String lastMessage;
   final DateTime lastMessageAt;
   final int unreadCount;
+  final String opponentId;
 
   OngoingChat({
     required this.roomId,
@@ -13,5 +14,6 @@ class OngoingChat {
     required this.lastMessage,
     required this.lastMessageAt,
     required this.unreadCount,
+    required this.opponentId,
   });
 }

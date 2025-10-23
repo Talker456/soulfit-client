@@ -77,7 +77,7 @@ class _OngoingChatScreenState extends ConsumerState<OngoingChatScreen> {
                       onTap: () async {
                         print('##### [OngoingChatScreen] Navigating to chat room: ${chat.roomId}');
                         await context.push(
-                          '${AppRoutes.chatDetail}/${chat.roomId}/${chat.opponentNickname}',
+                          '${AppRoutes.chatDetail}/${chat.roomId}/${chat.opponentNickname}/${chat.opponentId}',
                         );
                         print('##### [OngoingChatScreen] Returned from chat room: ${chat.roomId}. Refreshing chat list.');
                         ref.read(ongoingChatNotifierProvider.notifier).fetchOngoingChats();
