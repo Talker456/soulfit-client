@@ -30,6 +30,7 @@ import '../../feature/matching/chat-detail/presentation/screen/chat_detail_scree
 import '../../feature/matching/chat/presentation/screen/chat_screen.dart';
 import '../../feature/matching/chat/presentation/screen/chat_detail_screen.dart';
 import '../../feature/matching/recommendation/presentation/screen/recommended_user_screen.dart';
+import '../../feature/matching/review/presentation/screens/create_review_screen.dart';
 import '../../feature/meeting/main/ui/screen/meeting_list_screen.dart';
 import '../../feature/meeting/main/ui/screen/meeting_detail_screen.dart';
 import '../../feature/meeting/main/ui/screen/recently_open_group.dart';
@@ -114,6 +115,7 @@ class AppRoutes {
   static const String checkLike = '/check-like';
   static const String swipeLike = '/swipe-like';
   static const String recommendedUser = '/recommended-uesr';
+  static const String createReview = '/create-review';
 
   static const List<String> allRoutes = [
     login,
@@ -164,6 +166,7 @@ class AppRoutes {
     checkLike,
     swipeLike,
     recommendedUser,
+    createReview,
   ];
 }
 
@@ -377,12 +380,13 @@ final GoRouter appRouter = GoRouter(
       builder: (context, state) => const PastApplyList(),
     ),
     GoRoute(
-      path: '${AppRoutes.chatDetail}/:chatRoomId/:opponentNickname',
+      path: '${AppRoutes.chatDetail}/:chatRoomId/:opponentNickname/:opponentId',
       name: 'chat-detail',
       builder:
           (context, state) => ChatDetailScreen(
             roomId: state.pathParameters['chatRoomId']!,
             opponentNickname: state.pathParameters['opponentNickname']!,
+            opponentId: state.pathParameters['opponentId']!,
           ),
     ),
     GoRoute(
@@ -451,6 +455,28 @@ final GoRouter appRouter = GoRouter(
       path: AppRoutes.recommendedUser,
       name: 'recommended-user',
       builder: (context, state) => const RecommendedUserScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.createReview,
+      name: 'create-review',
+      builder: (context, state) {
+        // extra로 전달된 파라미터를 Map 형태로 받음
+        final params = state.extra as Map<String, dynamic>?;
+        final revieweeId = params?['revieweeId'] as int?;
+        final conversationRequestId = params?['conversationRequestId'] as int?;
+
+        // 파라미터가 없으면 에러 화면 또는 이전 화면으로 리다이렉트 (예시)
+        if (revieweeId == null || conversationRequestId == null) {
+          return const Scaffold(
+            body: Center(child: Text('잘못된 접근입니다.')),
+          );
+        }
+
+        return CreateReviewScreen(
+          revieweeId: revieweeId,
+          conversationRequestId: conversationRequestId,
+        );
+      },
     ),
 
     StatefulShellRoute.indexedStack(

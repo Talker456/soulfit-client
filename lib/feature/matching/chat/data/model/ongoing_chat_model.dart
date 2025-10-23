@@ -8,6 +8,7 @@ class OngoingChatModel extends OngoingChat {
     required super.lastMessage,
     required super.lastMessageAt,
     required super.unreadCount,
+    required super.opponentId,
   });
 
   factory OngoingChatModel.fromJson(Map<String, dynamic> json) {
@@ -20,6 +21,7 @@ class OngoingChatModel extends OngoingChat {
           ? DateTime.now()                                  // null이면 현재 시간으로 설정
           : DateTime.parse(json['lastMessageTime']),        // null이 아니면 파싱
       unreadCount: json['unreadCount'],
+      opponentId: json['opponentId'].toString(),
     );
   }
 }

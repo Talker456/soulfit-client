@@ -16,6 +16,7 @@ class FakeOngoingChatRemoteDataSource implements OngoingChatRemoteDataSource {
       lastMessage: '안녕하세요! 채팅 내용 ${index + 1}입니다.',
       lastMessageAt: DateTime.now().subtract(Duration(minutes: 30 * index)),
       unreadCount: Random().nextInt(5), // 0에서 4까지의 랜덤한 안 읽은 메시지 수
+      opponentId: "1",
     ),
   );
 
