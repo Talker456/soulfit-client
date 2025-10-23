@@ -1,57 +1,41 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:soulfit_client/config/router/app_router.dart';
 import 'package:soulfit_client/core/ui/widget/shared_app_bar_dating.dart';
 import 'package:soulfit_client/core/ui/widget/shared_navigation_bar.dart';
 import 'package:soulfit_client/feature/matching/filter/presentation/screen/dating_filter.dart';
 import 'package:soulfit_client/feature/matching/voting/presentation/screen/first_impression_evaluated.dart';
 import 'package:soulfit_client/feature/matching/voting/presentation/screen/first_impression_vote.dart' as vote_screen;
-import 'package:soulfit_client/feature/matching/recommendation/presentation/screen/recommand_user.dart';
+import 'package:soulfit_client/feature/matching/recommendation/presentation/screen/recommended_user_screen.dart' as recommendation;
+import '../../../filter/domain/entities/dating_filter.dart';
+import '../riverpod/dating_main_provider.dart';
+import '../../domain/entities/recommended_user.dart';
+import '../../domain/entities/first_impression_vote.dart';
 
-class RecommendedUser {
-  final String name;
-  final int age;
-  final double distance; // km 단위ff
-  final String imageUrl;
-
-  RecommendedUser({
-    required this.name,
-    required this.age,
-    required this.distance,
-    required this.imageUrl,
-  });
-}
-
-// 첫인상 투표 정보를 담는 클래스
-class FirstImpressionVote {
-  final String name;
-  final String message;
-  final String imageUrl;
-
-  FirstImpressionVote({
-    required this.name,
-    required this.message,
-    required this.imageUrl,
-  });
-}
-
-// --- 2. 프론트엔드 개발을 위한 '가짜 데이터' (Dummy Data) ---
-final List<RecommendedUser> dummyRecommendedUsers = [
-  RecommendedUser(name: 'Halima', age: 19, distance: 16, imageUrl: 'https://picsum.photos/300/400?random=1'),
-  RecommendedUser(name: 'Vanessa', age: 18, distance: 0, imageUrl: 'https://picsum.photos/300/400?random=2'),
-  RecommendedUser(name: 'James', age: 20, distance: 2.2, imageUrl: 'https://picsum.photos/300/400?random=3'),
-];
-
-final FirstImpressionVote dummyVote = FirstImpressionVote(
-  name: 'Tyler',
-  message: 'How r u?',
-  imageUrl: 'https://picsum.photos/100/100?random=4',
-);
-
-// --- 3. 화면을 그리는 메인 위젯 ---
-class DatingMain extends StatelessWidget {
+class DatingMain extends ConsumerStatefulWidget {
   const DatingMain({super.key});
 
   @override
+  ConsumerState<DatingMain> createState() => _DatingMainState();
+}
+
+class _DatingMainState extends ConsumerState<DatingMain> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      // Load recommended users with the default filter initially
+      ref.read(datingMainProvider.notifier).loadRecommendedUsers(DatingFilter.defaultFilter);
+      ref.read(datingMainProvider.notifier).loadLatestFirstImpressionVote();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final state = ref.watch(datingMainProvider);
+    final datingMainNotifier = ref.read(datingMainProvider.notifier);
+
     return Scaffold(
       backgroundColor: Colors.white,
       // --- AppBar 섹션 ---
@@ -71,10 +55,17 @@ class DatingMain extends StatelessWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.filter_list, color: Colors.black54),
-            onPressed: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const DatingFilter()),
-            ),
+            onPressed: () async {
+              // Navigate to filter screen and await for a returned filter
+              final DatingFilter? newFilter = await Navigator.push<DatingFilter>(
+                context,
+                MaterialPageRoute(builder: (context) => const DatingFilterScreen()),
+              );
+              // If a new filter is returned, apply it
+              if (newFilter != null) {
+                datingMainNotifier.loadRecommendedUsers(newFilter);
+              }
+            },
           ),
           IconButton(
             icon: const Icon(Icons.send_outlined, color: Colors.black54),
@@ -95,12 +86,9 @@ class DatingMain extends StatelessWidget {
             _buildSection(
               title: '추천 유저',
               onMorePressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const RecommendedUserScreen()),
-                );
+                context.push(AppRoutes.recommendedUser);
               },
-              content: _buildRecommendedUserList(),
+              content: _buildRecommendedUserList(state.recommendedUsers, state.isLoadingUsers),
             ),
             const SizedBox(height: 24),
             _buildSection(
@@ -112,7 +100,7 @@ class DatingMain extends StatelessWidget {
                 );
               },
               moreText: '참여하러가기 >',
-              content: _buildFirstImpressionCard(context, dummyVote),
+              content: _buildFirstImpressionCard(context, state.latestVote, state.isLoadingVote),
             ),
             const SizedBox(height: 24),
           ],
@@ -182,15 +170,31 @@ class DatingMain extends StatelessWidget {
   }
 
   // 추천 유저 가로 스크롤 목록
-  Widget _buildRecommendedUserList() {
+  Widget _buildRecommendedUserList(List<RecommendedUser> users, bool isLoading) {
+    if (isLoading) {
+      return const SizedBox(
+        height: 240,
+        child: Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    if (users.isEmpty) {
+      return const SizedBox(
+        height: 240,
+        child: Center(
+          child: Text('추천 유저가 없습니다.', style: TextStyle(color: Colors.grey)),
+        ),
+      );
+    }
+
     return SizedBox(
-      height: 240, // 높이 증가
+      height: 240,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 16.0),
-        itemCount: dummyRecommendedUsers.length,
+        itemCount: users.length,
         itemBuilder: (context, index) {
-          return _buildRecommendedUserCard(dummyRecommendedUsers[index]);
+          return _buildRecommendedUserCard(users[index]);
         },
       ),
     );
@@ -210,7 +214,7 @@ class DatingMain extends StatelessWidget {
             children: [
               // 배경 이미지
               Image.network(
-                user.imageUrl,
+                user.profileImageUrl ?? '',
                 fit: BoxFit.cover,
                 alignment: Alignment.center,
               ),
@@ -237,7 +241,7 @@ class DatingMain extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      '${user.distance.toString()} km away',
+                      '${user.distanceInKm.toString()} km away',
                       style: const TextStyle(
                         color: Colors.white70,
                         fontSize: 14,
@@ -245,7 +249,7 @@ class DatingMain extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      '${user.name}, ${user.age}',
+                      '${user.nickname}, ${user.age}',
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 18,
@@ -263,7 +267,35 @@ class DatingMain extends StatelessWidget {
   }
 
   // 첫인상 투표 카드
-  Widget _buildFirstImpressionCard(BuildContext context, FirstImpressionVote vote) {
+  Widget _buildFirstImpressionCard(BuildContext context, FirstImpressionVote? vote, bool isLoading) {
+    if (isLoading) {
+      return const Padding(
+        padding: EdgeInsets.symmetric(horizontal: 16.0),
+        child: Card(
+          child: SizedBox(
+            height: 80,
+            child: Center(child: CircularProgressIndicator()),
+          ),
+        ),
+      );
+    }
+
+    if (vote == null) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+        child: Card(
+          elevation: 2,
+          shadowColor: Colors.grey.withOpacity(0.2),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          child: const ListTile(
+            contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            title: Text('새로운 첫인상 투표가 없습니다.', style: TextStyle(color: Colors.grey)),
+            trailing: Icon(Icons.chevron_right, size: 28),
+          ),
+        ),
+      );
+    }
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       child: Card(
@@ -274,12 +306,14 @@ class DatingMain extends StatelessWidget {
           contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           leading: CircleAvatar(
             radius: 28,
-            backgroundImage: NetworkImage(vote.imageUrl),
+            backgroundImage: NetworkImage(vote.creatorProfileImageUrl ?? ''),
           ),
-          title: Text(vote.name, style: const TextStyle(fontWeight: FontWeight.bold)),
-          subtitle: Text(vote.message),
+          title: Text(vote.creatorUsername, style: const TextStyle(fontWeight: FontWeight.bold)),
+          subtitle: Text(vote.title),
           trailing: const Icon(Icons.chevron_right, size: 28),
           onTap: () {
+            // 투표를 읽음 처리
+            ref.read(datingMainProvider.notifier).markVoteAsRead(vote.id.toString());
             Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => const vote_screen.FirstImpressionVoteScreen()),
@@ -296,9 +330,11 @@ class DatingMain extends StatelessWidget {
 // --- 이 파일을 독립적으로 실행하기 위한 main 함수 ---
 void main() {
   runApp(
-    const MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: DatingMain(),
+    ProviderScope(
+      child: const MaterialApp(
+        debugShowCheckedModeBanner: false,
+        home: DatingMain(),
+      ),
     ),
   );
 }

@@ -1,5 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:soulfit_client/config/di/provider.dart';
+import 'package:soulfit_client/feature/meeting/main/data/datasource/meeting_remote_data_source_impl.dart';
 import '../../data/datasource/fake_meeting_remote_data_source_impl.dart';
+import '../../data/datasource/meeting_remote_data_source.dart';
 import '../../data/repository_impl/meeting_repository_impl.dart';
 import '../../domain/repository/meeting_repository.dart';
 import '../../domain/usecase/get_ai_recommended_meetings_usecase.dart';
@@ -10,10 +13,22 @@ import '../../domain/usecase/get_meetings_by_category_usecase.dart'; // New impo
 import '../notifier/meeting_list_notifier.dart';
 import '../state/meeting_list_state.dart';
 
+final meetingRemoteDataSourceProvider = Provider<MeetingRemoteDataSource>((ref){
+  if(USE_FAKE_DATASOURCE){
+    return FakeMeetingRemoteDataSourceImpl();
+  }else{
+    return MeetingRemoteDataSourceImpl(
+      client: ref.read(httpClientProvider),
+      authSource: ref.read(authLocalDataSourceProvider),
+    );
+  }
+});
+
 /// 🔧 Repository Provider
 final meetingRepositoryProvider = Provider<MeetingRepository>((ref) {
-  return MeetingRepositoryImpl(FakeMeetingRemoteDataSourceImpl());
+  return MeetingRepositoryImpl(ref.watch(meetingRemoteDataSourceProvider));
 });
+
 
 /// ✅ UseCase Providers
 final getAiRecommendedMeetingsUseCaseProvider = Provider((ref) {

@@ -1,3 +1,4 @@
+import './user_album_photo.dart';
 import 'user_main_profile_info.dart';
 import 'user_value_analysis.dart';
 
@@ -6,7 +7,7 @@ class UserProfileScreenData {
   final List<String> perceivedByOthersKeywords;
   final List<String> aiPredictedKeywords;
   final UserValueAnalysis valueAnalysis;
-  final List<String> albumImages;
+  final List<UserAlbumPhoto> albumImages;
   final bool canViewDetailedValue;
 
   UserProfileScreenData({

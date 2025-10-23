@@ -1,20 +1,20 @@
-// lib/feature/user_report/data/repository_impl/user_report_repository_impl.dart
-
-import '../models/user_report_request.dart';
-import '../datasources/user_report_api.dart';
+import '../../domain/entities/user_report.dart';
 import '../../domain/repositories/user_report_repository.dart';
+import '../datasources/user_report_api.dart';
+import '../models/user_report_request.dart';
 
 class UserReportRepositoryImpl implements UserReportRepository {
-  final UserReportApi remoteDataSource;
+  final UserReportRemoteDataSource remoteDataSource;
 
   UserReportRepositoryImpl({required this.remoteDataSource});
 
   @override
-  Future<void> reportUser(UserReportRequest request) async {
-    await remoteDataSource.reportUser(
-      reporterUserId: request.reporterUserId,
-      reportedUserId: request.reportedUserId,
-      reason: request.reason,
-    );
+  Future<void> reportUser(UserReport report) async {
+    try {
+      final requestDto = UserReportRequestDto.fromEntity(report);
+      await remoteDataSource.reportUser(requestDto);
+    } catch (e) {
+      rethrow;
+    }
   }
 }

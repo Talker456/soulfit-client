@@ -1,29 +1,42 @@
-// lib/feature/user_report/data/datasources/user_report_api.dart
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import '../../../../feature/authentication/data/datasource/auth_local_datasource.dart';
+import '../models/user_report_request.dart';
 
-import 'package:dio/dio.dart';
+abstract class UserReportRemoteDataSource {
+  Future<void> reportUser(UserReportRequestDto request);
+}
 
-class UserReportApi {
-  final Dio dio;
+class UserReportRemoteDataSourceImpl implements UserReportRemoteDataSource {
+  final http.Client client;
+  final AuthLocalDataSource source;
+  final String baseUrl;
 
-  UserReportApi({required this.dio});
+  UserReportRemoteDataSourceImpl({
+    required this.client,
+    required this.source,
+    required this.baseUrl,
+  });
 
-  Future<void> reportUser({
-    required String reporterUserId,
-    required String reportedUserId,
-    required String reason,
-  }) async {
+  @override
+  Future<void> reportUser(UserReportRequestDto request) async {
     try {
-      final response = await dio.post(
-        '/report/user',
-        data: {
-          'reporter_user_id': reporterUserId,
-          'reported_user_id': reportedUserId,
-          'reason': reason,
+      final accessToken = await source.getAccessToken();
+      if (accessToken == null) {
+        throw Exception('인증 토큰이 없습니다.');
+      }
+
+      final response = await client.post(
+        Uri.parse('http://$baseUrl:8080/api/reports'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $accessToken',
         },
+        body: jsonEncode(request.toJson()),
       );
 
-      if (response.statusCode != 200) {
-        throw Exception('신고에 실패했습니다.');
+      if (response.statusCode != 200 && response.statusCode != 201) {
+        throw Exception('신고에 실패했습니다. 상태코드: ${response.statusCode}');
       }
     } catch (e) {
       rethrow;

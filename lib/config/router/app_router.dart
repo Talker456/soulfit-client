@@ -29,6 +29,7 @@ import '../../feature/main_profile/ui/screen/test_result_report.dart';
 import '../../feature/matching/chat-detail/presentation/screen/chat_detail_screen.dart';
 import '../../feature/matching/chat/presentation/screen/chat_screen.dart';
 import '../../feature/matching/chat/presentation/screen/chat_detail_screen.dart';
+import '../../feature/matching/recommendation/presentation/screen/recommended_user_screen.dart';
 import '../../feature/meeting/main/ui/screen/meeting_list_screen.dart';
 import '../../feature/meeting/main/ui/screen/meeting_detail_screen.dart';
 import '../../feature/meeting/main/ui/screen/recently_open_group.dart';
@@ -36,6 +37,7 @@ import '../../feature/payment/presentation/ui/portone_delegator.dart';
 import '../../feature/payment/presentation/ui/tosspayments_widget_v2.dart';
 import '../../feature/meeting/meeting_opening/ui/screen/create_meeting_wizard_screen.dart';
 import '../../feature/meeting/meeting_post/ui/screen/meeting_post_screen.dart';
+import '../../feature/main_profile/meeting_dashboard/presentation/screen/meeting_dashboard_screen.dart';
 import '../di/provider.dart';
 
 import '../../feature/community/presentation/screens/community_main.dart';
@@ -49,6 +51,11 @@ import '../../feature/meeting/main/ui/screen/popular_group.dart';
 import '../../feature/main_profile/ui/screen/profile.dart';
 import '../../feature/main_profile/ui/screen/settings.dart';
 import '../../feature/main_profile/ui/screen/test_result_check.dart';
+import '../../feature/dating_profile/ui/screen/dating_profile_screen.dart';
+import 'package:soulfit_client/feature/matching/check-impression/presentation/widgets/impression_check_screen.dart';
+import 'package:soulfit_client/feature/matching/write-impression/ui/screen/impression_write_screen.dart';
+import 'package:soulfit_client/feature/matching/check-like/ui/screen/check_like_screen.dart';
+import 'package:soulfit_client/feature/matching/check-like/ui/screen/swipe_like_screen.dart';
 
 class AppRoutes {
   static const String sandbox = '/sandbox';
@@ -100,6 +107,13 @@ class AppRoutes {
   static const String firstImpressionVote = '/first-impression-vote';
   static const String groupReview = '/group-review';
   static const String hostReview = '/host-review';
+  static const String datingProfile = '/dating-profile/1/2';
+  static const String meetingDashboard = '/meeting-dashboard';
+  static const String checkImpression = '/check-impression';
+  static const String writeImpression = '/write-impression';
+  static const String checkLike = '/check-like';
+  static const String swipeLike = '/swipe-like';
+  static const String recommendedUser = '/recommended-uesr';
 
   static const List<String> allRoutes = [
     login,
@@ -143,6 +157,13 @@ class AppRoutes {
     meetingChat,
     meetingChatRoom,
     meetingChatParticipants,
+    meetingDashboard,
+    datingProfile,
+    checkImpression,
+    writeImpression,
+    checkLike,
+    swipeLike,
+    recommendedUser,
   ];
 }
 
@@ -367,7 +388,7 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: AppRoutes.datingFilter,
       name: 'dating-filter',
-      builder: (context, state) => const DatingFilter(),
+      builder: (context, state) => const DatingFilterScreen(),
     ),
     GoRoute(
       path: AppRoutes.firstImpressionEvaluated,
@@ -388,6 +409,48 @@ final GoRouter appRouter = GoRouter(
       path: AppRoutes.hostReview,
       name: 'host-review',
       builder: (context, state) => const HostReview(),
+    ),
+    GoRoute(
+      path: AppRoutes.meetingDashboard,
+      name: 'meeting-dashboard',
+      builder: (context, state) => const MeetingDashboardScreen(),
+    ),
+    GoRoute(
+      path: '/dating-profile/:viewerId/:targetId',
+      name: 'dating-profile',
+      builder: (context, state) {
+        final viewerId = state.pathParameters['viewerId']!;
+        final targetId = state.pathParameters['targetId']!;
+        return DatingProfileScreen(
+          viewerUserId: viewerId,
+          targetUserId: targetId,
+        );
+      },
+    ),
+    GoRoute(
+      path: AppRoutes.checkImpression,
+      name: 'check-impression',
+      builder: (context, state) => const ImpressionCheckScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.writeImpression,
+      name: 'write-impression',
+      builder: (context, state) => const ImpressionWriteScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.checkLike,
+      name: 'check-like',
+      builder: (context, state) => const CheckLikeScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.swipeLike,
+      name: 'swipe-like',
+      builder: (context, state) => const SwipeLikeScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.recommendedUser,
+      name: 'recommended-user',
+      builder: (context, state) => const RecommendedUserScreen(),
     ),
 
     StatefulShellRoute.indexedStack(

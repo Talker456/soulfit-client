@@ -18,7 +18,7 @@ class ConversationRequestNotifier extends StateNotifier<ConversationRequestState
   }
 
   Future<void> fetchRequests() async {
-    print('[conversation request notifier] : start fetching requests');
+    print('[conversation_req request notifier] : start fetching requests');
     state = ConversationRequestLoading();
     try {
       final requests = await getRequests();

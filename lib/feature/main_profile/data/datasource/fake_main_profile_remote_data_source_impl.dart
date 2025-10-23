@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:soulfit_client/feature/main_profile/data/model/user_album_photo_dto.dart';
+
 import 'main_profile_remote_datasource.dart';
 import '../model/user_main_profile_info_dto.dart';
 import '../model/user_value_analysis_dto.dart';
@@ -10,8 +12,13 @@ class FakeMainProfileRemoteDataSourceImpl implements MainProfileRemoteDataSource
   Future<UserMainProfileInfoDto> fetchUserMainProfileInfo(String userId) async {
     await Future.delayed(const Duration(milliseconds: 300)); // simulate latency
     return UserMainProfileInfoDto(
-      profileImageUrl: "https://picsum.photos/400/400",
-      introduction: "안녕하세요, 저는 성장을 좋아하는 사람입니다.",
+      id: int.tryParse(userId) ?? 0,
+      nickname: "페이크유저",
+      birthDate: "1995-08-12",
+      gender: "FEMALE",
+      mbti: "ISFP",
+      profileImageUrl: "https://picsum.photos/seed/$userId/400/400",
+      introduction: "안녕하세요, 저는 페이크 유저입니다. 테스트를 위해 존재합니다.",
       personalityKeywords: ["내향적", "감성적", "계획적"],
       selfKeywords: ["진지함", "배려", "호기심"],
     );
@@ -51,12 +58,12 @@ class FakeMainProfileRemoteDataSourceImpl implements MainProfileRemoteDataSource
   }
 
   @override
-  Future<List<String>> fetchUserAlbumImages(String userId) async {
+  Future<List<UserAlbumPhotoDto>> fetchUserAlbumImages(String userId) async {
     await Future.delayed(const Duration(milliseconds: 250));
     return [
-      "https://picsum.photos/400/400",
-      "https://picsum.photos/400/400",
-      "https://picsum.photos/400/400",
+      UserAlbumPhotoDto(id: 1, imageUrl: "https://picsum.photos/seed/${userId}1/400/400"),
+      UserAlbumPhotoDto(id: 2, imageUrl: "https://picsum.photos/seed/${userId}2/400/400"),
+      UserAlbumPhotoDto(id: 3, imageUrl: "https://picsum.photos/seed/${userId}3/400/400"),
     ];
   }
 
