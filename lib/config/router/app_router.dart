@@ -317,11 +317,6 @@ final GoRouter appRouter = GoRouter(
       builder: (context, state) => CouponList(),
     ),
     GoRoute(
-      path: AppRoutes.datingMain,
-      name: 'dating-main',
-      builder: (context, state) => const DatingMain(),
-    ),
-    GoRoute(
       path: AppRoutes.historyGroupList,
       name: 'history-group-list',
       builder: (context, state) => HistoryGroupList(),
@@ -500,7 +495,12 @@ final GoRouter appRouter = GoRouter(
             GoRoute(
               path: AppRoutes.home,
               name: 'home',
-              builder: (context, state) => const HomePage(),
+              builder: (context, state) => const MainScreen(),
+            ),
+            GoRoute(
+              path: AppRoutes.datingMain,
+              name: 'dating-main',
+              builder: (context, state) => const DatingMain(),
             ),
           ],
         ),

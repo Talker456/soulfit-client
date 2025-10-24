@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:soulfit_client/config/router/app_router.dart';
 import 'package:soulfit_client/core/ui/widget/shared_app_bar_dating.dart';
-import 'package:soulfit_client/core/ui/widget/shared_navigation_bar.dart';
+
 import 'package:soulfit_client/feature/matching/filter/presentation/screen/dating_filter.dart';
 import 'package:soulfit_client/feature/matching/voting/presentation/screen/first_impression_evaluated.dart';
 import 'package:soulfit_client/feature/matching/voting/presentation/screen/first_impression_vote.dart' as vote_screen;
@@ -40,7 +40,7 @@ class _DatingMainState extends ConsumerState<DatingMain> {
       backgroundColor: Colors.white,
       // --- AppBar 섹션 ---
       appBar: SharedAppBar(
-        showBackButton: false,
+        showBackButton: true,
         // 로고 색상과 스타일을 이미지에 맞게 커스텀합니다.
         title: Text(
           'soulfit',
@@ -106,14 +106,7 @@ class _DatingMainState extends ConsumerState<DatingMain> {
           ],
         ),
       ),
-      // --- BottomNavigationBar 섹션 ---
-      // 요청하신 대로 SharedNavigationBar를 직접 적용합니다.
-      bottomNavigationBar: SharedNavigationBar(
-        currentIndex: 0,
-        onTap: (index) {
-          // TODO: 탭 처리 구현
-        },
-      ),
+
     );
   }
 

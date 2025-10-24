@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class SharedAppBar extends StatelessWidget implements PreferredSizeWidget {
   final bool showBackButton;
@@ -8,7 +9,7 @@ class SharedAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   const SharedAppBar({
     super.key,
-    this.showBackButton = false,
+    this.showBackButton = true,
     this.onBackButtonPressed,
     this.title,
     this.actions,
@@ -24,7 +25,7 @@ class SharedAppBar extends StatelessWidget implements PreferredSizeWidget {
       leading: showBackButton
           ? IconButton(
               icon: const Icon(Icons.arrow_back_ios),
-              onPressed: onBackButtonPressed ?? () => Navigator.of(context).pop(),
+              onPressed: onBackButtonPressed ?? () => context.pop(),
             )
           : null,
       title: title ?? const Text(
