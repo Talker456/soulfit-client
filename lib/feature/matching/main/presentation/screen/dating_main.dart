@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:soulfit_client/config/router/app_router.dart';
 import 'package:soulfit_client/core/ui/widget/shared_app_bar_dating.dart';
 import 'package:soulfit_client/core/ui/widget/shared_navigation_bar.dart';
 import 'package:soulfit_client/feature/matching/filter/presentation/screen/dating_filter.dart';
@@ -84,10 +86,7 @@ class _DatingMainState extends ConsumerState<DatingMain> {
             _buildSection(
               title: '추천 유저',
               onMorePressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const recommendation.RecommendedUserScreen()),
-                );
+                context.push(AppRoutes.recommendedUser);
               },
               content: _buildRecommendedUserList(state.recommendedUsers, state.isLoadingUsers),
             ),

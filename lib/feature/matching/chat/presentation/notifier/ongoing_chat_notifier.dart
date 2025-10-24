@@ -12,10 +12,12 @@ class OngoingChatNotifier extends StateNotifier<OngoingChatState> {
   }
 
   Future<void> fetchOngoingChats() async {
+    print('##### [OngoingChatNotifier] Fetching ongoing chats.');
     _page = 0;
     state = OngoingChatLoading();
     try {
       final chats = await getOngoingChats(GetOngoingChatsParams(page: _page, size: _size));
+      print('##### [OngoingChatNotifier] Fetched ${chats.length} chats. Unread counts: ${chats.map((c) => '${c.roomId}: ${c.unreadCount}').toList()}');
       state = OngoingChatLoaded(chats: chats, hasReachedMax: chats.isEmpty);
     } catch (e, stackTrace) { // stackTrace 추가
       print('##### Ongoing Chat Error: $e'); // 에러 내용 출력

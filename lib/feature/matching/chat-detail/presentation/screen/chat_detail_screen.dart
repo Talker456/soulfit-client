@@ -2,29 +2,35 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:soulfit_client/config/di/provider.dart';
+import 'package:soulfit_client/config/router/app_router.dart';
 import 'package:soulfit_client/core/ui/widget/shared_app_bar.dart';
 import 'package:soulfit_client/feature/matching/chat-detail/domain/entity/chat_room_params.dart';
+import 'package:soulfit_client/feature/matching/chat-detail/domain/usecase/read_chat_room_use_case.dart';
 import 'package:soulfit_client/feature/matching/chat-detail/presentation/provider/chat_detail_provider.dart';
 import 'package:soulfit_client/feature/matching/chat-detail/presentation/state/chat_detail_state.dart';
 import 'package:soulfit_client/feature/matching/chat-detail/presentation/widget/chat_analysis_display.dart';
+import 'package:soulfit_client/feature/matching/chat-detail/presentation/widget/recommended_replies_widget.dart';
 
 class ChatDetailScreen extends ConsumerStatefulWidget {
   final String roomId;
   final String opponentNickname;
+  final String opponentId;
 
   const ChatDetailScreen({
     super.key,
     required this.roomId,
     required this.opponentNickname,
+    required this.opponentId,
   });
 
   @override
   ConsumerState<ChatDetailScreen> createState() => _ChatDetailScreenState();
 }
 
-enum _InputMode { keyboard, analysis }
+enum _InputMode { keyboard, analysis, recommendation }
 
 class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
   final _scrollController = ScrollController();
@@ -33,31 +39,40 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
   final _focusNode = FocusNode();
   var _inputMode = _InputMode.keyboard;
 
-  // Add a member variable for params
   late final ChatRoomParams _params;
 
   @override
   void initState() {
     super.initState();
 
-    // Initialize params in initState using ref.read
-    // Note: This assumes user data is already available upon entering the screen.
+
     final myUserId = ref.read(authNotifierProvider).user?.id;
     if (myUserId == null) {
-      // Handle this case appropriately, maybe pop the screen
-      // For now, we'll throw an error to make it explicit.
       throw Exception("User not logged in, cannot enter chat.");
     }
     _params = ChatRoomParams(roomId: widget.roomId, userId: myUserId);
 
+    _readChatRoom();
+
     _scrollController.addListener(_onScroll);
     _focusNode.addListener(() {
-      if (_focusNode.hasFocus && _inputMode == _InputMode.analysis) {
+      if (_focusNode.hasFocus && (_inputMode == _InputMode.analysis || _inputMode == _InputMode.recommendation)) {
         setState(() {
           _inputMode = _InputMode.keyboard;
         });
       }
     });
+  }
+
+  void _readChatRoom() async {
+    print('##### [ChatDetailScreen] Attempting to mark room ${widget.roomId} as read.');
+    try {
+      final readChatRoomUseCase = await ref.read(readChatRoomUseCaseProvider(_params).future);
+      await readChatRoomUseCase(ReadChatRoomParams(roomId: widget.roomId));
+      print('##### [ChatDetailScreen] Successfully marked room ${widget.roomId} as read.');
+    } catch (e) {
+      print('##### [ChatDetailScreen] Failed to mark chat room as read: $e');
+    }
   }
 
   @override
@@ -70,8 +85,7 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
   }
 
   void _onScroll() {
-    if (_scrollController.position.pixels <=
-        _scrollController.position.minScrollExtent) {
+    if (_scrollController.position.pixels <= _scrollController.position.minScrollExtent) {
       ref.read(chatDetailNotifierProvider(_params).notifier).fetchOlderMessages();
     }
   }
@@ -88,20 +102,31 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
   Future<void> _sendImage() async {
     final pickedFile = await _imagePicker.pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
-      ref
-          .read(chatDetailNotifierProvider(_params).notifier)
-          .sendImageMessage(File(pickedFile.path));
+      ref.read(chatDetailNotifierProvider(_params).notifier).sendImageMessage(File(pickedFile.path));
     }
   }
 
-  void _toggleInputMode() {
+  void _toggleAnalysisMode() {
     setState(() {
-      if (_inputMode == _InputMode.keyboard) {
-        _inputMode = _InputMode.analysis;
-        _focusNode.unfocus();
-      } else {
+      if (_inputMode == _InputMode.analysis) {
         _inputMode = _InputMode.keyboard;
         _focusNode.requestFocus();
+      } else {
+        _inputMode = _InputMode.analysis;
+        _focusNode.unfocus();
+      }
+    });
+  }
+
+  void _toggleRecommendationMode() {
+    setState(() {
+      if (_inputMode == _InputMode.recommendation) {
+        _inputMode = _InputMode.keyboard;
+        _focusNode.requestFocus();
+      } else {
+        _inputMode = _InputMode.recommendation;
+        _focusNode.unfocus();
+        ref.read(chatDetailNotifierProvider(_params).notifier).getRecommendedReplies();
       }
     });
   }
@@ -129,6 +154,29 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
       appBar: SharedAppBar(
         showBackButton: true,
         title: Text(widget.opponentNickname),
+        actions: [
+          PopupMenuButton<String>(
+            onSelected: (value) {
+              if (value == 'review') {
+                context.push(
+                  AppRoutes.createReview,
+                  extra: {
+                    'revieweeId': int.parse(widget.opponentId),
+                    'conversationRequestId': int.parse(widget.roomId),
+                  },
+                );
+                print('Navigate to Review Screen');
+              }
+            },
+            itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+              const PopupMenuItem<String>(
+                value: 'review',
+                child: Text('대화 상대 리뷰하기'),
+              ),
+            ],
+            icon: const Icon(Icons.more_vert, color: Colors.black),
+          ),
+        ],
       ),
       body: Column(
         children: [
@@ -145,11 +193,9 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
                       final message = messages[index];
                       final isMe = message.sender == myUsername;
                       return Align(
-                        alignment:
-                            isMe ? Alignment.centerRight : Alignment.centerLeft,
+                        alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
                         child: Container(
-                          margin: const EdgeInsets.symmetric(
-                              vertical: 4, horizontal: 8),
+                          margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
                           padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
                             color: isMe ? Colors.blue[100] : Colors.grey[300],
@@ -193,10 +239,12 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
               onPressed: _sendImage,
             ),
             IconButton(
-              icon: Icon(_inputMode == _InputMode.analysis
-                  ? Icons.keyboard_alt_outlined
-                  : Icons.analytics_outlined),
-              onPressed: _toggleInputMode,
+              icon: Icon(_inputMode == _InputMode.analysis ? Icons.keyboard_alt_outlined : Icons.analytics_outlined),
+              onPressed: _toggleAnalysisMode,
+            ),
+            IconButton(
+              icon: Icon(_inputMode == _InputMode.recommendation ? Icons.keyboard_alt_outlined : Icons.lightbulb_outline),
+              onPressed: _toggleRecommendationMode,
             ),
             Expanded(
               child: TextField(
@@ -228,13 +276,28 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
           child: child,
         );
       },
-      child: _inputMode == _InputMode.analysis
-          ? Container(
-              height: 280, // Typical keyboard height
-              color: Theme.of(context).scaffoldBackgroundColor,
-              child: ChatAnalysisDisplay(params: _params),
-            )
-          : const SizedBox.shrink(),
+      child: switch (_inputMode) {
+        _InputMode.analysis => Container(
+            height: 280,
+            color: Theme.of(context).scaffoldBackgroundColor,
+            child: ChatAnalysisDisplay(params: _params),
+          ),
+        _InputMode.recommendation => Container(
+            height: 280,
+            color: Theme.of(context).scaffoldBackgroundColor,
+            child: RecommendedRepliesWidget(
+              params: _params,
+              onRecommendationSelected: (text) {
+                _textController.text = text;
+                setState(() {
+                  _inputMode = _InputMode.keyboard;
+                  _focusNode.requestFocus();
+                });
+              },
+            ),
+          ),
+        _InputMode.keyboard => const SizedBox.shrink(),
+      },
     );
   }
 }
