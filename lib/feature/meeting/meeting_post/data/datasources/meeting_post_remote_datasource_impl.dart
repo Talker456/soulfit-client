@@ -42,6 +42,8 @@ class MeetingPostRemoteDataSourceImpl implements MeetingPostRemoteDataSource {
         final responseBody = utf8.decode(response.bodyBytes);
         final jsonResponse = jsonDecode(responseBody);
 
+        print('[meeting d-src impl] : ' + response.body.toString());
+
         return MeetingPostDetailModel.fromJson(jsonResponse);
       } else {
         throw Exception('모임 상세 정보 조회 실패: ${response.statusCode}');

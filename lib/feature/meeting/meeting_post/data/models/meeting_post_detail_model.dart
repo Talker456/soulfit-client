@@ -178,9 +178,19 @@ class MeetingPostDetailModel {
       communityButtonText: json['communityButtonText'] ?? '커뮤니티 바로가기',
       description: json['description'] ?? '',
       keywords: (json['keywords'] ?? []).cast<String>().toList(),
-      schedules: (json['schedules'] ?? [])
-          .map<ScheduleItemModel>((s) => ScheduleItemModel.fromJson(s))
-          .toList(),
+      schedules: (json['schedules'] as List<dynamic>? ?? [])
+          .map<ScheduleItemModel>((s) {
+        if (s is String) {
+          final parts = s.split(' - ');
+          return ScheduleItemModel(
+            timeRange: parts.isNotEmpty ? parts[0].trim() : '',
+            title: parts.length > 1 ? parts[1].trim() : '',
+          );
+        } else if (s is Map<String, dynamic>) {
+          return ScheduleItemModel.fromJson(s);
+        }
+        return ScheduleItemModel(timeRange: '', title: '');
+      }).toList(),
       meetPlaceAddress: json['meetPlaceAddress'] ?? json['meetingPlace'] ?? '',
       venuePlaceAddress: json['venuePlaceAddress'] ?? json['venue'] ?? '',
       participantStats: ParticipantStatsModel.fromJson(
@@ -193,7 +203,7 @@ class MeetingPostDetailModel {
           .map<ReviewModel>((r) => ReviewModel.fromJson(r))
           .toList(),
       supplies: (json['supplies'] ?? []).cast<String>().toList(),
-      pricePerPerson: json['pricePerPerson'] ?? json['price'] ?? 0,
+      pricePerPerson: json['pricePerPerson'] ?? json['fee'] ?? 0,
     );
   }
 

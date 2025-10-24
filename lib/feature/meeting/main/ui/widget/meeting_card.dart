@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../../domain/entity/meeting_summary.dart';
 
 class MeetingCard extends StatelessWidget {
@@ -10,10 +11,7 @@ class MeetingCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        // TODO: 상세 페이지 이동
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${meeting.title} 클릭됨')),
-        );
+        context.push('/meeting-post/${meeting.meetingId}');
       },
       child: Container(
         width: 200,
