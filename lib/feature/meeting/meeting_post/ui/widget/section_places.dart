@@ -2,19 +2,18 @@
 import 'package:flutter/material.dart';
 
 class SectionPlaces extends StatelessWidget {
-  final String meetAddress;
-  final String venueAddress;
+  final String fullAddress;
   const SectionPlaces({
     super.key,
-    required this.meetAddress,
-    required this.venueAddress,
+    required this.fullAddress,
   });
 
-  Widget _map(BuildContext c, String caption, String addr) {
+  @override
+  Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(caption, style: Theme.of(c).textTheme.titleMedium),
+        Text('모임 장소', style: Theme.of(context).textTheme.titleMedium),
         const SizedBox(height: 8),
         Container(
           height: 160,
@@ -25,18 +24,8 @@ class SectionPlaces extends StatelessWidget {
           child: const Center(child: Text('지도(추후 SDK 연동)')),
         ),
         const SizedBox(height: 6),
-        Text(addr),
+        Text(fullAddress),
         const SizedBox(height: 16),
-      ],
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        _map(context, '모이는 장소', meetAddress),
-        _map(context, '진행 장소', venueAddress),
       ],
     );
   }

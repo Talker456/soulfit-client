@@ -30,6 +30,7 @@ class MeetingPostNotifier extends StateNotifier<MeetingPostState> {
       id: entity.id,
       title: entity.title,
       hostName: entity.hostName,
+      hostProfileImageUrl: entity.hostProfileImageUrl,
       images: entity.imageUrls,
       ddayBadge: entity.ddayBadge,
       communityButtonText: entity.communityButtonText,
@@ -38,20 +39,17 @@ class MeetingPostNotifier extends StateNotifier<MeetingPostState> {
       schedules: entity.schedules
           .map((s) => MPSchedule(s.timeRange, s.title))
           .toList(),
-      meetPlaceAddress: entity.meetPlaceAddress,
-      venuePlaceAddress: entity.venuePlaceAddress,
+      fullAddress: entity.fullAddress,
       stats: MPStats(
         malePercent: entity.participantStats.malePercent,
         femalePercent: entity.participantStats.femalePercent,
-        age: entity.participantStats.ageGroups.map(
-          (key, value) => MapEntry(key, (value.maleCount, value.femaleCount)),
-        ),
+        ageDistribution: entity.participantStats.ageGroupDistribution,
       ),
       reviewCount: entity.reviewCount,
       reviewAvg: entity.reviewAvg,
       reviewSummary: entity.reviewSummary,
       reviews: entity.reviews
-          .map((r) => MPReview(r.author, r.rating, r.content))
+          .map((r) => MPReview(r.meetingRating, r.hostRating, r.content))
           .toList(),
       supplies: entity.supplies,
       pricePerPerson: entity.pricePerPerson,

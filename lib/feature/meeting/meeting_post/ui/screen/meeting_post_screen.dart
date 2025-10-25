@@ -119,6 +119,28 @@ class _MeetingPostScreenState extends ConsumerState<MeetingPostScreen>
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
+                      '호스트',
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        CircleAvatar(
+                          radius: 24,
+                          backgroundImage: d.hostProfileImageUrl != null
+                              ? NetworkImage(d.hostProfileImageUrl!)
+                              : null,
+                          child: d.hostProfileImageUrl == null
+                              ? const Icon(Icons.person, size: 24)
+                              : null,
+                        ),
+                        const SizedBox(width: 12),
+                        Text(d.hostName,
+                            style: Theme.of(context).textTheme.titleMedium),
+                      ],
+                    ),
+                    const SizedBox(height: 24),
+                    Text(
                       '모임 설명',
                       style: Theme.of(context).textTheme.titleMedium,
                     ),
@@ -138,8 +160,7 @@ class _MeetingPostScreenState extends ConsumerState<MeetingPostScreen>
               // 장소
               _SectionPadding(
                 child: SectionPlaces(
-                  meetAddress: d.meetPlaceAddress,
-                  venueAddress: d.venuePlaceAddress,
+                  fullAddress: d.fullAddress,
                 ),
               ),
               // 리뷰
