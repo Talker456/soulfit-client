@@ -60,8 +60,8 @@ class PersonalityModel {
 
   factory PersonalityModel.fromJson(Map<String, dynamic> json) {
     return PersonalityModel(
-      userA: List<String>.from(json['userA']),
-      userB: List<String>.from(json['userB']),
+      userA: List<String>.from(json['A']),
+      userB: List<String>.from(json['B']),
     );
   }
 
@@ -83,8 +83,8 @@ class EmpathyModel {
 
   factory EmpathyModel.fromJson(Map<String, dynamic> json) {
     return EmpathyModel(
-      userA: json['userA'],
-      userB: json['userB'],
+      userA: json['A'],
+      userB: json['B'],
     );
   }
 
@@ -106,8 +106,8 @@ class ResponseSpeedModel {
 
   factory ResponseSpeedModel.fromJson(Map<String, dynamic> json) {
     return ResponseSpeedModel(
-      userA: json['userA'],
-      userB: json['userB'],
+      userA: json['A'],
+      userB: json['B'],
     );
   }
 
@@ -129,8 +129,8 @@ class QuestionFrequencyModel {
 
   factory QuestionFrequencyModel.fromJson(Map<String, dynamic> json) {
     return QuestionFrequencyModel(
-      userA: json['userA'],
-      userB: json['userB'],
+      userA: json['A'],
+      userB: json['B'],
     );
   }
 
