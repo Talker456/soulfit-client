@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:soulfit_client/config/router/app_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:soulfit_client/feature/matching/main/presentation/screen/dating_main.dart';
 import 'package:soulfit_client/feature/community/presentation/screens/community_main.dart';
@@ -104,13 +106,7 @@ class MainScreen extends StatelessWidget {
           ),
         ),
       ),
-      // Standard bottom navigation bar for app navigation.
-      bottomNavigationBar: SharedNavigationBar(
-        currentIndex: 0,
-        onTap: (index) {
-          // TODO: Implement navigation
-        },
-      ),
+
     );
   }
 
@@ -169,10 +165,11 @@ class MainScreen extends StatelessWidget {
             icon: Icons.favorite,
             iconColor: Colors.redAccent,
             onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const DatingMain()),
-              );
+              // Navigator.push(
+              //   context,
+              //   MaterialPageRoute(builder: (context) => const DatingMain()),
+              // );
+              context.push(AppRoutes.datingMain);
             },
           ),
         ),
@@ -184,10 +181,7 @@ class MainScreen extends StatelessWidget {
             icon: Icons.groups,
             iconColor: Colors.blueAccent,
             onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => GroupScreen()),
-              );
+              context.push(AppRoutes.groupScreen);
             },
           ),
         ),
