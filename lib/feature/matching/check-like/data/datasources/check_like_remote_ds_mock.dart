@@ -33,6 +33,8 @@ class CheckLikeRemoteDataSourceMockImpl implements CheckLikeRemoteDataSource {
         return [
           AiMatchResponseModel(
             userId: candidateUserIds.first,
+            username: 'MockUser_${candidateUserIds.first}',
+            profileImageUrl: 'https://cdn-icons-png.flaticon.com/512/149/149071.png',
             matchScore: 0.85,
             matchReason: '가치관이 매우 유사하여 높은 점수를 받았습니다. 특히 현실적인 문제 해결 방식과 안정성을 중시하는 면에서 잘 맞을 것으로 보입니다.',
           ),

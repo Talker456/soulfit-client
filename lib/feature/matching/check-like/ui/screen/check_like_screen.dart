@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../../config/router/app_router.dart';
 import '../provider/check_like_providers.dart';
 import '../notifier/check_like_notifier.dart';
+import '../widgets/ai_match_loading_dialog.dart'; // Import the new loading dialog
 import '../widgets/ai_match_result_dialog.dart';
 import '../widgets/user_bubble.dart';
 import 'package:soulfit_client/config/di/provider.dart';
@@ -20,17 +21,26 @@ class CheckLikeScreen extends ConsumerWidget {
 
     ref.listen(checkLikeNotifierProvider.select((value) => value.aiMatchState),
         (previous, next) {
+      // Dismiss any existing dialog before showing a new one or a snackbar
+      if (previous != null && previous.isLoading && !next.isLoading) {
+        Navigator.of(context, rootNavigator: true).pop(); // Dismiss loading dialog
+      }
+
       next.when(
         data: (data) {
           if (data.isNotEmpty) {
             showDialog(
               context: context,
-              builder: (context) => AiMatchResultDialog(matchResult: data.first),
+              builder: (context) => AiMatchResultDialog(matchResult: data.first, viewerId: viewer!.id),
             );
           }
         },
         loading: () {
-          // You can show a loading indicator here if you want
+          showDialog(
+            context: context,
+            barrierDismissible: false, // Prevent dismissing by tapping outside
+            builder: (context) => const AiMatchLoadingDialog(),
+          );
         },
         error: (error, stackTrace) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -47,16 +57,18 @@ class CheckLikeScreen extends ConsumerWidget {
         ),
         actions: [
           TextButton(
-            onPressed: () {
-              final candidateUserIds = state.users.map((u) => int.parse(u.id)).toList();
-              if (candidateUserIds.isEmpty) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('분석할 사용자가 없습니다.')),
-                );
-                return;
-              }
-              notifier.getAiMatch(candidateUserIds);
-            },
+            onPressed: state.aiMatchState.isLoading // Disable button when loading
+                ? null
+                : () {
+                    final candidateUserIds = state.users.map((u) => int.parse(u.id)).toList();
+                    if (candidateUserIds.isEmpty) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('분석할 사용자가 없습니다.')),
+                      );
+                      return;
+                    }
+                    notifier.getAiMatch(candidateUserIds);
+                  },
             child: const Text('AI 매칭 분석'),
           ),
         ],
