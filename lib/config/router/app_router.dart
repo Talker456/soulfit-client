@@ -116,6 +116,7 @@ class AppRoutes {
   static const String swipeLike = '/swipe-like';
   static const String recommendedUser = '/recommended-uesr';
   static const String createReview = '/create-review';
+  static const String realMeetingPost = '/meeting-post/1';
 
   static const List<String> allRoutes = [
     login,
@@ -167,6 +168,7 @@ class AppRoutes {
     swipeLike,
     recommendedUser,
     createReview,
+    realMeetingPost,
   ];
 }
 
@@ -472,6 +474,13 @@ final GoRouter appRouter = GoRouter(
           conversationRequestId: conversationRequestId,
         );
       },
+    ),
+    GoRoute(
+      path: '/meeting-post/:meetingId',
+      name: 'real-meeting-post',
+      builder: (context, state) => MeetingPostScreen(
+        postId: state.pathParameters['meetingId'] as String,
+      ),
     ),
 
     StatefulShellRoute.indexedStack(

@@ -39,7 +39,7 @@ class SectionReviews extends StatelessWidget {
           (r) => Card(
             child: ListTile(
               leading: const CircleAvatar(child: Icon(Icons.person)),
-              title: Text('${r.author}  ★${r.rating}'),
+              title: Text('모임 ★${r.meetingRating} / 호스트 ★${r.hostRating}'),
               subtitle: Text(r.content),
             ),
           ),
